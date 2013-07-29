@@ -143,7 +143,7 @@ for i in xrange(weibomodule.pagemax):
 				"checked_at": nowtimestamp,
 				'started_tracking_at': nowtimestamp,
 				'initial_user_follower_count':followers_count[i],
-				'initial_post_repost_count':total_reposts_count[i]
+				'initial_post_repost_count':total_reposts_count[i],
 				"user_name": screen_name[i],
 				"user_follower_count": followers_count[i],
 				"post_original_pic":original_pic[i], 

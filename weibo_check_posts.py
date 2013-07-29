@@ -79,14 +79,13 @@ for this_post_id in live_post_ids:
 
 	# get the post info from postids_live collection,
 	# since if the post was deleted we wouldn't have any of that info anymore
-	this_post = collection_postids_live.collection_checklog.find_one({'post_id':this_post_id})
+	this_post = collection_postids_live.find_one({'post_id':unicode(this_post_id)})
 
 	statusresponse =  weibomodule.checkstatus(this_post_id)
-	
-	# just log once the checked at time so we know when the last successful check was
-	if (logged_checked_at == False):
-		logged_checked_at = True
-		collection_checked_at_times.insert({'checked_at':nowtimestamp})
+
+
+#	print "thispost = " + this_post_id
+#	print this_post
 
 	if ("error" in statusresponse):
 		#the post has been DELETED
@@ -101,9 +100,9 @@ for this_post_id in live_post_ids:
 		# the post is still alive! prepare the doc accordingly
 		doc = {
 		  "post_id": this_post_id,
-		  "user_id": this_post["user_id"]
+		  "user_id": this_post["user_id"],
 		  "checked_at": nowtimestamp,
-		  "user_name": this_post["user_name"]
+		  "user_name": this_post["user_name"],
 		  "user_follower_count": statusresponse["user"]["followers_count"],
 		  "post_original_pic": statusresponse["original_pic"],
 		  "post_created_at": statusresponse["created_at"],
@@ -116,9 +115,9 @@ for this_post_id in live_post_ids:
 	#this way the checklog has the full info
 	doc = {
 	  "post_id": this_post_id,
-	  "user_id": this_post["user_id"]
+	  "user_id": this_post["user_id"],
 	  "checked_at": nowtimestamp,
-	  "user_name": this_post["user_name"]
+	  "user_name": this_post["user_name"],
 	  "user_follower_count": statusresponse["user"]["followers_count"],
 	  "post_original_pic": statusresponse["original_pic"],
 	  "post_created_at": statusresponse["created_at"],
@@ -127,6 +126,10 @@ for this_post_id in live_post_ids:
 	}
 	collection_checklog.insert(doc)
 
+	# just log once the checked at time so we know when the last successful check was
+	if (logged_checked_at == False):
+		logged_checked_at = True
+		collection_checked_at_times.insert({'checked_at':nowtimestamp})
 
 
 
