@@ -137,18 +137,32 @@ for i in xrange(weibomodule.pagemax):
 			print "Storing postID " + str(post_id[i] + " image to file")
 			urlretrieve(original_pic[i], imgpath)
 			print "Storing postID " + str(post_id[i] + " to database")
-			collection_postids_live.insert({'post_id':post_id[i], 'started_tracking_at': nowtimestamp, 'post_created_at':created_at[i], 'initial_user_follower_count':followers_count[i], 'initial_post_repost_count':total_reposts_count[i]})
+			collection_postids_live.insert({
+				'post_id':post_id[i],
+				'user_id':user_id[i],
+				"checked_at": nowtimestamp,
+				'started_tracking_at': nowtimestamp,
+				'initial_user_follower_count':followers_count[i],
+				'initial_post_repost_count':total_reposts_count[i]
+				"user_name": screen_name[i],
+				"user_follower_count": followers_count[i],
+				"post_original_pic":original_pic[i], 
+				"post_created_at": created_at[i], 
+				"post_repost_count": total_reposts_count[i],
+				"post_text": text[i],
+			})
 
 			doc = {
-			  "post_id": post_id[i],
-			  "user_id":user_id[i],
-			  "checked_at": nowtimestamp,
-			  "user_name": screen_name[i],
-			  "user_follower_count": followers_count[i],
-			  "post_original_pic":original_pic[i], 
-			  "post_created_at": created_at[i], 
-			  "post_repost_count": total_reposts_count[i],
-			  "post_text": text[i]
+				"post_id": post_id[i],
+				"user_id":user_id[i],
+				"checked_at": nowtimestamp,
+				"user_name": screen_name[i],
+				"user_follower_count": followers_count[i],
+				"post_original_pic":original_pic[i], 
+				"post_created_at": created_at[i], 
+				"post_repost_count": total_reposts_count[i],
+				"post_text": text[i],
+				"is_alive":"True"
 			}
 			collection_checklog.insert(doc)
 		else:

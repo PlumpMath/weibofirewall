@@ -75,17 +75,50 @@ logged_checked_at = False
 
 for this_post_id in live_post_ids:
 	print "Checking post # " + this_post_id
+	thispost_is_alive = True
+
+	# get the post info from postids_live collection,
+	# since if the post was deleted we wouldn't have any of that info anymore
+	this_post = collection_postids_live.collection_checklog.find_one({'post_id':this_post_id})
 
 	statusresponse =  weibomodule.checkstatus(this_post_id)
+	
+	# just log once the checked at time so we know when the last successful check was
+	if (logged_checked_at == False):
+		logged_checked_at = True
+		collection_checked_at_times.insert({'checked_at':nowtimestamp})
+
+	if ("error" in statusresponse):
+		#the post has been DELETED
+		print "DELETED: " + statusresponse["error"]
+
+		thispost_is_alive = False
+
+		#remove document from postids_live collection
+		#add document into postids_archive collection, noting time, initial and final follower/repost counts, as well as error message and error code and deleted by
+
+	else:
+		# the post is still alive! prepare the doc accordingly
+		doc = {
+		  "post_id": this_post_id,
+		  "user_id": this_post["user_id"]
+		  "checked_at": nowtimestamp,
+		  "user_name": this_post["user_name"]
+		  "user_follower_count": statusresponse["user"]["followers_count"],
+		  "post_original_pic": statusresponse["original_pic"],
+		  "post_created_at": statusresponse["created_at"],
+		  "post_repost_count": statusresponse["reposts_count"],
+		  "post_text": statusresponse["text"]
+		}
+		pass
 
 	#add an entry to the checklog no matter what
 	#this way the checklog has the full info
-	
 	doc = {
 	  "post_id": this_post_id,
-	  "user_id": statusresponse["user"]["id"],
+	  "user_id": this_post["user_id"]
 	  "checked_at": nowtimestamp,
-	  "user_name": statusresponse["user"]["screen_name"],
+	  "user_name": this_post["user_name"]
 	  "user_follower_count": statusresponse["user"]["followers_count"],
 	  "post_original_pic": statusresponse["original_pic"],
 	  "post_created_at": statusresponse["created_at"],
@@ -94,21 +127,8 @@ for this_post_id in live_post_ids:
 	}
 	collection_checklog.insert(doc)
 
-	# just log once the checked at time so we know when the last successful check was
-	if (logged_checked_at == False):
-		logged_checked_at = True
-		collection_checked_at_times.insert({'checked_at':nowtimestamp})
 
-	if ("error" in statusresponse):
-		#the post has been DELETED
-		print "DELETED: " + api_response["error"]
 
-		#remove document from postids_live collection
-		#add document into postids_archive collection, noting time, initial and final follower/repost counts, as well as error message and error code and deleted by
-
-	else:
-		# the post is still alive! don't do much..
-		pass
 
 """
   # The post has been deleted

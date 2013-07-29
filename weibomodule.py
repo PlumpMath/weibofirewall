@@ -154,7 +154,13 @@ def requests_get_wrapper(url, params):
 		params["access_token"] = thistoken
 
 		#attempt to get request	
+	
+		print "data = requests.get(" + url + ", params=" 
+		print params
 		data = requests.get(url, params=params)
+
+		print data.text
+
 		jsondata = data.json()
 
 		try:
@@ -170,9 +176,12 @@ def requests_get_wrapper(url, params):
 
 				#loop and try again
 
-
 		except:
 			# success - exit out
+			return jsondata
+		else:
+			#oh, we actually have another error
+			#print jsondata["error"]
 			return jsondata
 
 			
