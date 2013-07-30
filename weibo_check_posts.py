@@ -97,12 +97,16 @@ for this_post_id in live_post_ids:
 		#remove document from postids_live collection
 		#by 'remove' we mean 'turn off the 'is_alive' tag
 		#note error message and error code and deleted by
-		collection_postids_live.update({"post_id":this_post_id}, {
-			"is_alive":"False",
-			"error_message": statusresponse['error'],
-			"error_code": statusresponse['error_code'],
-			"deleted_by": nowtimestamp
-		})
+		collection_postids_live.update(
+			{"post_id":this_post_id}, 
+			{	'$set': {
+					"is_alive":"False",
+					"error_message": statusresponse['error'],
+					"error_code": statusresponse['error_code'],
+					"deleted_by": nowtimestamp 
+					}
+			}
+		)
 	
 		# we're gonna adda nyways to the checklog - prepare info	
 

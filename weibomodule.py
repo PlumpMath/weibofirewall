@@ -91,7 +91,8 @@ def get_db_collection(collection_name):
 #just converts seconds to minutes and seconds
 def minsec(seconds):
 	m, s = divmod(seconds, 60)
-	return "%02d:%02d" % (m, s)
+	h, m = divmod(m, 60)
+	return "%d:%02d:%02d" % (h, m, s)
 
 # returns the number of posts to track
 def num_posts_to_track():

@@ -15,20 +15,15 @@ collection_checklog = weibomodule.get_db_collection(weibomodule.collection_check
 collection_postids_live = weibomodule.get_db_collection(weibomodule.collection_postids_live)
 collection_checked_at_times = weibomodule.get_db_collection(weibomodule.collection_checked_at_times)
 
+print "##################################"
+print "########## WEIBO STATUS ##########"
+print "##################################"
+
 num_live_posts = collection_postids_live.find({"is_alive":"True"}).count()
 if (num_live_posts == 0):
 	sys.exit("No posts are being tracked right now.")
 print "Currently tracking " + str(num_live_posts) + " posts"
 
-##########################################
-## GET LIST OF LIVE POSTS
-##########################################
-
-live_post_ids = []
-for lpis in collection_postids_live.find({"is_alive":"True"}):
-	live_post_ids.append(lpis["post_id"])
-
-print live_post_ids
 
 ##########################################
 ## HAS ENOUGH TIME PASSED?
@@ -53,41 +48,57 @@ else:
 	# okay, so has it been long enough?
 	timelapsed = nowtimestamp - lasttimestamp
 
-	print "It's been " + weibomodule.minsec(timelapsed) + " min"	
+	print "It's been " + weibomodule.minsec(timelapsed) + " since we last checked"	
 
 print "We're checking posts every " + weibomodule.minsec(weibomodule.tracking_period_seconds) + " minutes." 
 
 ##########################################
-## CHECK EACH POST & LOG IN DB
+## GET LIST OF LIVE POSTS
 ##########################################
 
-logged_checked_at = False
-
-#iterate through all of them, rotating tokens. log an updated check into the checklog db
-#actually we'd just use the friends timeline to do this. savea  few api calls
-
-
-
-for this_post_id in live_post_ids:
-	print "Checking post # " + this_post_id
-
-	# get the post info from postids_live collection,
-	# since if the post was deleted we wouldn't have any of that info anymore
-	this_post = collection_postids_live.find_one({'post_id': this_post_id, "is_alive":"True"})
-
-	try:
-		statusresponse =  weibomodule.checkstatus(this_post_id)
-	except:
-		print "okay weird error"
-		continue
+print "########## LIVE POSTS ##########"
+num_live_posts = collection_postids_live.find({"is_alive":"True"}).count()
+print "# of live posts we've tracked: " + str(num_live_posts)
+if (num_live_posts > 0):
+	live_post_ids = []
+	for lpis in collection_postids_live.find({"is_alive":"True"}):
+		live_post_ids.append(lpis["post_id"])
+#	print live_post_ids
 
 
-	if ("error" in statusresponse):
-		#the post has been DELETED
-		print " >> POST DELETED: " + statusresponse["error"]
+	for this_post_id in live_post_ids:
+		print "Checking post #" + this_post_id + ":",
 
-	else:
-		print " >> post alive: new/old repost count (" + str(statusresponse["reposts_count"]) + " / " + str(this_post["post_repost_count"]) + ") "
+		this_post_old = collection_postids_live.find_one({'post_id': this_post_id, "is_alive":"True"}, sort=[('checked_at', -1)])
+		this_post_check = collection_checklog.find_one({'post_id': this_post_id, "is_alive":"True"}, sort=[('checked_at', -1)])
+
+		print "alive: new/old repost count (" + str(this_post_check["post_repost_count"]) + " / " + str(this_post_old["initial_post_repost_count"]) + ") "
+
+		print weibomodule.minsec(this_post_check["checked_at"] - this_post_old["started_tracking_at"]) + " since tracking start"
+		#print this_post_check["checked_at"] , " " , this_post_old["started_tracking_at"]
 
 
-print "Done."
+##########################################
+## GET LIST OF DEAD POSTS
+##########################################
+
+print "########## DEAD POSTS ##########"
+num_dead_posts = collection_postids_live.find({"is_alive":"False"}).count()
+print "# of dead posts we've tracked: " + str(num_dead_posts)
+if (num_dead_posts > 0):
+	dead_post_ids = []
+	for lpis in collection_postids_live.find({"is_alive":"False"}):
+		dead_post_ids.append(lpis["post_id"])
+	print dead_post_ids
+
+
+	for this_post_id in dead_post_ids:
+		print "Checking post # " + this_post_id
+
+		# get the post info from postids_live collection,
+		# since if the post was deleted we wouldn't have any of that info anymore
+		this_post = collection_postids_live.find_one({'post_id': this_post_id, "is_alive":"True"})
+
+	#	print " >> post alive: new/old repost count (" + str(statusresponse["reposts_count"]) + " / " + str(this_post["post_repost_count"]) + ") "
+
+
