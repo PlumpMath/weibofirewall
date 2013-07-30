@@ -59,7 +59,7 @@ else:
 	if (timelapsed < weibomodule.tracking_period_seconds):
 		#not enough time has passed, too bad!
 		print "... But we're checking posts every " + weibomodule.minsec(weibomodule.tracking_period_seconds) + " minutes!" 
-#		sys.exit(1)
+		sys.exit(1)
 
 ##########################################
 ## CHECK EACH POST & LOG IN DB
