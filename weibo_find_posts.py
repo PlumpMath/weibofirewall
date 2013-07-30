@@ -150,6 +150,7 @@ for i in xrange(weibomodule.pagemax):
 				"post_created_at": created_at[i], 
 				"post_repost_count": total_reposts_count[i],
 				"post_text": text[i],
+				"is_alive":"True"
 			})
 
 			doc = {

@@ -155,11 +155,11 @@ def requests_get_wrapper(url, params):
 
 		#attempt to get request	
 	
-		print "data = requests.get(" + url + ", params=" 
-		print params
+		#print "data = requests.get(" + url + ", params=" 
+		#print params
 		data = requests.get(url, params=params)
 
-		print data.text
+		#print data.text
 
 		jsondata = data.json()
 
