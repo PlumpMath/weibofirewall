@@ -149,43 +149,4 @@ if (logged_checked_at == False):
 	logged_checked_at = True
 
 
-
-"""
-  # The post has been deleted
-  if "error" in api_response:
-    print 'DELETED ' + api_response['error'] 
-    deleted_image_url = current_post_in_db['original_pic']
-    deleted_by = strftime("%A %b %d %H:%M:%S +0000", gmtime())
-    
-    deldoc = {
-      "user_id":current_post_in_db['user_id'],
-      "check_url":url_temp,
-      "deleted_image_url":deleted_image_url, 
-      "delpost_id":d['post_id'], 
-      "deleted_by":deleted_by,
-      "text": current_post_in_db['text'],
-      "screen_name": current_post_in_db['screen_name'],
-      "created_at": current_post_in_db['created_at'],
-      "followers_count": current_post_in_db['followers_count'],
-      "total_reposts_count": current_post_in_db['total_reposts_count'],
-      "error_message": api_response['error'],
-      "error_code": api_response['error_code']
-    }
-    db['v2_deleted_weibo'].insert(deldoc)
-    db['v2_sample_weibo'].remove({'post_id':d['post_id']})
-
-  # If the post isn't deleted, update the data
-  else: 
-    updated_time = strftime("%A %b %d %H:%M:%S +0000", gmtime())
-
-    print "Prev: " + str(current_post_in_db['total_reposts_count']) + " | " + "New: " + str(api_response['reposts_count'])
-    db.v2_sample_weibo.update(current_post_in_db, {
-      "$set": {
-        "total_reposts_count": api_response['reposts_count'],
-        "updated_time": updated_time
-      }
-    })
-
-"""
-
-print "done"
+print "Done."

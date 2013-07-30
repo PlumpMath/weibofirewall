@@ -174,21 +174,6 @@ for i in xrange(weibomodule.pagemax):
 
 	statuspage += 1
 
-	"""
-	for i in xrange (len(screen_name)):
-		print jarray[i]
-		print '\n'
-		print 'Post_id: ' + post_id[i]  
-		print 'WeiboID: '+ screen_name[i]
-		print 'UserID: ' +   str(user_id[i])
-		print 'Followers: '+ str(followers_count[i])
-		print 'Original Pic: ' + original_pic[i]
-		print 'Created_at: '+ created_at[i]
-		print 'Total Reposts: ' + str(total_reposts_count[i])
-		print 'Post: '+ text[i]
-		print '\n'
-	"""
-
 print str(newpostcount) + " posts added, for a total of " + str(num_live_posts + newpostcount) + " posts"
 
 
