@@ -25,11 +25,11 @@ print weibomodule.post_alert()
 ## GET LIST OF LIVE POSTS
 ##########################################
 
-live_post_ids = []
+tracking_post_ids = []
 for lpis in collection_postids_live.find({"is_alive":"True"}):
-	live_post_ids.append(lpis["post_id"])
+	tracking_post_ids.append(lpis["post_id"])
 
-print live_post_ids
+print tracking_post_ids
 
 ##########################################
 ## HAS ENOUGH TIME PASSED?
@@ -59,7 +59,7 @@ else:
 	if (timelapsed < weibomodule.tracking_period_seconds):
 		#not enough time has passed, too bad!
 		print "... But we're checking posts every " + weibomodule.minsec(weibomodule.tracking_period_seconds) + " minutes!" 
-		sys.exit(1)
+#		sys.exit(1)
 
 ##########################################
 ## CHECK EACH POST & LOG IN DB
@@ -72,20 +72,22 @@ logged_checked_at = False
 
 
 
-for this_post_id in live_post_ids:
+for this_post_id in tracking_post_ids:
 	print "Checking post # " + this_post_id
 	thispost_is_alive = True
 
 	# get the post info from postids_live collection,
 	# since if the post was deleted we wouldn't have any of that info anymore
-	this_post = collection_postids_live.find_one({'post_id':unicode(this_post_id), "is_alive":"True"})
+	#this_post = collection_postids_live.find_one({'post_id':unicode(this_post_id), "is_alive":"True"})
+	this_post = collection_postids_live.find_one({'post_id':unicode(this_post_id)})
 
+	elapsedtime = nowtimestamp - int(this_post['post_created_at'])
+	
 	try:
 		statusresponse =  weibomodule.checkstatus(this_post_id)
 	except:
 		print "okay weird error"
 		continue
-
 
 
 	if ("error" in statusresponse):
@@ -128,7 +130,24 @@ for this_post_id in live_post_ids:
 		  "is_alive" : "False"		
 		}
 
+		collection_checklog.insert(doc)
+
+	elif (elapsedtime > weibomodule.track_posts_timeout):
+		print "Too much time has passed! We're not tracking this anymore."
+		# too much time has passed - the post wasn't deleted, but let's put it away
+
+		collection_postids_live.update(
+			{"post_id":this_post_id}, 
+			{	'$set': {
+					"is_tracking":"False",
+					}
+			}
+		)
+
 	else:
+
+
+
 		print " >> post alive: new/old repost count (" + str(statusresponse["reposts_count"]) + " / " + str(this_post["post_repost_count"]) + ") "
 
 		# the post is still alive! prepare the doc accordingly
@@ -145,7 +164,7 @@ for this_post_id in live_post_ids:
 		  "is_alive" : "True"
 		}
 
-	collection_checklog.insert(doc)
+		collection_checklog.insert(doc)
 	# just log once the checked at time so we know when the last successful check was
 
 if (logged_checked_at == False):

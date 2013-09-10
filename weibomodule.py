@@ -8,6 +8,12 @@ import json
 
 dbname = "weibo_firewall_db"
 
+## ALRIGHT NEW SETUP
+## THERE ARE TWO COLLECTIONS
+## 'COL_CURRENTLY_CHECKING' STORES THE CURRENTLY STORED ID# OF POSTS, AS WELL AS MOST RECENT CHECK TIME
+## 'COL_CHECKLOG' LOGS ALL CHECKS
+## THIS KEEPS THE DBS SIMPLE. ALL OTHER PROCESSING IS DONE THROUGH CODE
+
 collection_postids_live = "postids_live"
 collection_postids_archive = "postids_archive"
 collection_checklog = "checklog"
@@ -47,6 +53,9 @@ tracking_period = 0.25
 # mostly for debugging purposes
 # ex) 5 = track only 5 posts at a time
 track_posts_override = -1 
+
+#timeout - if a post is alive past this many seconds, then go onto the next
+track_posts_timeout = 259200 #72 hours
 
 
 ##########################################
@@ -110,7 +119,6 @@ def post_alert():
 	if (track_posts_override >= num_can_track):
 		return "WARNING - you can only track " + str(num_can_track) + ", yet you're trying to track " + str(track_posts_override)
 
-	return ''
 
 #get a new token- starting from the first token and working its way to the end
 def getnewtoken():
@@ -159,11 +167,11 @@ def requests_get_wrapper(url, params):
 		#print "data = requests.get(" + url + ", params=" 
 		#print params
 		data = requests.get(url, params=params)
-
 		#print data.text
 
 		jsondata = data.json()
 
+		print jsondata	
 		try:
 			# if we get an error
 			if jsondata["error"] == "User requests out of rate limit!":
@@ -176,6 +184,8 @@ def requests_get_wrapper(url, params):
 					return -1
 
 				#loop and try again
+			else:
+				return jsondata
 
 		except:
 			# success - exit out
@@ -183,9 +193,11 @@ def requests_get_wrapper(url, params):
 		else:
 			#oh, we actually have another error
 			#print jsondata["error"]
-			return jsondata
+			#return jsondata
+			# loop around
+			pass
 
-			
+		
 
 #get status of friends
 #usually call this without a parameter, since the max is 100, and this query only costs us 1 out of the 150 per hour query.
