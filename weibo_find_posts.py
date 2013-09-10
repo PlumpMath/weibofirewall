@@ -45,19 +45,19 @@ num_posts_to_track = weibomodule.num_posts_to_track()
 num_trackmore = num_posts_to_track - num_currently_tracking
 
 print num_trackmore
-sys.exit()
 
 # if we're tracking more than we need, exit.
 if (num_trackmore <= 0):
-	print "Currently tracking all " + str(num_live_posts) + " posts:"
+	print "Currently tracking all " + str(num_currently_tracking) + " posts:"
 	print "After all, we can only track a max of " + str(weibomodule.num_posts_to_track()) + " posts"
 	for lpis in collection_postids_live.find():
 		thisdate = datetime.fromtimestamp(int(lpis["started_tracking_at"]), tz=pytz.timezone(weibomodule.display_timezone)).strftime('%Y-%m-%d %H:%M:%S %Z')
 		print "post " + lpis["post_id"] + ", started tracking at " +  thisdate
 	sys.exit(0)
-#	sys.exit("Currently tracking all " + str(num_live_posts) + " posts.")
+#	sys.exit("Currently tracking all " + str(num_currently_tracking) + " posts.")
 
-print "Currently tracking " + str(num_live_posts) + " posts"
+sys.exit()
+print "Currently tracking " + str(num_currently_tracking) + " posts"
 print "Attempting to find " + str(num_trackmore) + " more posts to track"
 print " -- for a total of " + str(num_posts_to_track) + " tracked posts"
 print weibomodule.post_alert()
@@ -180,7 +180,7 @@ for i in xrange(weibomodule.pagemax):
 
 	statuspage += 1
 
-print str(newpostcount) + " posts added, for a total of " + str(num_live_posts + newpostcount) + " posts"
+print str(newpostcount) + " posts added, for a total of " + str(num_currently_tracking + newpostcount) + " posts"
 
 
 
