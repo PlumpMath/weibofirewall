@@ -14,10 +14,8 @@ dbname = "weibo_firewall_db"
 ## 'COL_CHECKLOG' LOGS ALL CHECKS
 ## THIS KEEPS THE DBS SIMPLE. ALL OTHER PROCESSING IS DONE THROUGH CODE
 
-collection_postids_live = "postids_live"
-collection_postids_archive = "postids_archive"
-collection_checklog = "checklog"
-collection_checked_at_times = "checked_at_times"
+collection_currently_tracking = "col_currently_tracking"
+collection_checklog = "col_checklog"
 
 #accesstokens = ['2.00Ga5TmDFObaNC7aeeff1e5cZR1oTD']
 accesstokens = ['2.00Ga5TmDFObaNC7aeeff1e5cZR1oTD', '2.00YJl5fDtbWV2B908f7d5e64BIPIwC','2.00Ga5TmDGX4hRE1447f826bclbRQJC','2.00Ga5TmD0Ugujs972d9aab4724Dt4D']

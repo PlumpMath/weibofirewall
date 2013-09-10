@@ -28,8 +28,8 @@ statuspage = 1
 ## OPEN DB, CHECK TO SEE IF IMG FOLDER EXISTS
 ##########################################
 
+collection_currently_tracking = weibomodule.get_db_collection(weibomodule.collection_currently_tracking)
 collection_checklog = weibomodule.get_db_collection(weibomodule.collection_checklog)
-collection_postids_live = weibomodule.get_db_collection(weibomodule.collection_postids_live)
 
 if(isdir(weibomodule.imgdir) == False):
 	sys.exit("No such directory " + weibomodule.imgdir)
@@ -38,10 +38,14 @@ if(isdir(weibomodule.imgdir) == False):
 ## CHECK TO SEE HOW MANY POSTS WE ARE TRACKING
 ##########################################
 
-num_live_posts = collection_postids_live.count()
+num_currently_tracking = collection_currently_tracking.count()
 
 num_posts_to_track = weibomodule.num_posts_to_track()
-num_trackmore = num_posts_to_track - num_live_posts
+
+num_trackmore = num_posts_to_track - num_currently_tracking
+
+print num_trackmore
+sys.exit()
 
 # if we're tracking more than we need, exit.
 if (num_trackmore <= 0):
