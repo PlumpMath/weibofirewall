@@ -6,7 +6,6 @@ from json import loads
 from urllib import urlretrieve
 from os.path import splitext, isdir
 from dateutil import parser
-from datetime import datetime
 
 
 ## WHAT WE DO HERE
@@ -60,24 +59,24 @@ if(isdir(weibomodule.imgdir) == False):
 ## CHECK TO SEE HOW MANY POSTS WE ARE TRACKING
 ##########################################
 
-thistest = weibomodule.getcurrentpostids()
-
+trackingpostids = weibomodule.get_tracking_postids()
 
 # TEMPORARY FIX
-num_currently_tracking = 0
+num_currently_tracking = len(trackingpostids)
 num_posts_to_track = weibomodule.num_posts_to_track()
 num_trackmore = num_posts_to_track - num_currently_tracking 
 
-print num_trackmore
-print "end_num_trackmire"
 
 # if we're tracking more than we need, exit.
 if (num_trackmore <= 0):
 	print "Currently tracking all " + str(num_currently_tracking) + " posts:"
 	print "After all, we can only track a max of " + str(weibomodule.num_posts_to_track()) + " posts"
-	for lpis in collection_postids_live.find():
-		thisdate = datetime.fromtimestamp(int(lpis["started_tracking_at"]), tz=pytz.timezone(weibomodule.display_timezone)).strftime('%Y-%m-%d %H:%M:%S %Z')
-		print "post " + lpis["post_id"] + ", started tracking at " +  thisdate
+	counter = 1
+	for thispostid in trackingpostids:
+		thispostid = thispostid[0]
+		thispost = weibomodule.get_mostrecent_post(thispostid)
+		print "post #" , counter ,":" + thispost["post_id"] + ", started tracking at" , thispost["started_tracking_at"]
+		counter += 1
 	sys.exit(0)
 #	sys.exit("Currently tracking all " + str(num_currently_tracking) + " posts.")
 
@@ -95,11 +94,9 @@ statuspage = 1
 loop = True 
 
 # get current time
-nowtimestamp = int(time.time())
-nowdatetime = time.strftime('%Y-%m-%d %H:%M:%S')
+# EVERYTHING IS ON CHINA TIME, YOU UNDERSTAND
 
-print nowdatetime
-
+nowdatetime =  weibomodule.get_current_chinatime()
 
 #this could be a while loop, but let's not go more than a given number of  pages back.
 for i in xrange(weibomodule.pagemax):
@@ -127,9 +124,8 @@ for i in xrange(weibomodule.pagemax):
 		if "retweeted_status" in jarray[i] and "original_pic" in jarray[i]["retweeted_status"]:
 
 			#createdtimestamp = parser.parse(jarray[i]["created_at"]).strftime('%s')
+			# THIS IS CHINA TIME
 			createddatetime = parser.parse(jarray[i]["created_at"]).strftime('%Y-%m-%d %H:%M:%S')
-
-			print createddatetime
 
 			thispost = {
 				"post_id": jarray[i]["retweeted_status"]["idstr"],
@@ -137,22 +133,24 @@ for i in xrange(weibomodule.pagemax):
 				"user_name": jarray[i]["retweeted_status"]["user"]["screen_name"],
 				"user_follower_count": jarray[i]["retweeted_status"]["user"]["followers_count"],
 				"post_original_pic": jarray[i]["retweeted_status"]["original_pic"],
-				"post_created_at": createddatetime
+				"post_created_at": createddatetime,
 				"post_repost_count": jarray[i]["retweeted_status"]["reposts_count"],
 				"post_text": unicode(jarray[i]["retweeted_status"]["text"]),
-				"started_tracking_at": nowtimestamp,
+				"started_tracking_at": nowdatetime,
 				"is_deleted": 0,
 				"is_retired": 0,
 				"error_message": "",
 				"error_code": "",
-				"checked_at": nowtimestamp
+				"checked_at": nowdatetime,
 			}
 
 			thispostbuffer.append(thispost)
 
+
 		# If this is an original Weibo, no retweets and it has an image
 		elif "original_pic" in jarray[i]:
 			createdtimestamp = parser.parse(jarray[i]["created_at"]).strftime('%s')
+			createddatetime = parser.parse(jarray[i]["created_at"]).strftime('%Y-%m-%d %H:%M:%S')
 
 			thispost = {
 				"post_id":	jarray[i]["idstr"],
@@ -160,21 +158,19 @@ for i in xrange(weibomodule.pagemax):
 				"user_name":	jarray[i]["user"]["screen_name"],
 				"user_follower_count":	jarray[i]["user"]["followers_count"],
 				"post_original_pic":	jarray[i]["original_pic"],
-				"post_created_at":	createdtimestamp,
+				"post_created_at":	createddatetime,
 				"post_repost_count":	jarray[i]["reposts_count"],
 				"post_text":	unicode(jarray[i]["text"]),
-				"started_tracking_at": nowtimestamp,
+				"started_tracking_at": nowdatetime,
 				"is_deleted": 0,
 				"is_retired": 0,
 				"error_message": "",
 				"error_code": "",
-				"checked_at": nowtimestamp
+				"checked_at": nowdatetime
 			}
 
 			thispostbuffer.append(thispost)
 	
-#		print thispost
-	sys.exit()
 
 	##########################################
 	## STORE IN DATABASE
@@ -184,7 +180,7 @@ for i in xrange(weibomodule.pagemax):
 
 	# store in db.
 	# we're looking for new posts only
-	for i in xrange(len(post_id)):
+	for i in xrange(len(thispostbuffer)):
 
 		#only put in as many as we need.
 		if(newpostcount >= num_trackmore):
@@ -192,58 +188,27 @@ for i in xrange(weibomodule.pagemax):
 			loop = False
 			break
 
-		print "xxx"
-		print post_id[i]
-		print "xxx"
+
+		thispost = thispostbuffer[i]
+
+		#print thispost["post_id"]
 
 		#if you can't find the post already in Mongo, put it in:
-		#dbcursor.execute("SELECT * FROM %s WHERE post_id = %s", (weibomodule.checklog_tablename , post_id[i]))
-		query = "SELECT COUNT(*) FROM %s WHERE post_id = %s" %('checklog', post_id[i])
-		dbcursor.execute(query)
-		res=dbcursor.fetchone()
-		num_existing_posts=res[0]
+		if (weibomodule.postexists(thispost["post_id"]) == False):
+			#POST IS NEW - let's save it
 
-
-
-		if (num_existing_posts == 0):
 			newpostcount += 1
-			imgpath = weibomodule.imgdir + str(post_id[i])+ splitext(original_pic[i])[1]
-			print "Storing postID " + str(post_id[i] + " image to file")
-			urlretrieve(original_pic[i], imgpath)
-			print "Storing postID " + str(post_id[i] + " to database")
-			collection_postids_live.insert({
-				'post_id':post_id[i],
-				'user_id':user_id[i],
-				"checked_at": nowtimestamp,
-				'started_tracking_at': nowtimestamp,
-				'initial_user_follower_count':followers_count[i],
-				'initial_post_repost_count':total_reposts_count[i],
-				"user_name": screen_name[i],
-				"user_follower_count": followers_count[i],
-				"post_original_pic":original_pic[i], 
-				"post_created_at": created_at[i], 
-				"post_repost_count": total_reposts_count[i],
-				"post_text": text[i],
-				"is_alive":"True",
-				"is_tracking":"True"
-			})
 
-			doc = {
-				"post_id": post_id[i],
-				"user_id":user_id[i],
-				"checked_at": nowtimestamp,
-				"user_name": screen_name[i],
-				"user_follower_count": followers_count[i],
-				"post_original_pic":original_pic[i], 
-				"post_created_at": created_at[i], 
-				"post_repost_count": total_reposts_count[i],
-				"post_text": text[i],
-				"is_alive":"True",
-				"is_tracking":"True"
-			}
-			collection_checklog.insert(doc)
+			imgpath = weibomodule.imgdir + str(thispost["post_id"])+ splitext(thispost["post_original_pic"])[1]
+			print "Storing postID -- tracking post #" , (num_currently_tracking + newpostcount)
+			print "Storing postID " + str(thispost["post_id"] + " image to file")
+			urlretrieve(thispost["post_original_pic"], imgpath)
+
+			print "Storing postID " + str(thispost["post_id"] + " to database")
+			weibomodule.checklog_insert(thispost)
+
 		else:
-			print "post " + str(post_id[i]) + " already exists"
+			print "post " + str(thispost["post_id"]) + " already exists"
 
 	if (loop == False):
 		break

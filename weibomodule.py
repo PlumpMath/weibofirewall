@@ -1,6 +1,8 @@
 import MySQLdb
 import requests
 import json
+from datetime import datetime
+from dateutil import tz
 
 ##########################################
 ## CONSTANTS
@@ -73,7 +75,7 @@ tracking_period_seconds = tracking_period * 3600
 def open_db():
 	global db
 	if not db:
-		db = MySQLdb.connect(dbhost, dbuser, dbpass, dbname)
+		db = MySQLdb.connect(dbhost, dbuser, dbpass, dbname, charset='utf8')
 	return db
 
 """
@@ -111,7 +113,7 @@ def num_posts_to_track():
 		return track_posts_override
 
 	numtokens = len(accesstokens)
-	return numtokens * tracking_period * queries_per_token
+	return int(numtokens * tracking_period * queries_per_token)
 
 # if we're on manual, this alerts everyone if w'ere tracking too many to count
 def post_alert():
@@ -215,16 +217,85 @@ def checkstatus(post_id):
 	jsondata = requests_get_wrapper(apiurl_checkstatus, params={"access_token": "TOKEN", "id": post_id})
 	return jsondata
 
-# find current posts only
-def getcurrentpostids():
-	db = open_db()
+# find posts that we're tracking
+def get_tracking_postids():
 
 	#query is: "of all posts that have "is_deleted" = 0 and "is_retired" = 0, find unique ids, sort descended by checked timestamp
 
+	db = open_db()
 	cursor = db.cursor()
+	
 
-	currentpostids = cursor.execute("SELECT DISTINCT post_id FROM " + checklog_tablename + " WHERE is_deleted = 0")
+	query = 'SELECT DISTINCT post_id FROM %s WHERE is_deleted = 0 AND is_retired = 0' % (checklog_tablename)
+	cursor.execute(query)
+	trackingpostids = cursor.fetchall()
 
-	return currentpostids
+	return trackingpostids
+
+# Does a post exist in the checklog, no matter its status"
+def postexists(post_id):
+	query = "SELECT COUNT(*) FROM %s WHERE post_id = %s" %(checklog_tablename, post_id)
+	db = open_db()
+	cursor = db.cursor()
+	cursor.execute(query)
+	result = cursor.fetchone()
+	num_existing_posts = result[0]
+	#close_db()
+
+	return num_existing_posts != 0
+
+
+def checklog_insert(thispost):
+	#print thispost
+
+
+	columns = ', '.join(thispost.keys())
+	parameters = ', '.join(['%({0})s'.format(k) for k in thispost.keys()])
+
+	#sqlinsert = "INSERT into checklog ('user_id', 'user_name', 'user_follower_count', 'post_original_pic', 'post_created_at', 'post_repost_count', 'post_text', 'started_tracking_at', 'is_deleted', 'is_retired', 'error_message', 'error_code', 'checked_at') VALUES (%(user_id)s, %(user_name)s, %(user_follower_count)s, %(post_original_pic)s, %(post_created_at)s, %(post_repost_count)s, %(post_text)s, %(started_tracking_at)s, %(is_deleted)s, %(is_retired)s, %(error_message)s, %(error_code)s, %(checked_at)s)" 
+
+	query = 'INSERT INTO checklog ({columns}) VALUES ({parameters})'.format(columns=columns, parameters=parameters)
+
+	#print query
+
+	#close_db()
+	db = open_db()
+	cursor = db.cursor()
+	cursor.execute(query, thispost)
+	#close_db()
+
+
+
+#given a post id, get its most recent post
+def get_mostrecent_post(post_id):
+
+	query = "SELECT * FROM %s WHERE post_id = %s ORDER BY 'checked_at' DESC LIMIT 1" %(checklog_tablename, post_id)
+
+	db = open_db()
+	cursor = db.cursor()
+	cursor.execute(query)
+	
+	cols = [d[0] for d in cursor.description]
+
+	result = cursor.fetchall()
+
+	thispost = dict(zip(cols, result[0]))
+
+	#print "HEYHEY"
+	#print thispost["post_text"].encode("ascii", "xmlcharrefreplace")
+
+	#print thispost
+	return thispost
+	
+
+# EVERYTHING IS ON CHINA TIME, YOU UNDERSTAND
+def get_current_chinatime():
+	utcnow =  datetime.utcnow()
+	from_zone=tz.tzutc()
+	to_zone = tz.gettz('Asia/Shanghai')
+	utcnow = utcnow.replace(tzinfo=from_zone)
+	chinanow =  utcnow.astimezone(to_zone)
+	nowdatetime = chinanow.strftime('%Y-%m-%d %H:%M:%S')
+	return nowdatetime
 
 
