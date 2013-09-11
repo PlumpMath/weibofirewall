@@ -3,6 +3,7 @@ import requests
 import json
 from datetime import datetime
 from dateutil import tz
+from dateutil import parser
 
 ##########################################
 ## CONSTANTS
@@ -177,33 +178,17 @@ def requests_get_wrapper(url, params):
 
 		jsondata = data.json()
 
-		#print jsondata	
-		try:
-			# if we get an error
-			if jsondata["error"] == "User requests out of rate limit!":
+	#	print jsondata
 
-				# failure! try another token
-				thistoken = getnewtoken()
-
-				#if we ran out of tokens!
-				if (thistoken == -1):
-					return -1
-
-				#loop and try again
-			else:
-				return jsondata
-
-		except:
-			# success - exit out
-			return jsondata
-		else:
-			#oh, we actually have another error
-			#print jsondata["error"]
-			#return jsondata
-			# loop around
+		if "error" in jsondata:
+			# failure! try another token
 			pass
+		else:
+			print "got working token"
+			return jsondata
 
-		
+	print "OUT OF TOKENS"	
+	return -1
 
 #get status of friends
 #usually call this without a parameter, since the max is 100, and this query only costs us 1 out of the 150 per hour query.
@@ -215,7 +200,33 @@ def accessfriends(count=100, page=1):
 # check each status
 def checkstatus(post_id):
 	jsondata = requests_get_wrapper(apiurl_checkstatus, params={"access_token": "TOKEN", "id": post_id})
+	#print jsondata
 	return jsondata
+
+# refresh post (basically, a better checkstatus)
+def refreshpost(post_id):
+	jsondata = requests_get_wrapper(apiurl_checkstatus, params={"access_token": "TOKEN", "id": post_id})
+
+	createddatetime = parser.parse(jsondata["created_at"]).strftime('%Y-%m-%d %H:%M:%S')
+
+	thispost = {
+		"post_id":	jsondata["idstr"],
+		"user_id":	jsondata["user"]["id"],
+		"user_name":	jsondata["user"]["screen_name"],
+		"user_follower_count":	jsondata["user"]["followers_count"],
+		"post_original_pic":	jsondata["original_pic"],
+		"post_created_at":	createddatetime,
+		"post_repost_count":	jsondata["reposts_count"],
+		"post_text":	unicode(jsondata["text"]),
+#		"started_tracking_at": nowdatetime,
+		"is_deleted": 0,
+		"is_retired": 0,
+		"error_message": "",
+		"error_code": "",
+#		"checked_at":
+	}
+
+	return thispost
 
 
 
@@ -224,16 +235,26 @@ def get_tracking_postids():
 
 	#query is: "of all posts that have "is_deleted" = 0 and "is_retired" = 0, find unique ids, sort descended by checked timestamp
 
+	#BUT REALLY - we want all the posts that never have either of the two flags.
+	
+	#SO we can achieve this by 1) getting all the post ids 2) getting all the post ids that are flagged 3) getting set 1 - set 2
 	db = open_db()
 	cursor = db.cursor()
-	
 
-	query = 'SELECT DISTINCT post_id FROM %s WHERE is_deleted = 0 AND is_retired = 0' % (checklog_tablename)
+	query = 'SELECT DISTINCT post_id FROM %s' % (checklog_tablename)
 	cursor.execute(query)
-	trackingpostids = cursor.fetchall()
+	allpostids = cursor.fetchall()
+	allpostids = map(lambda x: x[0], allpostids)
+	
+	query = 'SELECT DISTINCT post_id FROM %s WHERE is_deleted <> 0 OR is_retired <> 0' % (checklog_tablename)
+	cursor.execute(query)
+	nottrackingpostids = cursor.fetchall()
+	nottrackingpostids = map(lambda x: x[0], nottrackingpostids)
+
+
+	trackingpostids = list(set(allpostids) - set(nottrackingpostids))
 
 	return trackingpostids
-
 
 
 # Does a post exist in the checklog, no matter its status"
@@ -266,6 +287,7 @@ def checklog_insert(thispost):
 	db = open_db()
 	cursor = db.cursor()
 	cursor.execute(query, thispost)
+	db.commit()
 	#close_db()
 
 
@@ -305,17 +327,33 @@ def get_current_chinatime():
 
 
 def get_most_recent_check():
+	db = open_db()
+	db.commit()
+
+	SOMETHIGN IS WRONG HERE
+
 	query = "SELECT checked_at FROM %s ORDER BY 'checked_at' DESC LIMIT 1" %(checklog_tablename)
 
-	db = open_db()
 	cursor = db.cursor()
 	cursor.execute(query)
-	
+
+
 	result = cursor.fetchone()
 	chinatime =  result[0]
 
+	print result
+
+	print "RESULT" , chinatime
 	to_zone = tz.gettz('Asia/Shanghai')
 	chinatime=  chinatime.replace(tzinfo=to_zone)
+	print "RESU3333LT" , chinatime
+
+	print chinatime
 
 	return chinatime
+
+def makedateaware(thisdate):
+	to_zone = tz.gettz('Asia/Shanghai')
+	thisdate = thisdate.replace(tzinfo=to_zone)
+	return thisdate
 
