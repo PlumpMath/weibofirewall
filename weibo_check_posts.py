@@ -11,14 +11,14 @@ from dateutil import parser
 ## OPEN DB
 ##########################################
 
-collection_checklog = weibomodule.get_db_collection(weibomodule.collection_checklog)
-collection_postids_live = weibomodule.get_db_collection(weibomodule.collection_postids_live)
-collection_checked_at_times = weibomodule.get_db_collection(weibomodule.collection_checked_at_times)
+dbcursor = weibomodule.db_cursor()
 
-num_live_posts = collection_postids_live.find({"is_alive":"True"}).count()
-if (num_live_posts == 0):
+trackingpostids = weibomodule.get_tracking_postids()
+num_currently_tracking = len(trackingpostids)
+
+if (num_currently_tracking == 0):
 	sys.exit("No posts are being tracked right now.")
-print "Currently tracking " + str(num_live_posts) + " posts"
+print "Currently tracking " + str(num_currently_tracking) + " posts"
 print weibomodule.post_alert()
 
 ##########################################

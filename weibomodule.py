@@ -217,6 +217,8 @@ def checkstatus(post_id):
 	jsondata = requests_get_wrapper(apiurl_checkstatus, params={"access_token": "TOKEN", "id": post_id})
 	return jsondata
 
+
+
 # find posts that we're tracking
 def get_tracking_postids():
 
@@ -231,6 +233,8 @@ def get_tracking_postids():
 	trackingpostids = cursor.fetchall()
 
 	return trackingpostids
+
+
 
 # Does a post exist in the checklog, no matter its status"
 def postexists(post_id):

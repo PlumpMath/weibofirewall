@@ -45,7 +45,6 @@ statuspage = 1
 
 
 
-
 ##########################################
 ## OPEN DB, CHECK TO SEE IF IMG FOLDER EXISTS
 ##########################################
@@ -59,10 +58,8 @@ if(isdir(weibomodule.imgdir) == False):
 ## CHECK TO SEE HOW MANY POSTS WE ARE TRACKING
 ##########################################
 
-trackingpostids = weibomodule.get_tracking_postids()
-
-# TEMPORARY FIX
-num_currently_tracking = len(trackingpostids)
+tracking_post_ids = weibomodule.get_tracking_postids()
+num_currently_tracking = len(tracking_post_ids)
 num_posts_to_track = weibomodule.num_posts_to_track()
 num_trackmore = num_posts_to_track - num_currently_tracking 
 
@@ -72,7 +69,7 @@ if (num_trackmore <= 0):
 	print "Currently tracking all " + str(num_currently_tracking) + " posts:"
 	print "After all, we can only track a max of " + str(weibomodule.num_posts_to_track()) + " posts"
 	counter = 1
-	for thispostid in trackingpostids:
+	for thispostid in tracking_post_ids:
 		thispostid = thispostid[0]
 		thispost = weibomodule.get_mostrecent_post(thispostid)
 		print "post #" , counter ,":" + thispost["post_id"] + ", started tracking at" , thispost["started_tracking_at"]
