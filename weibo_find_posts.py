@@ -96,6 +96,10 @@ loop = True
 
 # get current time
 nowtimestamp = int(time.time())
+nowdatetime = time.strftime('%Y-%m-%d %H:%M:%S')
+
+print nowdatetime
+
 
 #this could be a while loop, but let's not go more than a given number of  pages back.
 for i in xrange(weibomodule.pagemax):
@@ -122,10 +126,9 @@ for i in xrange(weibomodule.pagemax):
 
 		if "retweeted_status" in jarray[i] and "original_pic" in jarray[i]["retweeted_status"]:
 
-			createdtimestamp = parser.parse(jarray[i]["created_at"]).strftime('%s')
+			#createdtimestamp = parser.parse(jarray[i]["created_at"]).strftime('%s')
 			createddatetime = parser.parse(jarray[i]["created_at"]).strftime('%Y-%m-%d %H:%M:%S')
 
-			print createdtimestamp
 			print createddatetime
 
 			thispost = {
@@ -134,7 +137,7 @@ for i in xrange(weibomodule.pagemax):
 				"user_name": jarray[i]["retweeted_status"]["user"]["screen_name"],
 				"user_follower_count": jarray[i]["retweeted_status"]["user"]["followers_count"],
 				"post_original_pic": jarray[i]["retweeted_status"]["original_pic"],
-				"post_created_at": createdtimestamp,
+				"post_created_at": createddatetime
 				"post_repost_count": jarray[i]["retweeted_status"]["reposts_count"],
 				"post_text": unicode(jarray[i]["retweeted_status"]["text"]),
 				"started_tracking_at": nowtimestamp,
