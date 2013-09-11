@@ -1,4 +1,4 @@
-import pymongo
+import MySQLdb
 import requests
 import json
 
@@ -6,16 +6,16 @@ import json
 ## CONSTANTS
 ##########################################
 
-dbname = "weibo_firewall_db"
+dbname = "jumpingthegreatfirewall"
+dbhost = "localhost"
+dbuser = "weibofirewall"
+dbpass = "w3ibofirewall"
 
 ## ALRIGHT NEW SETUP
-## THERE ARE TWO COLLECTIONS
-## 'COL_CURRENTLY_CHECKING' STORES THE CURRENTLY STORED ID# OF POSTS, AS WELL AS MOST RECENT CHECK TIME
-## 'COL_CHECKLOG' LOGS ALL CHECKS
+## THERE IS ONE COLLECTION
 ## THIS KEEPS THE DBS SIMPLE. ALL OTHER PROCESSING IS DONE THROUGH CODE
 
-collection_currently_tracking = "col_currently_tracking"
-collection_checklog = "col_checklog"
+checklog_tablename = "checklog"
 
 #accesstokens = ['2.00Ga5TmDFObaNC7aeeff1e5cZR1oTD']
 accesstokens = ['2.00Ga5TmDFObaNC7aeeff1e5cZR1oTD', '2.00YJl5fDtbWV2B908f7d5e64BIPIwC','2.00Ga5TmDGX4hRE1447f826bclbRQJC','2.00Ga5TmD0Ugujs972d9aab4724Dt4D']
@@ -60,7 +60,6 @@ track_posts_timeout = 259200 #72 hours
 ## VARIABLES AND CALCULATIONS
 ##########################################
 
-connection = None
 db = None
 thistoken = None
 
@@ -71,25 +70,30 @@ tracking_period_seconds = tracking_period * 3600
 ## DB connection
 ##########################################
 
-def get_connection():
-	global connection
-	if not connection:
-		connection = pymongo.Connection()
-	return connection
-
-def get_db():
+def open_db():
 	global db
 	if not db:
-		get_connection()
-	db = connection[dbname]
+		db = MySQLdb.connect(dbhost, dbuser, dbpass, dbname)
 	return db
 
+"""
 def get_db_collection(collection_name):
 	global db
 	if not db:
-		get_db()
+		open_connection()
 	collection = db[collection_name]
 	return collection 
+	"""
+
+def db_cursor():
+	global db
+	if not db:
+		open_db()
+	cursor = db.cursor()
+	return cursor
+
+def close_db():
+	db.close()
 
 ##########################################
 ## PROCESSES
@@ -117,6 +121,7 @@ def post_alert():
 	if (track_posts_override >= num_can_track):
 		return "WARNING - you can only track " + str(num_can_track) + ", yet you're trying to track " + str(track_posts_override)
 
+	return ""
 
 #get a new token- starting from the first token and working its way to the end
 def getnewtoken():
@@ -137,7 +142,8 @@ def getnewtoken():
 			#get the next token
 			thistoken = accesstokens[thistokenindex + 1]
 
-	print "Access Token being used: " + thistoken
+	thistokenindex = accesstokens.index(thistoken)
+	print "Access Token #" , (thistokenindex + 1) , " being used: " + thistoken
 	return thistoken
 
 #checks and gets a working access token.
@@ -169,7 +175,7 @@ def requests_get_wrapper(url, params):
 
 		jsondata = data.json()
 
-		print jsondata	
+		#print jsondata	
 		try:
 			# if we get an error
 			if jsondata["error"] == "User requests out of rate limit!":
@@ -208,5 +214,17 @@ def accessfriends(count=100, page=1):
 def checkstatus(post_id):
 	jsondata = requests_get_wrapper(apiurl_checkstatus, params={"access_token": "TOKEN", "id": post_id})
 	return jsondata
+
+# find current posts only
+def getcurrentpostids():
+	db = open_db()
+
+	#query is: "of all posts that have "is_deleted" = 0 and "is_retired" = 0, find unique ids, sort descended by checked timestamp
+
+	cursor = db.cursor()
+
+	currentpostids = cursor.execute("SELECT DISTINCT post_id FROM " + checklog_tablename + " WHERE is_deleted = 0")
+
+	return currentpostids
 
 

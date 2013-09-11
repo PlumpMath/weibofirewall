@@ -8,28 +8,50 @@ from os.path import splitext, isdir
 from dateutil import parser
 from datetime import datetime
 
+
+## WHAT WE DO HERE
+## WE CHECK HOW MANY POSTS WE NEED TO TRACK MORE, IF ANY
+## IF WE DO, WE ITERATE THROUGH THE POSTS OF FRIENDS
+## AND FIND NEW POSTS THAT WE DON'T CURRENLTY HAVE
+## WE INSERT THEM INTO col_currently_tracking
+## AS WELL AS LOG A CHECK INTO col_checklog
+
+#"SCHEMA"
+"""
+post_id
+user_id
+user_name
+user_follower_count
+post_original_pic
+post_created_at
+post_repost_count
+post_text
+started_tracking_at
+is_deleted
+is_retired
+error_message
+error_code
+checked_at
+"""
+# CREATE TABLE checklog (post_id VARCHAR(20), user_id VARCHAR(20), user_name VARCHAR(30), user_follower_count INT, post_original_pic TEXT, post_created_at DATETIME, post_repost_count INT, post_text TEXT, started_tracking_at DATETIME, is_deleted  TINYINT, is_retired TINYINT, error_message VARCHAR(255), error_code VARCHAR(255), checked_at DATETIME);
+
 ##########################################
 ## INIT VARIABLES
 ##########################################
 
-screen_name=[]
-followers_count=[]
-text = []
-original_pic = []
-created_at = []
-post_id = []
-user_id = []
-total_reposts_count = []
+thispostbuffer = []
+
 newpostcount = 0
 statuspage = 1
+
+
 
 
 ##########################################
 ## OPEN DB, CHECK TO SEE IF IMG FOLDER EXISTS
 ##########################################
 
-collection_currently_tracking = weibomodule.get_db_collection(weibomodule.collection_currently_tracking)
-collection_checklog = weibomodule.get_db_collection(weibomodule.collection_checklog)
+dbcursor = weibomodule.db_cursor()
 
 if(isdir(weibomodule.imgdir) == False):
 	sys.exit("No such directory " + weibomodule.imgdir)
@@ -38,13 +60,16 @@ if(isdir(weibomodule.imgdir) == False):
 ## CHECK TO SEE HOW MANY POSTS WE ARE TRACKING
 ##########################################
 
-num_currently_tracking = collection_currently_tracking.count()
+thistest = weibomodule.getcurrentpostids()
 
+
+# TEMPORARY FIX
+num_currently_tracking = 0
 num_posts_to_track = weibomodule.num_posts_to_track()
-
-num_trackmore = num_posts_to_track - num_currently_tracking
+num_trackmore = num_posts_to_track - num_currently_tracking 
 
 print num_trackmore
+print "end_num_trackmire"
 
 # if we're tracking more than we need, exit.
 if (num_trackmore <= 0):
@@ -56,11 +81,11 @@ if (num_trackmore <= 0):
 	sys.exit(0)
 #	sys.exit("Currently tracking all " + str(num_currently_tracking) + " posts.")
 
-sys.exit()
 print "Currently tracking " + str(num_currently_tracking) + " posts"
 print "Attempting to find " + str(num_trackmore) + " more posts to track"
 print " -- for a total of " + str(num_posts_to_track) + " tracked posts"
 print weibomodule.post_alert()
+
 
 ##########################################
 ## GET DATA
@@ -91,30 +116,62 @@ for i in xrange(weibomodule.pagemax):
 
 	print "Parsing statuses..."
 
+
 	for i in xrange(len(jarray)):
 	# If this is a retweet and the original Weibo has an image, get the original
+
 		if "retweeted_status" in jarray[i] and "original_pic" in jarray[i]["retweeted_status"]:
-			screen_name.append(jarray[i]["retweeted_status"]["user"]["screen_name"])
-			user_id.append(jarray[i]["retweeted_status"]["user"]["id"])
-			followers_count.append(jarray[i]["retweeted_status"]["user"]["followers_count"])
-			text.append(unicode(jarray[i]["retweeted_status"]["text"]))
-			original_pic.append(jarray[i]["retweeted_status"]["original_pic"])
+
 			createdtimestamp = parser.parse(jarray[i]["created_at"]).strftime('%s')
-			created_at.append(createdtimestamp)
-			post_id.append(jarray[i]["retweeted_status"]["idstr"])
-			total_reposts_count.append(jarray[i]["retweeted_status"]["reposts_count"])
+			createddatetime = parser.parse(jarray[i]["created_at"]).strftime('%Y-%m-%d %H:%M:%S')
+
+			print createdtimestamp
+			print createddatetime
+
+			thispost = {
+				"post_id": jarray[i]["retweeted_status"]["idstr"],
+				"user_id": jarray[i]["retweeted_status"]["user"]["id"],
+				"user_name": jarray[i]["retweeted_status"]["user"]["screen_name"],
+				"user_follower_count": jarray[i]["retweeted_status"]["user"]["followers_count"],
+				"post_original_pic": jarray[i]["retweeted_status"]["original_pic"],
+				"post_created_at": createdtimestamp,
+				"post_repost_count": jarray[i]["retweeted_status"]["reposts_count"],
+				"post_text": unicode(jarray[i]["retweeted_status"]["text"]),
+				"started_tracking_at": nowtimestamp,
+				"is_deleted": 0,
+				"is_retired": 0,
+				"error_message": "",
+				"error_code": "",
+				"checked_at": nowtimestamp
+			}
+
+			thispostbuffer.append(thispost)
 
 		# If this is an original Weibo, no retweets and it has an image
 		elif "original_pic" in jarray[i]:
-			screen_name.append(jarray[i]["user"]["screen_name"])
-			user_id.append(jarray[i]["user"]["id"])
-			followers_count.append(jarray[i]["user"]["followers_count"])
-			text.append(unicode(jarray[i]["text"]))
-			original_pic.append(jarray[i]["original_pic"])
 			createdtimestamp = parser.parse(jarray[i]["created_at"]).strftime('%s')
-			created_at.append(createdtimestamp)
-			post_id.append(jarray[i]["idstr"])
-			total_reposts_count.append(jarray[i]["reposts_count"])
+
+			thispost = {
+				"post_id":	jarray[i]["idstr"],
+				"user_id":	jarray[i]["user"]["id"],
+				"user_name":	jarray[i]["user"]["screen_name"],
+				"user_follower_count":	jarray[i]["user"]["followers_count"],
+				"post_original_pic":	jarray[i]["original_pic"],
+				"post_created_at":	createdtimestamp,
+				"post_repost_count":	jarray[i]["reposts_count"],
+				"post_text":	unicode(jarray[i]["text"]),
+				"started_tracking_at": nowtimestamp,
+				"is_deleted": 0,
+				"is_retired": 0,
+				"error_message": "",
+				"error_code": "",
+				"checked_at": nowtimestamp
+			}
+
+			thispostbuffer.append(thispost)
+	
+#		print thispost
+	sys.exit()
 
 	##########################################
 	## STORE IN DATABASE
@@ -132,10 +189,20 @@ for i in xrange(weibomodule.pagemax):
 			loop = False
 			break
 
-		#if you can't find the post already in Mongo, put it in:
-		existing_post = collection_checklog.find_one({'post_id':post_id[i]})
+		print "xxx"
+		print post_id[i]
+		print "xxx"
 
-		if (existing_post == None):
+		#if you can't find the post already in Mongo, put it in:
+		#dbcursor.execute("SELECT * FROM %s WHERE post_id = %s", (weibomodule.checklog_tablename , post_id[i]))
+		query = "SELECT COUNT(*) FROM %s WHERE post_id = %s" %('checklog', post_id[i])
+		dbcursor.execute(query)
+		res=dbcursor.fetchone()
+		num_existing_posts=res[0]
+
+
+
+		if (num_existing_posts == 0):
 			newpostcount += 1
 			imgpath = weibomodule.imgdir + str(post_id[i])+ splitext(original_pic[i])[1]
 			print "Storing postID " + str(post_id[i] + " image to file")
