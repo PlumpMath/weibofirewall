@@ -299,7 +299,23 @@ def get_current_chinatime():
 	to_zone = tz.gettz('Asia/Shanghai')
 	utcnow = utcnow.replace(tzinfo=from_zone)
 	chinanow =  utcnow.astimezone(to_zone)
-	nowdatetime = chinanow.strftime('%Y-%m-%d %H:%M:%S')
-	return nowdatetime
+	return chinanow
+	#nowdatetime = chinanow.strftime('%Y-%m-%d %H:%M:%S')
+	#return nowdatetime
 
+
+def get_most_recent_check():
+	query = "SELECT checked_at FROM %s ORDER BY 'checked_at' DESC LIMIT 1" %(checklog_tablename)
+
+	db = open_db()
+	cursor = db.cursor()
+	cursor.execute(query)
+	
+	result = cursor.fetchone()
+	chinatime =  result[0]
+
+	to_zone = tz.gettz('Asia/Shanghai')
+	chinatime=  chinatime.replace(tzinfo=to_zone)
+
+	return chinatime
 

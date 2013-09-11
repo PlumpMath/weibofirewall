@@ -31,16 +31,14 @@ print tracking_post_ids
 ## HAS ENOUGH TIME PASSED?
 ##########################################
 
-
 # get current time
-nowtimestamp = int(time.time())
+nowdatetime = weibomodule.get_current_chinatime()
 timelapsed = -1
 
 # when was the last time we checked
-most_recent_check = collection_checked_at_times.find_one({}, sort=[('checked_at', -1)])
 
 try:
-	lasttimestamp = int(most_recent_check["checked_at"])
+	most_recent_check = weibomodule.get_most_recent_check()
 
 except:
 	# never been tracked! so let's just go ahead
@@ -49,13 +47,15 @@ except:
 
 else:	
 	# okay, so has it been long enough?
-	timelapsed = nowtimestamp - lasttimestamp
+	timelapsed = nowdatetime - most_recent_check
+	print "XXXXXXXXXXX"
+	print timelapsed.seconds
 
-	print "It's been " + weibomodule.minsec(timelapsed) + " min"	
-	if (timelapsed < weibomodule.tracking_period_seconds):
+	print "It's been " + weibomodule.minsec(timelapsed.seconds) + " min"	
+	if (timelapsed.seconds < weibomodule.tracking_period_seconds):
 		#not enough time has passed, too bad!
 		print "... But we're checking posts every " + weibomodule.minsec(weibomodule.tracking_period_seconds) + " minutes!" 
-#		sys.exit(1)
+		sys.exit(1)
 
 ##########################################
 ## CHECK EACH POST & LOG IN DB
