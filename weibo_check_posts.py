@@ -13,8 +13,8 @@ from dateutil import parser
 
 dbcursor = weibomodule.db_cursor()
 
-trackingpostids = weibomodule.get_tracking_postids()
-num_currently_tracking = len(trackingpostids)
+tracking_post_ids = weibomodule.get_tracking_postids()
+num_currently_tracking = len(tracking_post_ids)
 
 if (num_currently_tracking == 0):
 	sys.exit("No posts are being tracked right now.")
@@ -24,10 +24,6 @@ print weibomodule.post_alert()
 ##########################################
 ## GET LIST OF LIVE POSTS
 ##########################################
-
-tracking_post_ids = []
-for lpis in collection_postids_live.find({"is_alive":"True"}):
-	tracking_post_ids.append(lpis["post_id"])
 
 print tracking_post_ids
 
