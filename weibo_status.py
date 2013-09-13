@@ -63,6 +63,11 @@ if (len(tracking_post_ids) > 0):
 
 		print "alive: new/old repost count (" , this_post_new["post_repost_count"] , " / " , this_post_old["post_repost_count"] , ") "
 
+		elapsedtime  = nowdatetime - weibomodule.set_timezone_to_china(this_post_new["started_tracking_at"]) 
+#		print elapsedtime
+#k		print elapsedtime.seconds
+
+
 		#print this_post_old["checked_at"]
 		#print this_post_old["started_tracking_at"]
 #		print weibomodule.minsec(this_post_new["checked_at"] - this_post_new["started_tracking_at"]) + " since tracking start"
@@ -76,6 +81,7 @@ if (len(tracking_post_ids) > 0):
 
 deleted_post_ids = weibomodule.get_deleted_postids()
 
+print ""
 print "########## DEAD POSTS ##########"
 num_dead_posts = len(deleted_post_ids)
 print "# of dead posts we've tracked: " + str(num_dead_posts)
@@ -87,6 +93,34 @@ if (num_dead_posts > 0):
 
 		# get the post info from postids_live collection,
 		# since if the post was deleted we wouldn't have any of that info anymore
+
+		this_post_new = weibomodule.get_most_recent_post(this_post_id)
+		this_post_old = weibomodule.get_oldest_post(this_post_id)
+
+
+
+		print "alive: new/old repost count (" , this_post_new["post_repost_count"] , " / " , this_post_old["post_repost_count"] , ") "
+	#	print " >> post alive: new/old repost count (" + str(statusresponse["reposts_count"]) + " / " + str(this_post["post_repost_count"]) + ") "
+
+##########################################
+## GET LIST OF RETIRED POSTS
+##########################################
+
+
+retired_post_ids = weibomodule.get_retired_postids()
+
+print ""
+print "########## RETIRED POSTS ##########"
+num_retired_posts = len(retired_post_ids)
+print "# of retired posts we've tracked: " + str(num_retired_posts)
+if (num_retired_posts > 0):
+	retired_post_ids = []
+
+	for this_post_id in retired_post_ids:
+		print "Checking post # " + this_post_id
+
+		# get the post info from postids_live collection,
+		# since if the post was retired we wouldn't have any of that info anymore
 
 		this_post_new = weibomodule.get_most_recent_post(this_post_id)
 		this_post_old = weibomodule.get_oldest_post(this_post_id)

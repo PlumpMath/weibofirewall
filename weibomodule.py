@@ -305,6 +305,21 @@ def get_deleted_postids():
 	return deletedpostids
 
 
+
+# find posts that have been retired
+def get_retired_postids():
+
+	db = open_db()
+	cursor = db.cursor()
+
+	query = 'SELECT DISTINCT post_id FROM %s WHERE is_retired <> 0' % (checklog_tablename)
+	cursor.execute(query)
+	retiredpostids = cursor.fetchall()
+	retiredpostids = map(lambda x: x[0], retiredpostids)
+
+	return retiredpostids
+
+
 # Does a post exist in the checklog, no matter its status"
 def postexists(post_id):
 	query = "SELECT COUNT(*) FROM %s WHERE post_id = %s" %(checklog_tablename, post_id)
@@ -393,6 +408,12 @@ def get_current_chinatime():
 	#return nowdatetime
 
 
+def set_timezone_to_china(thisdatetime):
+	to_zone = tz.gettz(to_timezome_name)
+	thisdatetime =  thisdatetime.replace(tzinfo=to_zone)
+	return thisdatetime
+
+
 def get_most_recent_check():
 	db = open_db()
 	db.commit()
@@ -418,8 +439,4 @@ def get_most_recent_check():
 
 	return chinatime
 
-def makedateaware(thisdate):
-	to_zone = tz.gettz(to_timezome_name)
-	thisdate = thisdate.replace(tzinfo=to_zone)
-	return thisdate
 

@@ -74,8 +74,8 @@ for this_post_id in tracking_post_ids:
 #	this_post = collection_postids_live.find_one({'post_id':unicode(this_post_id)})
 	this_post = weibomodule.get_most_recent_post(this_post_id)
 
-	thispost_createdat = weibomodule.makedateaware(this_post['post_created_at'])
-	elapsedtime = nowdatetime - thispost_createdat 
+	thispost_created_at = weibomodule.set_timezone_to_china(this_post['post_created_at'])
+	elapsedtime = nowdatetime - thispost_created_at 
 
 	refreshedpost  =  weibomodule.refreshpost(this_post_id)
 	refreshedpost["started_tracking_at"] = this_post["started_tracking_at"]
