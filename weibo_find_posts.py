@@ -70,7 +70,7 @@ if (num_trackmore <= 0):
 	print "After all, we can only track a max of " + str(weibomodule.num_posts_to_track()) + " posts"
 	counter = 1
 	for thispostid in tracking_post_ids:
-		thispost = weibomodule.get_mostrecent_post(thispostid)
+		thispost = weibomodule.get_most_recent_post(thispostid)
 		print "post #" , counter ,":" + thispost["post_id"] + ", started tracking at" , thispost["started_tracking_at"]
 		counter += 1
 	sys.exit(0)

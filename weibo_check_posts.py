@@ -37,30 +37,22 @@ nowdatetime = weibomodule.get_current_chinatime()
 timelapsed = -1
 
 # when was the last time we checked
-
 most_recent_check = weibomodule.get_most_recent_check()
-print "most recent check = " ,most_recent_check 
-print "now = " , nowdatetime
 
+# okay, so has it been long enough?
+timelapsed = nowdatetime - most_recent_check
 
-try:
-	most_recent_check = weibomodule.get_most_recent_check()
-	# okay, so has it been long enough?
-	timelapsed = nowdatetime - most_recent_check
+print "It's been " + weibomodule.minsec(timelapsed.seconds) + " min since our most recent check, which was on" , most_recent_check	
 
-	print "It's been " + weibomodule.minsec(timelapsed.seconds) + " min"	
-	print timelapsed.seconds
-	print weibomodule.tracking_period_seconds
+if (timelapsed.seconds < weibomodule.tracking_period_seconds):
+	#not enough time has passed, too bad!
+	print "... But we're checking posts every " + weibomodule.minsec(weibomodule.tracking_period_seconds) + " minutes!" 
+	print "We'll check next time."
+	sys.exit(0)
 
-	if (timelapsed.seconds < weibomodule.tracking_period_seconds):
-		#not enough time has passed, too bad!
-		print "... But we're checking posts every " + weibomodule.minsec(weibomodule.tracking_period_seconds) + " minutes!" 
-		sys.exit(1)
-
-except:
-	# never been tracked! so let's just go ahead
-	print "Let's start tracking!"
-	pass
+# never been tracked! so let's just go ahead
+print "Let's start tracking!"
+print "====================="
 
 ##########################################
 ## CHECK EACH POST & LOG IN DB
@@ -80,7 +72,7 @@ for this_post_id in tracking_post_ids:
 
 	# get the post info from postids_live collection,
 #	this_post = collection_postids_live.find_one({'post_id':unicode(this_post_id)})
-	this_post = weibomodule.get_mostrecent_post(this_post_id)
+	this_post = weibomodule.get_most_recent_post(this_post_id)
 
 	thispost_createdat = weibomodule.makedateaware(this_post['post_created_at'])
 	elapsedtime = nowdatetime - thispost_createdat 
@@ -122,7 +114,7 @@ for this_post_id in tracking_post_ids:
 
 		else:
 			#post EXISTS as usual.	
-			print "Okay, log it and move on.."
+			#print "Okay, log it and move on.."
 			weibomodule.checklog_insert(refreshedpost)
 
 

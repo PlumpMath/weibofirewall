@@ -6,6 +6,25 @@ from datetime import datetime
 from dateutil import tz
 from dateutil import parser
 
+#"SCHEMA"
+"""
+post_id
+user_id
+user_name
+user_follower_count
+post_original_pic
+post_created_at
+post_repost_count
+post_text
+started_tracking_at
+is_deleted
+is_retired
+error_message
+error_code
+checked_at
+"""
+# CREATE TABLE checklog (post_id VARCHAR(20), user_id VARCHAR(20), user_name VARCHAR(30), user_follower_count INT, post_original_pic TEXT, post_created_at DATETIME, post_repost_count INT, post_text TEXT, started_tracking_at DATETIME, is_deleted  TINYINT, is_retired TINYINT, error_message VARCHAR(255), error_code VARCHAR(255), checked_at DATETIME);
+
 ##########################################
 ## CONSTANTS
 ##########################################
@@ -54,10 +73,10 @@ tracking_period = 0.25
 # default: set to -1 to determine tracking posts based on period, set to number to specificy number of posts to track
 # mostly for debugging purposes
 # ex) 5 = track only 5 posts at a time
-track_posts_override = -1 
+track_posts_override = 50 
 
 #timeout - if a post is alive past this many seconds, then go onto the next
-track_posts_timeout = 259200 #72 hours
+track_posts_timeout = 86400 #24 houts
 
 
 ##########################################
@@ -133,6 +152,12 @@ def getnewtoken():
 	global accesstokens
 	numtokens = len(accesstokens)
 
+	thistokenindex = -1 
+
+
+	#print "Let's get a new token. currently using" , thistoken
+	print "Getting new token.."
+
 	#if token doesn't exist, get the first token
 	if (thistoken == None):	
 		thistoken = accesstokens[0]
@@ -142,12 +167,15 @@ def getnewtoken():
 		if (thistokenindex + 1 >= numtokens):
 			#error on our hands - we've reached the last token!
 			thistoken = -1
+			print "OUT OF TOKENS"
+			sys.exit()
 		else:
 			#get the next token
 			thistoken = accesstokens[thistokenindex + 1]
+#			print "got the next token"
 
-	thistokenindex = accesstokens.index(thistoken)
-	print "Access Token #" , (thistokenindex + 1) , " being used: " + thistoken
+	thistokenindex += 1
+	print "Access Token #" , (thistokenindex + 1) , "/" , len(accesstokens) , " being used: " + thistoken
 	return thistoken
 
 #checks and gets a working access token.
@@ -187,7 +215,7 @@ def requests_get_wrapper(url, params):
 			# failure! try another token
 			thistoken = getnewtoken()
 		else:
-			print "got working token"
+			#got a successful response
 			return jsondata
 
 
@@ -262,6 +290,21 @@ def get_tracking_postids():
 	return trackingpostids
 
 
+
+# find posts that have been deleted
+def get_deleted_postids():
+
+	db = open_db()
+	cursor = db.cursor()
+
+	query = 'SELECT DISTINCT post_id FROM %s WHERE is_deleted <> 0' % (checklog_tablename)
+	cursor.execute(query)
+	deletedpostids = cursor.fetchall()
+	deletedpostids = map(lambda x: x[0], deletedpostids)
+
+	return deletedpostids
+
+
 # Does a post exist in the checklog, no matter its status"
 def postexists(post_id):
 	query = "SELECT COUNT(*) FROM %s WHERE post_id = %s" %(checklog_tablename, post_id)
@@ -298,24 +341,43 @@ def checklog_insert(thispost):
 
 
 #given a post id, get its most recent post
-def get_mostrecent_post(post_id):
+def get_most_recent_post(post_id):
 
-	query = "SELECT * FROM %s WHERE post_id = %s ORDER BY 'checked_at' DESC LIMIT 1" %(checklog_tablename, post_id)
+	query = "SELECT * FROM %s WHERE post_id = %s ORDER BY checked_at DESC LIMIT 1" %(checklog_tablename, post_id)
 
 	db = open_db()
 	cursor = db.cursor()
 	cursor.execute(query)
 	
+	#get keys for dictionary
 	cols = [d[0] for d in cursor.description]
 
 	result = cursor.fetchall()
 
+	#formulate into dictionary
 	thispost = dict(zip(cols, result[0]))
 
-	#print "HEYHEY"
-	#print thispost["post_text"].encode("ascii", "xmlcharrefreplace")
+	return thispost
+	
 
-	#print thispost
+
+#given a post id, get its most recent post
+def get_oldest_post(post_id):
+
+	query = "SELECT * FROM %s WHERE post_id = %s ORDER BY checked_at ASC LIMIT 1" %(checklog_tablename, post_id)
+
+	db = open_db()
+	cursor = db.cursor()
+	cursor.execute(query)
+	
+	#get keys for dictionary
+	cols = [d[0] for d in cursor.description]
+
+	result = cursor.fetchall()
+
+	#formulate into dictionary
+	thispost = dict(zip(cols, result[0]))
+
 	return thispost
 	
 
@@ -342,13 +404,17 @@ def get_most_recent_check():
 
 	#get the data
 	result = cursor.fetchone()
+
+	if(result == None):
+		return -1
+
 	chinatime =  result[0]
 
 	#set timezone to china
 	to_zone = tz.gettz(to_timezome_name)
 	chinatime=  chinatime.replace(tzinfo=to_zone)
 
-	print chinatime
+	#print chinatime
 
 	return chinatime
 

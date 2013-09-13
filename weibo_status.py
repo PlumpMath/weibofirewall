@@ -11,19 +11,17 @@ from dateutil import parser
 ## OPEN DB
 ##########################################
 
-collection_checklog = weibomodule.get_db_collection(weibomodule.collection_checklog)
-collection_postids_live = weibomodule.get_db_collection(weibomodule.collection_postids_live)
-collection_checked_at_times = weibomodule.get_db_collection(weibomodule.collection_checked_at_times)
-
 print "##################################"
 print "########## WEIBO STATUS ##########"
 print "##################################"
 
-num_live_posts = collection_postids_live.find({"is_alive":"True"}).count()
-if (num_live_posts == 0):
-	sys.exit("No posts are being tracked right now.")
-print "Currently tracking " + str(num_live_posts) + " posts"
+dbcursor = weibomodule.db_cursor()
+tracking_post_ids = weibomodule.get_tracking_postids()
+num_currently_tracking = len(tracking_post_ids)
 
+if (num_currently_tracking == 0):
+	sys.exit("No posts are being tracked right now.")
+print "Currently tracking " + str(num_currently_tracking) + " posts"
 
 ##########################################
 ## HAS ENOUGH TIME PASSED?
@@ -31,24 +29,20 @@ print "Currently tracking " + str(num_live_posts) + " posts"
 
 
 # get current time
-nowtimestamp = int(time.time())
+nowdatetime = weibomodule.get_current_chinatime()
 timelapsed = -1
 
 # when was the last time we checked
-most_recent_check = collection_checked_at_times.find_one({}, sort=[('checked_at', -1)])
+most_recent_check = weibomodule.get_most_recent_check()
 
-try:
-	lasttimestamp = int(most_recent_check["checked_at"])
-
-except:
-	# never been tracked! so let's just go ahead
+if most_recent_check == -1:
 	print "Never been tracked!"
 
 else:	
 	# okay, so has it been long enough?
-	timelapsed = nowtimestamp - lasttimestamp
+	timelapsed = nowdatetime - most_recent_check
 
-	print "It's been " + weibomodule.minsec(timelapsed) + " since we last checked"	
+	print "It's been " + weibomodule.minsec(timelapsed.seconds) + " min since our most recent check, which was on" , most_recent_check	
 
 print "We're checking posts every " + weibomodule.minsec(weibomodule.tracking_period_seconds) + " minutes." 
 
@@ -56,25 +50,22 @@ print "We're checking posts every " + weibomodule.minsec(weibomodule.tracking_pe
 ## GET LIST OF LIVE POSTS
 ##########################################
 
-print "########## LIVE POSTS ##########"
-num_live_posts = collection_postids_live.find({"is_alive":"True"}).count()
-print "# of live posts we've tracked: " + str(num_live_posts)
-if (num_live_posts > 0):
-	live_post_ids = []
-	for lpis in collection_postids_live.find({"is_alive":"True"}):
-		live_post_ids.append(lpis["post_id"])
-#	print live_post_ids
+print "########## POSTS TRACKING ##########"
+print "# of posts we're tracking: " , len(tracking_post_ids)
 
+if (len(tracking_post_ids) > 0):
 
-	for this_post_id in live_post_ids:
+	for this_post_id in tracking_post_ids:
 		print "Checking post #" + this_post_id + ":",
 
-		this_post_old = collection_postids_live.find_one({'post_id': this_post_id, "is_alive":"True"}, sort=[('checked_at', -1)])
-		this_post_check = collection_checklog.find_one({'post_id': this_post_id, "is_alive":"True"}, sort=[('checked_at', -1)])
+		this_post_new = weibomodule.get_most_recent_post(this_post_id)
+		this_post_old = weibomodule.get_oldest_post(this_post_id)
 
-		print "alive: new/old repost count (" + str(this_post_check["post_repost_count"]) + " / " + str(this_post_old["initial_post_repost_count"]) + ") "
+		print "alive: new/old repost count (" , this_post_new["post_repost_count"] , " / " , this_post_old["post_repost_count"] , ") "
 
-		print weibomodule.minsec(this_post_check["checked_at"] - this_post_old["started_tracking_at"]) + " since tracking start"
+		#print this_post_old["checked_at"]
+		#print this_post_old["started_tracking_at"]
+#		print weibomodule.minsec(this_post_new["checked_at"] - this_post_new["started_tracking_at"]) + " since tracking start"
 		#print this_post_check["checked_at"] , " " , this_post_old["started_tracking_at"]
 
 
@@ -82,23 +73,27 @@ if (num_live_posts > 0):
 ## GET LIST OF DEAD POSTS
 ##########################################
 
+
+deleted_post_ids = weibomodule.get_deleted_postids()
+
 print "########## DEAD POSTS ##########"
-num_dead_posts = collection_postids_live.find({"is_alive":"False"}).count()
+num_dead_posts = len(deleted_post_ids)
 print "# of dead posts we've tracked: " + str(num_dead_posts)
 if (num_dead_posts > 0):
 	dead_post_ids = []
-	for lpis in collection_postids_live.find({"is_alive":"False"}):
-		dead_post_ids.append(lpis["post_id"])
-	print dead_post_ids
 
-
-	for this_post_id in dead_post_ids:
+	for this_post_id in deleted_post_ids:
 		print "Checking post # " + this_post_id
 
 		# get the post info from postids_live collection,
 		# since if the post was deleted we wouldn't have any of that info anymore
-		this_post = collection_postids_live.find_one({'post_id': this_post_id, "is_alive":"True"})
 
+		this_post_new = weibomodule.get_most_recent_post(this_post_id)
+		this_post_old = weibomodule.get_oldest_post(this_post_id)
+
+
+
+		print "alive: new/old repost count (" , this_post_new["post_repost_count"] , " / " , this_post_old["post_repost_count"] , ") "
 	#	print " >> post alive: new/old repost count (" + str(statusresponse["reposts_count"]) + " / " + str(this_post["post_repost_count"]) + ") "
 
 
