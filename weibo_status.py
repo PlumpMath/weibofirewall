@@ -64,7 +64,7 @@ if (len(tracking_post_ids) > 0):
 		print "alive: new/old repost count (" , this_post_new["post_repost_count"] , " / " , this_post_old["post_repost_count"] , ") "
 
 		elapsedtime  = nowdatetime - weibomodule.set_timezone_to_china(this_post_new["started_tracking_at"]) 
-#		print elapsedtime
+		print "elapsed time = " ,  elapsedtime
 #k		print elapsedtime.seconds
 
 
