@@ -33,8 +33,8 @@ queries_per_token = 100 #hardcoded - set this to 100 to give us some padding
 
 pagemax = 10 # let's not go more than 10 pages back while looking for anything
 
-#display_timezone = "Asia/Shanghai"
-display_timezone = "America/New_York"
+to_timezome_name = 'Asia/Shanghai'
+display_timezone = "Asia/Shanghai"
 
 """
 the WEIBO API KEY only takes 150 REQUESTS PER HOUR. 
@@ -323,7 +323,7 @@ def get_mostrecent_post(post_id):
 def get_current_chinatime():
 	utcnow =  datetime.utcnow()
 	from_zone=tz.tzutc()
-	to_zone = tz.gettz('Asia/Shanghai')
+	to_zone = tz.gettz(to_timezome_name)
 	utcnow = utcnow.replace(tzinfo=from_zone)
 	chinanow =  utcnow.astimezone(to_zone)
 	return chinanow
@@ -340,23 +340,20 @@ def get_most_recent_check():
 	cursor = db.cursor()
 	cursor.execute(query)
 
-
+	#get the data
 	result = cursor.fetchone()
 	chinatime =  result[0]
 
-	print result
-
-	print "RESULT" , chinatime
-	to_zone = tz.gettz('Asia/Shanghai')
+	#set timezone to china
+	to_zone = tz.gettz(to_timezome_name)
 	chinatime=  chinatime.replace(tzinfo=to_zone)
-	print "RESU3333LT" , chinatime
 
 	print chinatime
 
 	return chinatime
 
 def makedateaware(thisdate):
-	to_zone = tz.gettz('Asia/Shanghai')
+	to_zone = tz.gettz(to_timezome_name)
 	thisdate = thisdate.replace(tzinfo=to_zone)
 	return thisdate
 
