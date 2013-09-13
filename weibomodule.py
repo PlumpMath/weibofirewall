@@ -335,7 +335,7 @@ def get_most_recent_check():
 	db = open_db()
 	db.commit()
 
-	query = "SELECT checked_at FROM %s ORDER BY 'checked_at' DESC LIMIT 1" %(checklog_tablename)
+	query = "SELECT checked_at FROM %s ORDER BY checked_at DESC LIMIT 1" %(checklog_tablename)
 
 	cursor = db.cursor()
 	cursor.execute(query)
