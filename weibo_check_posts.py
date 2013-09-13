@@ -38,20 +38,13 @@ timelapsed = -1
 
 # when was the last time we checked
 
-print "HEYH"
-
-print "fuck"
 most_recent_check = weibomodule.get_most_recent_check()
-print "most recent check = "
-print most_recent_check 
-print nowdatetime
+print "most recent check = " ,most_recent_check 
+print "now = " , nowdatetime
 
 
 try:
 	most_recent_check = weibomodule.get_most_recent_check()
-	print "most recent check = "
-	print most_recent_check 
-	print nowdatetime
 	# okay, so has it been long enough?
 	timelapsed = nowdatetime - most_recent_check
 

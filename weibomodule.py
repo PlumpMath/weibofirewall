@@ -1,6 +1,7 @@
 import MySQLdb
 import requests
 import json
+import sys
 from datetime import datetime
 from dateutil import tz
 from dateutil import parser
@@ -169,6 +170,8 @@ def requests_get_wrapper(url, params):
 		#replace param with our token
 		params["access_token"] = thistoken
 
+
+		#print "trying to get token" , i , "token is " , thistoken
 		#attempt to get request	
 	
 		#print "data = requests.get(" + url + ", params=" 
@@ -182,12 +185,14 @@ def requests_get_wrapper(url, params):
 
 		if "error" in jsondata:
 			# failure! try another token
-			pass
+			thistoken = getnewtoken()
 		else:
 			print "got working token"
 			return jsondata
 
+
 	print "OUT OF TOKENS"	
+	sys.exit()
 	return -1
 
 #get status of friends
@@ -329,8 +334,6 @@ def get_current_chinatime():
 def get_most_recent_check():
 	db = open_db()
 	db.commit()
-
-	SOMETHIGN IS WRONG HERE
 
 	query = "SELECT checked_at FROM %s ORDER BY 'checked_at' DESC LIMIT 1" %(checklog_tablename)
 
