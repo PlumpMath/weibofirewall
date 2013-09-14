@@ -88,7 +88,7 @@ for this_post_id in tracking_post_ids:
 
 
 	try:
-		checkedjson =  weibomodule.checkstatus(this_post_id)
+		refreshedpost  =  weibomodule.refreshpost(this_post_id)
 	except:
 		#hmm. can't even check status. weird.
 		print "okay weird error"
@@ -96,24 +96,20 @@ for this_post_id in tracking_post_ids:
 		continue
 
 
-	refreshedpost  =  weibomodule.refreshpost(this_post_id)
+	#set post checked_at time
 	refreshedpost["checked_at"] = nowdatetime
 
-	if ("error" in checkedjson):
+	if ("error" in refreshedpost):
 		#the post has been DELETED
 		#let's flag, add to checklog
-		print " >> POST DELETED: " + checkedjson["error"]
-
-		refreshedpost["is_deleted"] = 1
-		refreshedpost["error_message"] = checkedjson["error"]
-		refreshedpost["error_code"] = checkedjson["error_code"]
+		print " >> POST DELETED: " + refreshedpost["error"]
 		weibomodule.checklog_insert(refreshedpost)
 
 	else:
 	
 		#post EXISTS
 
-		print " >> post alive: new/old repost count (" + str(checkedjson["reposts_count"]) + " / " + str(this_post_oldest["post_repost_count"]) + ") "
+		print " >> post alive: new/old repost count (" + str(refreshedpost["post_repost_count"]) + " / " + str(this_post_oldest["post_repost_count"]) + ") "
 
 		print "elapsed time = " , weibomodule.total_seconds(elapsedtime) 
 		print "our timeout is = " , weibomodule.track_posts_timeout
