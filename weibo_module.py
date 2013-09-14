@@ -74,27 +74,26 @@ def minsec(seconds):
 
 # returns the number of posts to track
 def num_posts_to_track():
-	if (track_posts_override != -1):
-		return track_posts_override
+	if (weibo_settings.track_posts_override != -1):
+		return weibo_settings.track_posts_override
 
-	numtokens = len(accesstokens)
-	return int(numtokens * tracking_period * queries_per_token)
+	numtokens = len(weibo_settings.accesstokens)
+	return int(numtokens * weibo_settings.tracking_period * weibo_settings.queries_per_token)
 
 # if we're on manual, this alerts everyone if w'ere tracking too many to count
 def post_alert():
-	numtokens = len(accesstokens)
-	num_can_track =  numtokens * tracking_period * queries_per_token
+	numtokens = len(weibo_settings.accesstokens)
+	num_can_track =  numtokens * weibo_settings.tracking_period * weibo_settings.queries_per_token
 
-	if (track_posts_override >= num_can_track):
-		return "WARNING - you can only track " + str(num_can_track) + ", yet you're trying to track " + str(track_posts_override)
+	if (weibo_settings.track_posts_override >= num_can_track):
+		return "WARNING - you can only track " + str(num_can_track) + ", yet you're trying to track " + str(weibo_settings.track_posts_override)
 
 	return ""
 
 #get a new token- starting from the first token and working its way to the end
 def getnewtoken():
 	global thistoken
-	global accesstokens
-	numtokens = len(accesstokens)
+	numtokens = len(weibo_settings.accesstokens)
 
 	thistokenindex = -1 
 
@@ -104,10 +103,10 @@ def getnewtoken():
 
 	#if token doesn't exist, get the first token
 	if (thistoken == None):	
-		thistoken = accesstokens[0]
+		thistoken = weibo_settings.accesstokens[0]
 	else:
 		# try to get the next token, making sure that we're not at the end
-		thistokenindex = accesstokens.index(thistoken)
+		thistokenindex = weibo_settings.accesstokens.index(thistoken)
 		if (thistokenindex + 1 >= numtokens):
 			#error on our hands - we've reached the last token!
 			thistoken = -1
@@ -115,11 +114,11 @@ def getnewtoken():
 			sys.exit()
 		else:
 			#get the next token
-			thistoken = accesstokens[thistokenindex + 1]
+			thistoken = weibo_settings.accesstokens[thistokenindex + 1]
 #			print "got the next token"
 
 	thistokenindex += 1
-	print "Access Token #" , (thistokenindex + 1) , "/" , len(accesstokens) , " being used: " + thistoken
+	print "Access Token #" , (thistokenindex + 1) , "/" , len(weibo_settings.accesstokens) , " being used: " + thistoken
 	return thistoken
 
 #checks and gets a working access token.
@@ -133,11 +132,10 @@ def gettoken():
 # launches a request. if api is out, switches to the next token. sends -1 if all tokens have been used.
 def requests_get_wrapper(url, params):
 	global thistoken
-	global accesstokens
 	thistoken = gettoken()
 
 	# should be a while loop, but just doing this so we don't get caught in an infinite loop
-	for i in xrange(len(accesstokens)):
+	for i in xrange(len(weibo_settings.accesstokens)):
 
 		#replace param with our token
 		params["access_token"] = thistoken
@@ -179,13 +177,13 @@ def requests_get_wrapper(url, params):
 #get status of friends
 #usually call this without a parameter, since the max is 100, and this query only costs us 1 out of the 150 per hour query.
 def accessfriends(count=100, page=1):
-	jsondata = requests_get_wrapper(apiurl_accessfriends, params={"access_token": "TOKEN", "count": count, "page": page})
+	jsondata = requests_get_wrapper(weibo_settings.apiurl_accessfriends, params={"access_token": "TOKEN", "count": count, "page": page})
 	return jsondata
 
 
 # check each status
 def checkstatus(post_id):
-	jsondata = requests_get_wrapper(apiurl_checkstatus, params={"access_token": "TOKEN", "id": post_id})
+	jsondata = requests_get_wrapper(weibo_settings.apiurl_checkstatus, params={"access_token": "TOKEN", "id": post_id})
 	#print jsondata
 	return jsondata
 
@@ -194,7 +192,7 @@ def checkstatus(post_id):
 # consisting of post id, is_deleted, error message, error code, checekd_at, and then put it in checklog.
 # otherwise returns formatted schema format in dict
 def refreshpost(this_post_id):
-	jsondata = requests_get_wrapper(apiurl_checkstatus, params={"access_token": "TOKEN", "id": this_post_id})
+	jsondata = requests_get_wrapper(weibo_settings.apiurl_checkstatus, params={"access_token": "TOKEN", "id": this_post_id})
 
 
 	this_post_old = get_oldest_post(this_post_id)
@@ -261,12 +259,12 @@ def get_tracking_postids():
 	db = open_db()
 	cursor = db.cursor()
 
-	query = 'SELECT DISTINCT post_id FROM %s' % (checklog_tablename)
+	query = 'SELECT DISTINCT post_id FROM %s' % (weibo_settings.checklog_tablename)
 	cursor.execute(query)
 	allpostids = cursor.fetchall()
 	allpostids = map(lambda x: x[0], allpostids)
 	
-	query = 'SELECT DISTINCT post_id FROM %s WHERE is_deleted <> 0 OR is_retired <> 0' % (checklog_tablename)
+	query = 'SELECT DISTINCT post_id FROM %s WHERE is_deleted <> 0 OR is_retired <> 0' % (weibo_settings.checklog_tablename)
 	cursor.execute(query)
 	nottrackingpostids = cursor.fetchall()
 	nottrackingpostids = map(lambda x: x[0], nottrackingpostids)
@@ -285,9 +283,9 @@ def get_deleted_postids(error_code=-1):
 	cursor = db.cursor()
 
 	if error_code == -1:
-		query = 'SELECT DISTINCT post_id FROM %s WHERE is_deleted <> 0' % (checklog_tablename)
+		query = 'SELECT DISTINCT post_id FROM %s WHERE is_deleted <> 0' % (weibo_settings.checklog_tablename)
 	else:
-		query = 'SELECT DISTINCT post_id FROM %s WHERE is_deleted <> 0 AND error_code = %s' % (checklog_tablename, error_code)
+		query = 'SELECT DISTINCT post_id FROM %s WHERE is_deleted <> 0 AND error_code = %s' % (weibo_settings.checklog_tablename, error_code)
 
 	cursor.execute(query)
 	deletedpostids = cursor.fetchall()
@@ -303,7 +301,7 @@ def get_retired_postids():
 	db = open_db()
 	cursor = db.cursor()
 
-	query = 'SELECT DISTINCT post_id FROM %s WHERE is_retired <> 0' % (checklog_tablename)
+	query = 'SELECT DISTINCT post_id FROM %s WHERE is_retired <> 0' % (weibo_settings.checklog_tablename)
 	cursor.execute(query)
 	retiredpostids = cursor.fetchall()
 	retiredpostids = map(lambda x: x[0], retiredpostids)
@@ -313,7 +311,7 @@ def get_retired_postids():
 
 # Does a post exist in the checklog, no matter its status"
 def postexists(post_id):
-	query = "SELECT COUNT(*) FROM %s WHERE post_id = %s" %(checklog_tablename, post_id)
+	query = "SELECT COUNT(*) FROM %s WHERE post_id = %s" %(weibo_settings.checklog_tablename, post_id)
 	db = open_db()
 	cursor = db.cursor()
 	cursor.execute(query)
@@ -349,7 +347,7 @@ def checklog_insert(thispost):
 #given a post id, get its most recent post
 def get_most_recent_live_post(post_id):
 
-	query = "SELECT * FROM %s WHERE post_id = %s AND post_repost_count IS NOT NULL ORDER BY checked_at DESC LIMIT 1" %(checklog_tablename, post_id)
+	query = "SELECT * FROM %s WHERE post_id = %s AND post_repost_count IS NOT NULL ORDER BY checked_at DESC LIMIT 1" %(weibo_settings.checklog_tablename, post_id)
 
 	db = open_db()
 	cursor = db.cursor()
@@ -370,7 +368,7 @@ def get_most_recent_live_post(post_id):
 #given a post id, get its most recent post
 def get_oldest_post(post_id):
 
-	query = "SELECT * FROM %s WHERE post_id = %s ORDER BY checked_at ASC LIMIT 1" %(checklog_tablename, post_id)
+	query = "SELECT * FROM %s WHERE post_id = %s ORDER BY checked_at ASC LIMIT 1" %(weibo_settings.checklog_tablename, post_id)
 
 	db = open_db()
 	cursor = db.cursor()
@@ -393,9 +391,9 @@ def get_oldest_post(post_id):
 def get_deletion_post(post_id, error_code=-1):
 
 	if error_code == -1:
-		query = "SELECT * FROM %s WHERE post_id = %s AND is_deleted <> 0 ORDER BY checked_at DESC LIMIT 1" %(checklog_tablename, post_id)
+		query = "SELECT * FROM %s WHERE post_id = %s AND is_deleted <> 0 ORDER BY checked_at DESC LIMIT 1" %(weibo_settings.checklog_tablename, post_id)
 	else:
-		query = "SELECT * FROM %s WHERE post_id = %s AND is_deleted <> 0 AND error_code = %s ORDER BY checked_at DESC LIMIT 1" %(checklog_tablename, post_id, error_code)
+		query = "SELECT * FROM %s WHERE post_id = %s AND is_deleted <> 0 AND error_code = %s ORDER BY checked_at DESC LIMIT 1" %(weibo_settings.checklog_tablename, post_id, error_code)
 
 
 	db = open_db()
@@ -421,7 +419,7 @@ def get_deletion_post(post_id, error_code=-1):
 def get_current_chinatime():
 	utcnow =  datetime.utcnow()
 	from_zone=tz.tzutc()
-	to_zone = tz.gettz(to_timezome_name)
+	to_zone = tz.gettz(weibo_settings.to_timezome_name)
 	utcnow = utcnow.replace(tzinfo=from_zone)
 	chinanow =  utcnow.astimezone(to_zone)
 	return chinanow
@@ -431,7 +429,7 @@ def get_current_chinatime():
 
 def set_timezone_to_china(thisdatetime):
 #	print "* thisdatetime = ", thisdatetime
-	to_zone = tz.gettz(to_timezome_name)
+	to_zone = tz.gettz(weibo_settings.to_timezome_name)
 	thisdatetime =  thisdatetime.replace(tzinfo=to_zone)
 	return thisdatetime
 
@@ -441,7 +439,7 @@ def get_most_recent_checktime():
 	db = open_db()
 	db.commit()
 
-	query = "SELECT checked_at FROM %s ORDER BY checked_at DESC LIMIT 1" %(checklog_tablename)
+	query = "SELECT checked_at FROM %s ORDER BY checked_at DESC LIMIT 1" %(weibo_settings.checklog_tablename)
 
 	cursor = db.cursor()
 	cursor.execute(query)
@@ -455,7 +453,7 @@ def get_most_recent_checktime():
 	chinatime =  result[0]
 
 	#set timezone to china
-	to_zone = tz.gettz(to_timezome_name)
+	to_zone = tz.gettz(weibo_settings.to_timezome_name)
 	chinatime=  chinatime.replace(tzinfo=to_zone)
 
 	#print chinatime
