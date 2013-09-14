@@ -7,139 +7,55 @@ import requests
 import logging
 import re
 import os
-
-logging.basicConfig(filename='example.log',level=logging.DEBUG)
-
+import weibomodule
 
 
-def deleted_in_sample():
-	docno = 0
 
-	with open("deleted_in_sample.csv", "w") as wf:
+def csvize_deleted_unique(csv_filename):
 
-		print "post_id, created_at, poster_id"
-		wf.write("post_id, created_at, poster_id \n")
+	csv_header = "post_id, user_id, user_name, user_follower_count_initial, user_follower_count, post_original_pic, post_created_at, post_repost_count_initial, post_repost_count, post_text, started_tracking_at, is_deleted, is_retired, error_message, error_code, last_checked_at"
 
-		for post in deleted_weibo.find():
+	deleted_post_ids = weibomodule.get_deleted_postids()
+	num_dead_posts = len(deleted_post_ids)
 
-			postid =  post['delpost_id'] 
+	#if we're not tracking any posts, get out of there
+	if (num_dead_posts <= 0):
+		return
 
-			samplefind = sample_weibo.find( { 'post_id': postid })
-	#		print samplefind.count()
-			if(samplefind.count() != 0):
-				#print "post = " + postid
-				for doc in samplefind:
-					docno += 1
-					#print "this is the doc = " + str(docno)
-					#print doc
-					thiscreated = parse(doc['created_at']).strftime('%s')
-					print postid + "," + thiscreated + "," , doc['id']
-					wf.write(postid + "," + thiscreated + "," + str(doc['id']) + "\n")
-			samplefind.rewind()
+	## OPEN A FILE
+	with open(csv_filename, "w") as wf:
+		wf.write(codecs.BOM_UTF)
 
-def csvize_sample():
+		#write csv header
+		wf.write(csv_header + "\n")
+		print csv_header
 
-	#Fri May 03 07:49:13 +0800 2013
-	#%a %b %d %H:%M:%S %z %Y
+		#iterate through posts
+		for this_post_id in deleted_post_ids:
 
-	with open("sample_weibo.csv", "w") as wf:
+			this_post_new = weibomodule.get_most_recent_live_post(this_post_id)
+			this_post_old = weibomodule.get_oldest_post(this_post_id)
+			this_post_deleted = weibomodule.get_deletion_post(this_post_id)
+			#the only items that change between the two is the "initial" items
 
-		wf.write("post_id, created_at, poster_id \n")
-		print "post_id, created_at, poster_id"
-		for doc in sample_weibo.find().sort("created_at").limit(10):
-			#print doc
-			thiscreated = parse(doc['created_at']).strftime('%s')
-			thisname = doc["screen_name"].encode("utf8")
-			print doc["post_id"] + "," + thiscreated + "," , doc["id"]
-			wf.write(doc["post_id"] + "," + thiscreated + "," + str(doc["id"]) + "\n")
-			#print doc["followers_count"]
-			#screen_name, post_id, created_at,deleted_at
-
-def csvize_deleted():
-
-	#Fri May 03 07:49:13 +0800 2013
-	#%a %b %d %H:%M:%S %z %Y
-
-	FIX ME
-
-	deleted_weibo_filename = "deleted_weibo.csv"
-	deleted_weibo_temp = "deleted_weibo_temp.csv"
-
-	### IF TEMP FILE HAS SOMETHING IN IT, MERGE WITH MASTER FILE
-	if(os.stat(deleted_weibo_temp)[6] != 0):
-		with open(deleted_weibo_temp, "r") as rf:
-			tempcontent = rf.readlines()
-
-		with open(deleted_weibo_filename, "a") as af:
-			
-			for eachline in tempcontent:
-				if(re.match("post_id.*", eachline)):
-					pass
-					#is header
-				else:
-					af.write(eachline)
-						
+			this_post = this_post_old
+			this_post["user_follower_count_initial"] = this_post_old["user_follower_count"]
+			this_post["user_follower_count"] = this_post_new["user_follower_count"]
+			this_post["post_repost_count_initial"] = this_post_old["post_repost_count"]
+			this_post["post_repost_count"] = this_post_new["post_repost_count"]
+			this_post["started_tracking_at"] = this_post_old["started_tracking_at"]
+			this_post["error_code"] = this_post_deleted["error_code"] 
+			this_post["error_message"] = this_post_deleted["error_message"] 
+			# we're setting the "deleted time" to be when it was found to be deleted
+			# that means that, depending on the interval T, 
+			# the actual deletion time is always between 0 and T later
+			this_post["last_checked_at"] = this_post_new["checked_at"]
 
 
-	### GET THE LAST POST WE SCANNED SO WE DON'T DUPLICATE SCAN
-	lastpost_id = -1
-	if(os.path.exists(deleted_weibo_filename)):
-		
-		lines= os.popen("tail -3 " + deleted_weibo_filename).readlines()
-		for thisline in reversed(lines):
-			if(thisline != "\n"):
-				regresult = re.search("(\d*),",thisline)
-				lastpost_id = regresult.groups()[0]
-				print lastpost_id
-				break
+			csv_line = this_post["post_id"] + ", " +  this_post["user_id"] + ", " +  this_post["user_name"] + ", " +  this_post["user_follower_count_initial"] + ", " +  this_post["user_follower_count"] + ", " +  this_post["post_original_pic"] + ", " +  this_post["post_created_at"] + ", " +  this_post["post_repost_count_initial"] + ", " +  this_post["post_repost_count"] + ", " +  this_post["post_text"] + ", " +  this_post["started_tracking_at"] + ", " +  this_post["is_deleted"] + ", " +  this_post["is_retired"] + ", " +  this_post["error_message"] + ", " +  this_post["error_code"] + ", " +  this_post["last_checked_at"]
 
-		if lastpost_id == -1:
-			print "error reading previous file."
-			return "yo"				
-
-	## OPEN A TEMPORARY FILE
-
-	with open(deleted_weibo_temp, "w") as wf:
-		wf.write("post_id, created_at, poster_id \n")
-		print "post_id, created_at, poster_id"
-
-		maxcount =  deleted_weibo.find().count()
-		inc = 0
-		skipover = True
-
-		for doc in deleted_weibo.find():
-
-			thispostid = doc["delpost_id"]
-
-			### UNTIL WE FIND THE LAST POST WE SCANNED, SKIP OVER
-
-			if(thispostid == lastpost_id):
-				skipover = False
-				continue
-		
-			if(skipover == True):
-				continue			
-
-			inc += 1
-			if inc % 10 == 0:
-				print "======================" + str(inc * 1.0 / maxcount) + "% done"
-			#print doc
-			#print doc["delurl"]
-			#print thispostid
-			#print doc["followers_count"]
-			#screen_name, post_id, created_at,deleted_at
-			created_at = search_date(thispostid)
-			if(created_at == -1):
-				continue
-			if(created_at == -10):
-				print "LIMIT EXCEEDED - TRY AGAIN NEXT HOUR"
-				break
-	
-			regresult = re.search("uid=(\d*)\&", doc["delurl"])
-			thisposter_id = regresult.groups()[0]
-
-			print thispostid + "," + created_at + "," + thisposter_id
-			wf.write( thispostid + "," + created_at + "," + thisposter_id + "\n")
+			wf.write(csv_line + "\n")
+			print csv_line
 
 
 def search_date(postid):
@@ -182,8 +98,20 @@ def search_date(postid):
 
 	#weibo_postid_querystring
 
+
+#################################
+#################################
+#################################
+#################################
+
+
+#our process
+#grab all the deleted posts
+#massage to CSV!
 #csvize_sample()
-csvize_deleted()
+deleted_weibo_filename = "deleted_weibo.csv"
+
+csvize_deleted_unique(deleted_weibo_filename)
 #deleted_in_sample()
 
 

@@ -447,7 +447,28 @@ def get_oldest_post(post_id):
 	return thispost
 	
 
-# EVERYTHING IS ON CHINA TIME, YOU UNDERSTAND
+
+#given a post id, get its deletion post
+def get_deletion_post(post_id):
+
+	query = "SELECT * FROM %s WHERE post_id = %s AND is_deleted = 1 ORDER BY checked_at DESC LIMIT 1" %(checklog_tablename, post_id)
+
+	db = open_db()
+	cursor = db.cursor()
+	cursor.execute(query)
+	
+	#get keys for dictionary
+	cols = [d[0] for d in cursor.description]
+
+	result = cursor.fetchall()
+
+	#formulate into dictionary
+	thispost = dict(zip(cols, result[0]))
+
+	return thispost
+
+
+	# EVERYTHING IS ON CHINA TIME, YOU UNDERSTAND
 def get_current_chinatime():
 	utcnow =  datetime.utcnow()
 	from_zone=tz.tzutc()
