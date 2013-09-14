@@ -48,7 +48,7 @@ if (weibomodule.total_seconds(timelapsed) < weibomodule.tracking_period_seconds)
 	#not enough time has passed, too bad!
 	print "... But we're checking posts every " + weibomodule.minsec(weibomodule.tracking_period_seconds) + " minutes!" 
 	print "We'll check next time."
-#	sys.exit(0)
+	sys.exit(0)
 
 # never been tracked! so let's just go ahead
 print "Let's start tracking!"
@@ -65,20 +65,25 @@ print "====================="
 # does it exist? YES! -- too old? NO:  log in checklog
 # does it exist? YES! -- too old? YES: turn flag on,  log in checklog
 
+checkpostcount = 0 
+
 for this_post_id in tracking_post_ids:
-	print "Checking post # " + this_post_id
+	checkpostcount += 1
+
+	print "=========================="
+	print "CHECK", checkpostcount , ":: checking post # " + this_post_id
 	thispost_is_alive = True
 
 
-	this_post_newest = weibomodule.get_most_recent_post(this_post_id)
+	this_post_newest = weibomodule.get_most_recent_live_post(this_post_id)
 	this_post_oldest = weibomodule.get_oldest_post(this_post_id)
 	thispost_created_at = weibomodule.set_timezone_to_china(this_post_newest['post_created_at'])
 	elapsedtime = nowdatetime - thispost_created_at 
 
-	print "now is = " , nowdatetime
-	print "newest sez created at = " , this_post_newest["post_created_at"]
-	print "oldt commitest sez created at = " , this_post_oldest["post_created_at"]
-	print "---time elapsed = " , elapsedtime, " and in seconds" , weibomodule.total_seconds(elapsedtime)
+#	print "now is = " , nowdatetime
+#	print "newest sez created at = " , this_post_newest["post_created_at"]
+#	print "oldt commitest sez created at = " , this_post_oldest["post_created_at"]
+	print "* time elapsed = " , elapsedtime, " and in seconds" , weibomodule.total_seconds(elapsedtime)
 
 
 # so - we look for the post
@@ -99,21 +104,23 @@ for this_post_id in tracking_post_ids:
 	#set post checked_at time
 	refreshedpost["checked_at"] = nowdatetime
 
-	if ("error" in refreshedpost):
+#	print "* refrehsedpost = " ,refreshedpost
+
+	if ("error_code" in refreshedpost):
 		#the post has been DELETED
 		#let's flag, add to checklog
-		print " >> POST DELETED: " + refreshedpost["error"]
+		print " >> POST DELETED: " + refreshedpost["error_message"]
 		weibomodule.checklog_insert(refreshedpost)
 
 	else:
 	
 		#post EXISTS
 
-		print " >> post alive: new/old repost count (" + str(refreshedpost["post_repost_count"]) + " / " + str(this_post_oldest["post_repost_count"]) + ") "
+		print "* post alive: new/old repost count (" + str(refreshedpost["post_repost_count"]) + " / " + str(this_post_oldest["post_repost_count"]) + ") "
 
-		print "elapsed time = " , weibomodule.total_seconds(elapsedtime) 
-		print "our timeout is = " , weibomodule.track_posts_timeout
-		print "so has more time passed? " , (weibomodule.total_seconds(elapsedtime) > weibomodule.track_posts_timeout)
+#		print "* elapsed time = " , weibomodule.total_seconds(elapsedtime) 
+#		print "* our timeout is = " , weibomodule.track_posts_timeout
+#		print "* so has more time passed? " , (weibomodule.total_seconds(elapsedtime) > weibomodule.track_posts_timeout)
 
 		if (weibomodule.total_seconds(elapsedtime) > weibomodule.track_posts_timeout):
 			#TOO MUCH TIME HAS PASSED - let's retire this

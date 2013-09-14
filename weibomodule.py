@@ -41,7 +41,15 @@ dbpass = "w3ibofirewall"
 checklog_tablename = "checklog"
 
 #accesstokens = ['2.00Ga5TmDFObaNC7aeeff1e5cZR1oTD']
-accesstokens = ['2.00Ga5TmDFObaNC7aeeff1e5cZR1oTD', '2.00YJl5fDtbWV2B908f7d5e64BIPIwC','2.00Ga5TmDGX4hRE1447f826bclbRQJC','2.00Ga5TmD0Ugujs972d9aab4724Dt4D']
+accesstokens = [
+	'2.00Ga5TmDFObaNC7aeeff1e5cZR1oTD', 
+	'2.00YJl5fDtbWV2B908f7d5e64BIPIwC',
+	'2.00Ga5TmDGX4hRE1447f826bclbRQJC',
+	'2.00Ga5TmD0Ugujs972d9aab4724Dt4D',
+	'2.00X32EqBHyA86B7b7f20b938QdUbLC',
+	'2.00X32EqB2NJFhC94e6fe6b490_6uQ_',
+	'2.00X32EqBnWX2zCa083e0c752msL92D',
+	]
 
 apiurl_accessfriends = "https://api.weibo.com/2/statuses/friends_timeline.json"
 apiurl_checkstatus = "https://api.weibo.com/2/statuses/show.json"
@@ -213,9 +221,11 @@ def requests_get_wrapper(url, params):
 
 		if "error" in jsondata:
 			# failure! try another token
-			print "error = " , jsondata["error"]
+			print "* error = " , jsondata["error"]
+			print "* error_code = " , jsondata["error_code"]
 			#see for error codes: http://open.weibo.com/wiki/Error_code
-			if(jsondata["error_code"] == '10022' or jsondata["error_code"] == '10023' or jsondata["error_code"] == '10024'):
+			if(jsondata["error_code"] == 10022 or jsondata["error_code"] == 10023 or jsondata["error_code"] == 10024):
+				print "* Hitting rate limit!"
 				#we're hitting a rate limit!
 				thistoken = getnewtoken()
 			else:
@@ -247,9 +257,11 @@ def checkstatus(post_id):
 # returns skeletal post upon error
 # consisting of post id, is_deleted, error message, error code, checekd_at, and then put it in checklog.
 # otherwise returns formatted schema format in dict
-def refreshpost(post_id):
-	jsondata = requests_get_wrapper(apiurl_checkstatus, params={"access_token": "TOKEN", "id": post_id})
+def refreshpost(this_post_id):
+	jsondata = requests_get_wrapper(apiurl_checkstatus, params={"access_token": "TOKEN", "id": this_post_id})
 
+
+	this_post_old = get_oldest_post(this_post_id)
 
 	#okay, so we get post data
 	#if it has an error (which means that it's been deleted), then  assemble skeeletal 
@@ -257,7 +269,7 @@ def refreshpost(post_id):
 	if "error_code" in jsondata:
 
 		thispost = {
-			"post_id":	post_id.
+			"post_id":	this_post_id,
 #			"user_id":	jsondata["user"]["id"],
 #			"user_name":	jsondata["user"]["screen_name"],
 #			"user_follower_count":	jsondata["user"]["followers_count"],
@@ -265,7 +277,7 @@ def refreshpost(post_id):
 #			"post_created_at":	createddatetime,
 #			"post_repost_count":	jsondata["reposts_count"],
 #			"post_text":	unicode(jsondata["text"]),
-	#		"started_tracking_at": nowdatetime,
+			"started_tracking_at": this_post_old["started_tracking_at"],
 			"is_deleted": 1,
 #			"is_retired": 0,
 			"error_message": jsondata["error"],
@@ -282,7 +294,7 @@ def refreshpost(post_id):
 
 
 		thispost = {
-			"post_id":	post_id
+			"post_id":	this_post_id,
 			"user_id":	jsondata["user"]["id"],
 			"user_name":	jsondata["user"]["screen_name"],
 			"user_follower_count":	jsondata["user"]["followers_count"],
@@ -290,11 +302,11 @@ def refreshpost(post_id):
 			"post_created_at":	createddatetime,
 			"post_repost_count":	jsondata["reposts_count"],
 			"post_text":	unicode(jsondata["text"]),
-	#		"started_tracking_at": nowdatetime,
+			"started_tracking_at": this_post_old["started_tracking_at"],
 			"is_deleted": 0,
 			"is_retired": 0,
-			"error_message": "",
-			"error_code": "",
+#			"error_message": "",
+#			"error_code": "",
 	#		"checked_at":
 		}
 
@@ -395,9 +407,9 @@ def checklog_insert(thispost):
 
 
 #given a post id, get its most recent post
-def get_most_recent_post(post_id):
+def get_most_recent_live_post(post_id):
 
-	query = "SELECT * FROM %s WHERE post_id = %s ORDER BY checked_at DESC LIMIT 1" %(checklog_tablename, post_id)
+	query = "SELECT * FROM %s WHERE post_id = %s AND post_repost_count IS NOT NULL ORDER BY checked_at DESC LIMIT 1" %(checklog_tablename, post_id)
 
 	db = open_db()
 	cursor = db.cursor()
@@ -448,6 +460,7 @@ def get_current_chinatime():
 
 
 def set_timezone_to_china(thisdatetime):
+#	print "* thisdatetime = ", thisdatetime
 	to_zone = tz.gettz(to_timezome_name)
 	thisdatetime =  thisdatetime.replace(tzinfo=to_zone)
 	return thisdatetime
