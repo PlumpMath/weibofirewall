@@ -48,7 +48,7 @@ if (timelapsed.seconds < weibomodule.tracking_period_seconds):
 	#not enough time has passed, too bad!
 	print "... But we're checking posts every " + weibomodule.minsec(weibomodule.tracking_period_seconds) + " minutes!" 
 	print "We'll check next time."
-	sys.exit(0)
+#	sys.exit(0)
 
 # never been tracked! so let's just go ahead
 print "Let's start tracking!"
@@ -72,13 +72,15 @@ for this_post_id in tracking_post_ids:
 
 	# get the post info from postids_live collection,
 #	this_post = collection_postids_live.find_one({'post_id':unicode(this_post_id)})
-	this_post = weibomodule.get_most_recent_post(this_post_id)
-
-	thispost_created_at = weibomodule.set_timezone_to_china(this_post['post_created_at'])
+	this_post_newest = weibomodule.get_most_recent_post(this_post_id)
+	this_post_oldest = weibomodule.get_oldest_post(this_post_id)
+	thispost_created_at = weibomodule.set_timezone_to_china(this_post_newest['post_created_at'])
 	elapsedtime = nowdatetime - thispost_created_at 
 
+	print "newest sez created at = " , this_post_newest["post_created_at"]
+	print "oldest sez created at = " , this_post_oldest["post_created_at"]
+
 	refreshedpost  =  weibomodule.refreshpost(this_post_id)
-	refreshedpost["started_tracking_at"] = this_post["started_tracking_at"]
 	refreshedpost["checked_at"] = nowdatetime
 	try:
 		statusresponse =  weibomodule.checkstatus(this_post_id)
@@ -103,7 +105,11 @@ for this_post_id in tracking_post_ids:
 	
 		#post EXISTS
 
-		print " >> post alive: new/old repost count (" + str(statusresponse["reposts_count"]) + " / " + str(this_post["post_repost_count"]) + ") "
+		print " >> post alive: new/old repost count (" + str(statusresponse["reposts_count"]) + " / " + str(this_post_oldest["post_repost_count"]) + ") "
+
+		print "elapsed time = " , elapsedtime.seconds 
+		print "our timeout is = " , weibomodule.track_posts_timeout
+		print "so has more time passed? " , (elapsedtime.seconds > weibomodule.track_posts_timeout)
 
 		if (elapsedtime.seconds > weibomodule.track_posts_timeout):
 			#TOO MUCH TIME HAS PASSED - let's retire this

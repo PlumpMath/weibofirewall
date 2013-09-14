@@ -213,6 +213,8 @@ def requests_get_wrapper(url, params):
 
 		if "error" in jsondata:
 			# failure! try another token
+			print "failure! must have gotten an error. try another token"
+			print "error = " , jsondata["error"]
 			thistoken = getnewtoken()
 		else:
 			#got a successful response
