@@ -213,9 +213,14 @@ def requests_get_wrapper(url, params):
 
 		if "error" in jsondata:
 			# failure! try another token
-			print "failure! must have gotten an error. try another token"
 			print "error = " , jsondata["error"]
-			thistoken = getnewtoken()
+			#see for error codes: http://open.weibo.com/wiki/Error_code
+			if(jsondata["error_code"] == '10022' or jsondata["error_code"] == '10023' or jsondata["error_code"] == '10024'):
+				#we're hitting a rate limit!
+				thistoken = getnewtoken()
+			else:
+				#oh wait, an interesting error - maybe post has been deleted
+				return jsondata
 		else:
 			#got a successful response
 			return jsondata
@@ -239,27 +244,59 @@ def checkstatus(post_id):
 	return jsondata
 
 # refresh post (basically, a better checkstatus)
+# returns skeletal post upon error
+# consisting of post id, is_deleted, error message, error code, checekd_at, and then put it in checklog.
+# otherwise returns formatted schema format in dict
 def refreshpost(post_id):
 	jsondata = requests_get_wrapper(apiurl_checkstatus, params={"access_token": "TOKEN", "id": post_id})
 
-	createddatetime = parser.parse(jsondata["created_at"]).strftime('%Y-%m-%d %H:%M:%S')
 
-	thispost = {
-		"post_id":	jsondata["idstr"],
-		"user_id":	jsondata["user"]["id"],
-		"user_name":	jsondata["user"]["screen_name"],
-		"user_follower_count":	jsondata["user"]["followers_count"],
-		"post_original_pic":	jsondata["original_pic"],
-		"post_created_at":	createddatetime,
-		"post_repost_count":	jsondata["reposts_count"],
-		"post_text":	unicode(jsondata["text"]),
-#		"started_tracking_at": nowdatetime,
-		"is_deleted": 0,
-		"is_retired": 0,
-		"error_message": "",
-		"error_code": "",
-#		"checked_at":
-	}
+	#okay, so we get post data
+	#if it has an error (which means that it's been deleted), then  assemble skeeletal 
+
+	if "error_code" in jsondata:
+
+		thispost = {
+			"post_id":	post_id.
+#			"user_id":	jsondata["user"]["id"],
+#			"user_name":	jsondata["user"]["screen_name"],
+#			"user_follower_count":	jsondata["user"]["followers_count"],
+#			"post_original_pic":	jsondata["original_pic"],
+#			"post_created_at":	createddatetime,
+#			"post_repost_count":	jsondata["reposts_count"],
+#			"post_text":	unicode(jsondata["text"]),
+	#		"started_tracking_at": nowdatetime,
+			"is_deleted": 1,
+#			"is_retired": 0,
+			"error_message": jsondata["error"],
+			"error_code": jsondata["error_code"],
+	#		"checked_at":
+		}
+
+		return thispost
+
+	else:
+
+		createddatetime = parser.parse(jsondata["created_at"]).strftime('%Y-%m-%d %H:%M:%S')
+		#otherwise format it ccording to our schema
+
+
+		thispost = {
+			"post_id":	post_id
+			"user_id":	jsondata["user"]["id"],
+			"user_name":	jsondata["user"]["screen_name"],
+			"user_follower_count":	jsondata["user"]["followers_count"],
+			"post_original_pic":	jsondata["original_pic"],
+			"post_created_at":	createddatetime,
+			"post_repost_count":	jsondata["reposts_count"],
+			"post_text":	unicode(jsondata["text"]),
+	#		"started_tracking_at": nowdatetime,
+			"is_deleted": 0,
+			"is_retired": 0,
+			"error_message": "",
+			"error_code": "",
+	#		"checked_at":
+		}
 
 	return thispost
 
@@ -416,7 +453,8 @@ def set_timezone_to_china(thisdatetime):
 	return thisdatetime
 
 
-def get_most_recent_check():
+# check then the most recent checktime was
+def get_most_recent_checktime():
 	db = open_db()
 	db.commit()
 
@@ -441,4 +479,6 @@ def get_most_recent_check():
 
 	return chinatime
 
-
+def total_seconds(td):
+	#because python 2.6 doesn't have totalseconds
+	return td.seconds + td.days * 24 * 3600

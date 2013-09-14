@@ -37,14 +37,14 @@ nowdatetime = weibomodule.get_current_chinatime()
 timelapsed = -1
 
 # when was the last time we checked
-most_recent_check = weibomodule.get_most_recent_check()
+most_recent_check = weibomodule.get_most_recent_checktime()
 
 # okay, so has it been long enough?
 timelapsed = nowdatetime - most_recent_check
 
-print "It's been " + weibomodule.minsec(timelapsed.seconds) + " min since our most recent check, which was on" , most_recent_check	
+print "It's been " + weibomodule.minsec(weibomodule.total_seconds(timelapsed)) + " min since our most recent check, which was on" , most_recent_check	
 
-if (timelapsed.seconds < weibomodule.tracking_period_seconds):
+if (weibomodule.total_seconds(timelapsed) < weibomodule.tracking_period_seconds):
 	#not enough time has passed, too bad!
 	print "... But we're checking posts every " + weibomodule.minsec(weibomodule.tracking_period_seconds) + " minutes!" 
 	print "We'll check next time."
@@ -70,48 +70,56 @@ for this_post_id in tracking_post_ids:
 	thispost_is_alive = True
 
 
-	# get the post info from postids_live collection,
-#	this_post = collection_postids_live.find_one({'post_id':unicode(this_post_id)})
 	this_post_newest = weibomodule.get_most_recent_post(this_post_id)
 	this_post_oldest = weibomodule.get_oldest_post(this_post_id)
 	thispost_created_at = weibomodule.set_timezone_to_china(this_post_newest['post_created_at'])
 	elapsedtime = nowdatetime - thispost_created_at 
 
+	print "now is = " , nowdatetime
 	print "newest sez created at = " , this_post_newest["post_created_at"]
-	print "oldest sez created at = " , this_post_oldest["post_created_at"]
+	print "oldt commitest sez created at = " , this_post_oldest["post_created_at"]
+	print "---time elapsed = " , elapsedtime, " and in seconds" , weibomodule.total_seconds(elapsedtime)
 
-	refreshedpost  =  weibomodule.refreshpost(this_post_id)
-	refreshedpost["checked_at"] = nowdatetime
+
+# so - we look for the post
+# if we have an error, assemble a skeletal post consisting of post id, is_deleted, error message, error code, checekd_at, and then put it in checklog.
+# whic means that we should check first for the existenc of an error
+# refreshpost will give us back the error, otherwise returns a dict 
+
+
 	try:
-		statusresponse =  weibomodule.checkstatus(this_post_id)
+		checkedjson =  weibomodule.checkstatus(this_post_id)
 	except:
+		#hmm. can't even check status. weird.
 		print "okay weird error"
 		traceback.print_exc(file=sys.stdout)
-
 		continue
 
 
+	refreshedpost  =  weibomodule.refreshpost(this_post_id)
+	refreshedpost["checked_at"] = nowdatetime
 
-	if ("error" in statusresponse):
+	if ("error" in checkedjson):
 		#the post has been DELETED
 		#let's flag, add to checklog
-		print " >> POST DELETED: " + statusresponse["error"]
+		print " >> POST DELETED: " + checkedjson["error"]
 
 		refreshedpost["is_deleted"] = 1
-		refreshedpost["error_message"] = statusresponse["error"]
+		refreshedpost["error_message"] = checkedjson["error"]
+		refreshedpost["error_code"] = checkedjson["error_code"]
 		weibomodule.checklog_insert(refreshedpost)
 
 	else:
 	
 		#post EXISTS
 
-		print " >> post alive: new/old repost count (" + str(statusresponse["reposts_count"]) + " / " + str(this_post_oldest["post_repost_count"]) + ") "
+		print " >> post alive: new/old repost count (" + str(checkedjson["reposts_count"]) + " / " + str(this_post_oldest["post_repost_count"]) + ") "
 
-		print "elapsed time = " , elapsedtime.seconds 
+		print "elapsed time = " , weibomodule.total_seconds(elapsedtime) 
 		print "our timeout is = " , weibomodule.track_posts_timeout
-		print "so has more time passed? " , (elapsedtime.seconds > weibomodule.track_posts_timeout)
+		print "so has more time passed? " , (weibomodule.total_seconds(elapsedtime) > weibomodule.track_posts_timeout)
 
-		if (elapsedtime.seconds > weibomodule.track_posts_timeout):
+		if (weibomodule.total_seconds(elapsedtime) > weibomodule.track_posts_timeout):
 			#TOO MUCH TIME HAS PASSED - let's retire this
 			print "Too much time has passed! We're not tracking this anymore."
 			#LOOK THIS POST UP AGAIN
