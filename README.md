@@ -3,7 +3,7 @@
 #### With the ADVP at GSAPP - http://advp.gsapp.org
 
 SHORT SUMMARY: 
-These scripts grab image-laden posts from the friends ofa Sina Weibo account, and tracks the posts for sudden deletions (aka censorship). 
+These scripts grab image-laden posts from the friends ofa Sina Weibo account, and tracks the posts for sudden deletions (aka censorship). The scripts then massage the data out to a CSV file, which can then be read by a visualization client.
 
 LONGER SUMMARY:
 * Detecting the deletion of a post is only possible by frequently checking the post at regular intervals. Given a desired interval, the script automatically calculates the number of posts trackable given the API rate limit.
