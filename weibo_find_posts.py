@@ -1,7 +1,8 @@
 import time
 import pytz
 import sys
-import weibomodule
+import weibo_module
+import weibo_settings
 from json import loads
 from urllib import urlretrieve
 from os.path import splitext, isdir
@@ -49,28 +50,28 @@ statuspage = 1
 ## OPEN DB, CHECK TO SEE IF IMG FOLDER EXISTS
 ##########################################
 
-dbcursor = weibomodule.db_cursor()
+dbcursor = weibo_module.db_cursor()
 
-if(isdir(weibomodule.imgdir) == False):
-	sys.exit("No such directory " + weibomodule.imgdir)
+if(isdir(weibo_settings.imgdir) == False):
+	sys.exit("No such directory " + weibo_settings.imgdir)
 
 ##########################################
 ## CHECK TO SEE HOW MANY POSTS WE ARE TRACKING
 ##########################################
 
-tracking_post_ids = weibomodule.get_tracking_postids()
+tracking_post_ids = weibo_module.get_tracking_postids()
 num_currently_tracking = len(tracking_post_ids)
-num_posts_to_track = weibomodule.num_posts_to_track()
+num_posts_to_track = weibo_module.num_posts_to_track()
 num_trackmore = num_posts_to_track - num_currently_tracking 
 
 
 # if we're tracking more than we need, exit.
 if (num_trackmore <= 0):
 	print "Currently tracking all " + str(num_currently_tracking) + " posts:"
-	print "After all, we can only track a max of " + str(weibomodule.num_posts_to_track()) + " posts"
+	print "After all, we can only track a max of " + str(weibo_module.num_posts_to_track()) + " posts"
 	counter = 1
 	for thispostid in tracking_post_ids:
-		thispost = weibomodule.get_most_recent_live_post(thispostid)
+		thispost = weibo_module.get_most_recent_live_post(thispostid)
 		print "post #" , counter ,":" + thispost["post_id"] + ", started tracking at" , thispost["started_tracking_at"]
 		counter += 1
 	sys.exit(0)
@@ -79,7 +80,7 @@ if (num_trackmore <= 0):
 print "Currently tracking " + str(num_currently_tracking) + " posts"
 print "Attempting to find " + str(num_trackmore) + " more posts to track"
 print " -- for a total of " + str(num_posts_to_track) + " tracked posts"
-print weibomodule.post_alert()
+print weibo_module.post_alert()
 
 
 ##########################################
@@ -92,15 +93,15 @@ loop = True
 # get current time
 # EVERYTHING IS ON CHINA TIME, YOU UNDERSTAND
 
-nowdatetime =  weibomodule.get_current_chinatime()
+nowdatetime =  weibo_module.get_current_chinatime()
 
 #this could be a while loop, but let's not go more than a given number of  pages back.
-for i in xrange(weibomodule.pagemax):
+for i in xrange(weibo_module.pagemax):
 
 	print "Accessing statuses - page " + str(statuspage) + " ..."
 
 	# grab json-decoded statuses of friends
-	statusresponse = weibomodule.accessfriends(page=statuspage)
+	statusresponse = weibo_module.accessfriends(page=statuspage)
 
 	#response = statusdata.json()
 	# extract statuses
@@ -190,18 +191,18 @@ for i in xrange(weibomodule.pagemax):
 		#print thispost["post_id"]
 
 		#if you can't find the post already in Mongo, put it in:
-		if (weibomodule.postexists(thispost["post_id"]) == False):
+		if (weibo_module.postexists(thispost["post_id"]) == False):
 			#POST IS NEW - let's save it
 
 			newpostcount += 1
 
-			imgpath = weibomodule.imgdir + str(thispost["post_id"])+ splitext(thispost["post_original_pic"])[1]
+			imgpath = weibo_module.imgdir + str(thispost["post_id"])+ splitext(thispost["post_original_pic"])[1]
 			print "Storing postID -- tracking post #" , (num_currently_tracking + newpostcount)
 			print "Storing postID " + str(thispost["post_id"] + " image to file")
 			urlretrieve(thispost["post_original_pic"], imgpath)
 
 			print "Storing postID " + str(thispost["post_id"] + " to database")
-			weibomodule.checklog_insert(thispost)
+			weibo_module.checklog_insert(thispost)
 
 		else:
 			print "post " + str(thispost["post_id"]) + " already exists"
