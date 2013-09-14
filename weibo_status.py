@@ -1,6 +1,6 @@
 import time
 import sys
-import weibomodule
+import weibo_module
 from json import loads
 from urllib import urlretrieve
 from os.path import splitext, isdir
@@ -12,8 +12,8 @@ from dateutil import parser
 ##########################################
 def check_for_live_posts():
 
-	dbcursor = weibomodule.db_cursor()
-	tracking_post_ids = weibomodule.get_tracking_postids()
+	dbcursor = weibo_module.db_cursor()
+	tracking_post_ids = weibo_module.get_tracking_postids()
 	num_currently_tracking = len(tracking_post_ids)
 
 	if (num_currently_tracking == 0):
@@ -29,11 +29,11 @@ def check_for_live_posts():
 def display_tracking_interval():
 
 	# get current time
-#	nowdatetime = weibomodule.get_current_chinatime()
+#	nowdatetime = weibo_module.get_current_chinatime()
 	timelapsed = -1
 
 	# when was the last time we checked
-	most_recent_check = weibomodule.get_most_recent_check()
+	most_recent_check = weibo_module.get_most_recent_check()
 
 	if most_recent_check == -1:
 		print "Never been tracked!"
@@ -42,9 +42,9 @@ def display_tracking_interval():
 		# okay, so has it been long enough?
 		timelapsed = nowdatetime - most_recent_check
 
-		print "It's been " + weibomodule.minsec(timelapsed.seconds) + " min since our most recent check, which was on" , most_recent_check	
+		print "It's been " + weibo_module.minsec(timelapsed.seconds) + " min since our most recent check, which was on" , most_recent_check	
 
-	print "We're checking posts every " + weibomodule.minsec(weibomodule.tracking_period_seconds) + " minutes." 
+	print "We're checking posts every " + weibo_module.minsec(weibo_module.tracking_period_seconds) + " minutes." 
 
 
 
@@ -53,7 +53,7 @@ def display_tracking_interval():
 ##########################################
 def list_live_posts():
 
-	tracking_post_ids = weibomodule.get_tracking_postids()
+	tracking_post_ids = weibo_module.get_tracking_postids()
 
 	print "########## POSTS TRACKING ##########"
 	print "# of posts we're tracking: " , len(tracking_post_ids)
@@ -63,21 +63,21 @@ def list_live_posts():
 		for this_post_id in tracking_post_ids:
 			print "Checking post #" + this_post_id + ":",
 
-			this_post_new = weibomodule.get_most_recent_live_post(this_post_id)
-			this_post_old = weibomodule.get_oldest_post(this_post_id)
+			this_post_new = weibo_module.get_most_recent_live_post(this_post_id)
+			this_post_old = weibo_module.get_oldest_post(this_post_id)
 
 			print "alive: new/old repost count (" , this_post_new["post_repost_count"] , " / " , this_post_old["post_repost_count"] , ") "
 
-			print "* this_post_new = " , this_post_new
+#			print "* this_post_new = " , this_post_new
 
-			elapsedtime  = nowdatetime - weibomodule.set_timezone_to_china(this_post_new["started_tracking_at"]) 
+			elapsedtime  = nowdatetime - weibo_module.set_timezone_to_china(this_post_new["started_tracking_at"]) 
 			print "elapsed time = " ,  elapsedtime
 	#k		print elapsedtime.seconds
 
 
 			#print this_post_old["checked_at"]
 			#print this_post_old["started_tracking_at"]
-	#		print weibomodule.minsec(this_post_new["checked_at"] - this_post_new["started_tracking_at"]) + " since tracking start"
+	#		print weibo_module.minsec(this_post_new["checked_at"] - this_post_new["started_tracking_at"]) + " since tracking start"
 			#print this_post_check["checked_at"] , " " , this_post_old["started_tracking_at"]
 
 
@@ -86,7 +86,7 @@ def list_live_posts():
 ##########################################
 def list_deleted_posts():
 
-	deleted_post_ids = weibomodule.get_deleted_postids()
+	deleted_post_ids = weibo_module.get_deleted_postids()
 
 	print ""
 	print "########## DEAD POSTS ##########"
@@ -101,8 +101,8 @@ def list_deleted_posts():
 			# get the post info from postids_live collection,
 			# since if the post was deleted we wouldn't have any of that info anymore
 
-			this_post_new = weibomodule.get_most_recent_live_post(this_post_id)
-			this_post_old = weibomodule.get_oldest_post(this_post_id)
+			this_post_new = weibo_module.get_most_recent_live_post(this_post_id)
+			this_post_old = weibo_module.get_oldest_post(this_post_id)
 
 
 
@@ -114,7 +114,7 @@ def list_deleted_posts():
 ##########################################
 def list_retired_posts():
 
-	retired_post_ids = weibomodule.get_retired_postids()
+	retired_post_ids = weibo_module.get_retired_postids()
 
 	print ""
 	print "########## RETIRED POSTS ##########"
@@ -129,8 +129,8 @@ def list_retired_posts():
 			# get the post info from postids_live collection,
 			# since if the post was retired we wouldn't have any of that info anymore
 
-			this_post_new = weibomodule.get_most_recent_live_post(this_post_id)
-			this_post_old = weibomodule.get_oldest_post(this_post_id)
+			this_post_new = weibo_module.get_most_recent_live_post(this_post_id)
+			this_post_old = weibo_module.get_oldest_post(this_post_id)
 
 
 
@@ -149,7 +149,7 @@ print "##################################"
 print "########## WEIBO STATUS ##########"
 print "##################################"
 
-nowdatetime = weibomodule.get_current_chinatime()
+nowdatetime = weibo_module.get_current_chinatime()
 numlive = check_for_live_posts()
 if numlive > 0:
 	list_live_posts()

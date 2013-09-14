@@ -8,6 +8,7 @@ import requests
 import logging
 import re
 import os
+import weibo_settings
 import weibo_module
 
 
@@ -78,7 +79,7 @@ def csvize_deleted_unique(csv_filename, error_code=-1):
 #grab all the deleted posts
 #massage to CSV!
 #csvize_sample()
-deleted_weibo_filename = "deleted_weibo.csv"
+deleted_weibo_filename = weibo_settings.csv_filename
 csvize_deleted_unique(deleted_weibo_filename, 20101 )
 #deleted_in_sample()
 

@@ -1,5 +1,6 @@
 import time
 import sys
+import weibo_settings
 import weibo_module
 import traceback
 from json import loads
@@ -44,9 +45,9 @@ timelapsed = nowdatetime - most_recent_check
 
 print "It's been " + weibo_module.minsec(weibo_module.total_seconds(timelapsed)) + " min since our most recent check, which was on" , most_recent_check	
 
-if (weibo_module.total_seconds(timelapsed) < weibo_module.tracking_period_seconds):
+if (weibo_module.total_seconds(timelapsed) < weibo_settings.tracking_period_seconds):
 	#not enough time has passed, too bad!
-	print "... But we're checking posts every " + weibo_module.minsec(weibo_module.tracking_period_seconds) + " minutes!" 
+	print "... But we're checking posts every " + weibo_module.minsec(weibo_settings.tracking_period_seconds) + " minutes!" 
 	print "We'll check next time."
 	sys.exit(0)
 
@@ -122,7 +123,7 @@ for this_post_id in tracking_post_ids:
 #		print "* our timeout is = " , weibo_module.track_posts_timeout
 #		print "* so has more time passed? " , (weibo_module.total_seconds(elapsedtime) > weibo_module.track_posts_timeout)
 
-		if (weibo_module.total_seconds(elapsedtime) > weibo_module.track_posts_timeout):
+		if (weibo_module.total_seconds(elapsedtime) > weibo_settings.track_posts_timeout):
 			#TOO MUCH TIME HAS PASSED - let's retire this
 			print "Too much time has passed! We're not tracking this anymore."
 			#LOOK THIS POST UP AGAIN

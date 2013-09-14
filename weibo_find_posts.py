@@ -64,6 +64,9 @@ num_currently_tracking = len(tracking_post_ids)
 num_posts_to_track = weibo_module.num_posts_to_track()
 num_trackmore = num_posts_to_track - num_currently_tracking 
 
+nowdatetime =  weibo_module.get_current_chinatime()
+
+print "The DATE/TIME IS " , nowdatetime
 
 # if we're tracking more than we need, exit.
 if (num_trackmore <= 0):
@@ -96,7 +99,7 @@ loop = True
 nowdatetime =  weibo_module.get_current_chinatime()
 
 #this could be a while loop, but let's not go more than a given number of  pages back.
-for i in xrange(weibo_module.pagemax):
+for i in xrange(weibo_settings.pagemax):
 
 	print "Accessing statuses - page " + str(statuspage) + " ..."
 
@@ -196,7 +199,7 @@ for i in xrange(weibo_module.pagemax):
 
 			newpostcount += 1
 
-			imgpath = weibo_module.imgdir + str(thispost["post_id"])+ splitext(thispost["post_original_pic"])[1]
+			imgpath = weibo_settings.imgdir + str(thispost["post_id"])+ splitext(thispost["post_original_pic"])[1]
 			print "Storing postID -- tracking post #" , (num_currently_tracking + newpostcount)
 			print "Storing postID " + str(thispost["post_id"] + " image to file")
 			urlretrieve(thispost["post_original_pic"], imgpath)
