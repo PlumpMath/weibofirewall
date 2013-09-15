@@ -76,6 +76,7 @@ if (num_trackmore <= 0):
 	for thispostid in tracking_post_ids:
 		thispost = weibo_module.get_most_recent_live_post(thispostid)
 		print "post #" , counter ,":" + thispost["post_id"] + ", started tracking at" , thispost["started_tracking_at"]
+		print "was created at " , thispost["post_created_at"]
 		counter += 1
 	sys.exit(0)
 #	sys.exit("Currently tracking all " + str(num_currently_tracking) + " posts.")
