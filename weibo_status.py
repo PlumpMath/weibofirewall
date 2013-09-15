@@ -101,12 +101,10 @@ def list_deleted_posts():
 			# get the post info from postids_live collection,
 			# since if the post was deleted we wouldn't have any of that info anymore
 
-			this_post_new = weibo_module.get_most_recent_live_post(this_post_id)
-			this_post_old = weibo_module.get_oldest_post(this_post_id)
+			this_post_deleted = weibo_module.merge_deleted_from_new_old(this_post_id)
+			print "ERRORCODE = " , this_post_deleted["error_code"]
 
-
-
-			print "alive: new/old repost count (" , this_post_new["post_repost_count"] , " / " , this_post_old["post_repost_count"] , ") "
+			print "alive: new/old repost count (" , this_post_deleted["post_repost_count"] , " / " , this_post_deleted["post_repost_count_initial"] , ") "
 		#	print " >> post alive: new/old repost count (" + str(statusresponse["reposts_count"]) + " / " + str(this_post["post_repost_count"]) + ") "
 
 ##########################################

@@ -279,7 +279,7 @@ def get_tracking_postids():
 
 
 # find posts that have been deleted
-def get_deleted_postids(error_code=-1):
+def get_deleted_postids(error_code=-1, exclude_error_code=False):
 
 	db = open_db()
 	cursor = db.cursor()
@@ -287,7 +287,10 @@ def get_deleted_postids(error_code=-1):
 	if error_code == -1:
 		query = 'SELECT DISTINCT post_id FROM %s WHERE is_deleted <> 0' % (weibo_settings.checklog_tablename)
 	else:
-		query = 'SELECT DISTINCT post_id FROM %s WHERE is_deleted <> 0 AND error_code = %s' % (weibo_settings.checklog_tablename, error_code)
+		if exclude_error_code == False:
+			query = 'SELECT DISTINCT post_id FROM %s WHERE is_deleted <> 0 AND error_code = %s' % (weibo_settings.checklog_tablename, error_code)
+		else:
+			query = 'SELECT DISTINCT post_id FROM %s WHERE is_deleted <> 0 AND error_code <> %s' % (weibo_settings.checklog_tablename, error_code)
 
 	cursor.execute(query)
 	deletedpostids = cursor.fetchall()
@@ -465,3 +468,72 @@ def get_most_recent_checktime():
 def total_seconds(td):
 	#because python 2.6 doesn't have totalseconds
 	return td.seconds + td.days * 24 * 3600
+
+def merge_deleted_from_new_old(this_post_id):
+
+	this_post_new = get_most_recent_live_post(this_post_id)
+	this_post_old = get_oldest_post(this_post_id)
+	this_post_deleted = get_deletion_post(this_post_id)
+	#the only items that change between the two is the "initial" items
+
+	thispost_last_check = set_timezone_to_china(this_post_new['checked_at'])
+	thispost_created_at = set_timezone_to_china(this_post_old['post_created_at'])
+	thispost_lifespan = thispost_last_check - thispost_created_at
+	thispost_lifespan = total_seconds(thispost_lifespan)
+
+	this_post = this_post_old
+	this_post["user_follower_count_initial"] = str(this_post_old["user_follower_count"])
+	this_post["user_follower_count"] = str(this_post_new["user_follower_count"])
+	this_post["post_repost_count_initial"] = str(this_post_old["post_repost_count"])
+	this_post["post_repost_count"] = str(this_post_new["post_repost_count"])
+	this_post["started_tracking_at"] = this_post_old["started_tracking_at"].strftime('%Y-%m-%d %H:%M:%S')
+	this_post["error_code"] = this_post_deleted["error_code"] 
+	this_post["error_message"] = this_post_deleted["error_message"] 
+	this_post["is_deleted"] = this_post_deleted["is_deleted"] 
+	# we're setting the "deleted time" to be when it was found to be deleted
+	# that means that, depending on the interval T, 
+	# the actual deletion time is always between 0 and T later
+	this_post["last_checked_at"] = this_post_new["checked_at"].strftime('%Y-%m-%d %H:%M:%S')
+	this_post["post_created_at"] = this_post_new["post_created_at"].strftime('%Y-%m-%d %H:%M:%S')
+	this_post["post_lifespan"] = thispost_lifespan
+
+	return this_post
+
+
+def get_all_posts(post_id):
+	query = "SELECT * FROM %s WHERE post_id = %s GROUP BY checked_at ASC" %(weibo_settings.checklog_tablename, post_id)
+
+	db = open_db()
+	cursor = db.cursor()
+	cursor.execute(query)
+	
+	result = cursor.fetchall()
+
+	#print "RESULT " , result
+	#print "RESULTLEN " , len(result)
+	
+	if result == ():
+		return -1
+
+	#get keys for dictionary
+	cols = [d[0] for d in cursor.description]
+
+	dictlist = []
+	for thisresult in result:
+		#formulate into dictionary
+		thisdict = dict(zip(cols, thisresult))
+		dictlist.append(thisdict)
+
+	return dictlist
+
+
+
+
+
+
+def make_csvline_from_post(this_post):
+#	print "THISPOST" , this_post
+
+	csvline = this_post["post_id"] , this_post["user_id"] , this_post["user_name"] , this_post["user_follower_count_initial"] , this_post["user_follower_count"] , this_post["post_original_pic"] , this_post["post_created_at"] , this_post["post_repost_count_initial"] , this_post["post_repost_count"] , this_post["post_text"] , this_post["started_tracking_at"] , this_post["is_deleted"] , this_post["is_retired"] , this_post["error_message"] , this_post["error_code"] , this_post["last_checked_at"] , this_post["post_lifespan"]
+	return csvline
+
