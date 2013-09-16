@@ -71,30 +71,50 @@ post_lifespan
 
 // read the datafile.
 d3.csv(datafile, function(d) {
-//	console.log(d);
+	//	console.log(d);
+	//
+	// this is the format of what we need, adopted from weibo_module's make_csvline_from_post 
 	return {
 		post_id: +d.post_id,
-		post_created_at: +d.post_created_at_epoch,
+		user_id: parseFloat(d.user_id),
+		user_name: d.user_name,
+		user_follower_count_initial: +d.user_follower_count_initial,
+		user_follower_count: +d.user_follower_count,
+		post_original_pic: d.post_original_pic,
+		post_created_at : +d.post_created_at_epoch,
+		post_repost_count_initial: +d.post_repost_count_initial,
+		post_repost_count: +d.post_repost_count,
+		post_text: d.post_text,
+		started_tracking_at: +d.started_tracking_at_epoch,
+		is_deleted: d.is_deleted,
+		is_retired: d.is_retired,
+		error_message: d.error_message,
+		error_code: +d.error_code,
 		last_checked_at: +d.last_checked_at_epoch,
-		post_lifespan: +d.post_lifespan,
-		user_id: parseFloat(d.user_id)
+		post_lifespan: +d.post_lifespan
 	};
 }, function(error, rows) {
 
+
+	// now let's massage that data
 	var data = rows;
 	var chartheight = (barheight + bargap) * data.length;
 
 	data.sort(function(a,b) { return a.post_created_at - b.post_created_at; });
 	//data.sort(function(a,b) { return a.user_id - b.user_id; });
 	//
-	console.log(data)
+//	console.log(data)
 
-	var maxtime = d3.max(data, function(d) { return d["post_created_at"]; }) + timepadding + (randomTimeRange / 2);
+//	var maxtime = d3.max(data, function(d) { return d["post_created_at"]; }) + timepadding + (randomTimeRange / 2);
+	var mintime = d3.min(data, function(d) { return d["post_created_at"]; });
+	var maxtime = d3.max(data, function(d) { return d["last_checked_at"]; });
 
 /*	console.log("hopefully sorted poster ids");
 	console.log(data.map(function(d) { return d.user_id; }));	
 	console.log(data.length);	*/
 
+
+	// create chart, set dimensions based on # of deleted posts
 	var chart = d3.select("#chartdiv")
 		.append("svg")
 			.attr("class", "chart")
@@ -102,12 +122,14 @@ d3.csv(datafile, function(d) {
 			.attr("height", (barheight + bargap) * data.length)
 		.append("g");
 
+	// let's specify the x-axis
 	var scaleTime = d3.scale.linear()
-		.domain([d3.min(data, function(d) { return d["post_created_at"]; }), randomTimeRange + d3.max(data, function(d) { return d["post_created_at"]; })])
-		.range([0, chartwidth - 300]);
+		// domain is min max of time
+		.domain([mintime, maxtime])
+		.range([0, chartwidth]);
 
 	var scaleTimeForColor = d3.scale.linear()
-		.domain([d3.min(data, function(d) { return d["post_created_at"]; }), d3.max(data, function(d) { return d["post_created_at"]; })])
+		.domain([mintime, maxtime])
 		.range([colorMin, colorMax]);
 
 	var axisTime = d3.svg.axis()
