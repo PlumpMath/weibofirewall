@@ -14,8 +14,8 @@
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script>
 
-
-var datafile = "data/deleted_weibo_log.csv";
+var datafile = "../_archive/firewall_pre_git/data/130616_deleted_weibo.csv";
+//var datafile = "data/deleted_weibo_log.csv";
 var imgdir = "weibo_images/"
 var chartwidth = 960;
 var chartheight = 960;
