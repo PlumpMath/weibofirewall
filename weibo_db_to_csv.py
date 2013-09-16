@@ -85,19 +85,24 @@ def csvize_deleted_repost_timeline(csv_filename, error_code=-1, exclude_error_co
 			# and then we scan the rest 
 			this_post_all_logs =  weibo_module.get_all_posts(this_post_id)
 
+			this_log_line = ""
 			for this_log in this_post_all_logs:
 #				print "##############################tpal"
 #				print "THISLOG" , this_log
 #				print "CHECKEDAT "  , this_log["checked_at"]
-				if 'post_repost_count' in this_log:
-					print this_log["post_repost_count"], " :: " , this_log["checked_at"]
+				if 'post_repost_count' in this_log and this_log["post_repost_count"] <> None:
+#					print this_log["post_repost_count"], " :: " , this_log["checked_at"]
+					this_log_line += ","  + str(this_log["post_repost_count"]) + "," + str(this_log["checked_at"])
 #				print "##############################tpalE"
 							
 
 			csvline = weibo_module.make_csvline_from_post(this_post)
+
 		
 			csvline = map((lambda x: unicode(x)), csvline)
 			csvline = u','.join(csvline)
+
+			csvline += this_log_line
 
 #			print csvline
 			wf.write(csvline + "\n")
@@ -112,10 +117,10 @@ def csvize_deleted_repost_timeline(csv_filename, error_code=-1, exclude_error_co
 #grab all the deleted posts
 #massage to CSV!
 #csvize_sample()
-deleted_weibo_filename = weibo_settings.csv_filename
-#csvize_deleted_unique(deleted_weibo_filename, 20101  )
+deleted_weibo_filename = weibo_settings.unique_csv_filename
+csvize_deleted_unique(weibo_settings.unique_csv_filename, 10023, True)
 
-csvize_deleted_repost_timeline(deleted_weibo_filename, 20101 )
+csvize_deleted_repost_timeline(weibo_settings.log_csv_filename, 10023, True)
 
 #deleted_in_sample()
 
