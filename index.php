@@ -14,8 +14,8 @@
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script>
 
-var datafile = "../_archive/firewall_pre_git/data/130616_deleted_weibo.csv";
-//var datafile = "data/deleted_weibo_log.csv";
+//var datafile = "../_archive/firewall_pre_git/data/130616_deleted_weibo.csv";
+var datafile = "data/deleted_weibo_log.csv";
 var imgdir = "weibo_images/"
 var chartwidth = 960;
 var chartheight = 960;
@@ -45,29 +45,55 @@ function randomTimeOffset() {
 	return Math.ceil((Math.random() * randomTimeRange) + (randomTimeRange / 2));
 }
 
+/* THIS IS THE CSVLINE 
+	*
+	post_id,
+user_id,
+user_name,
+user_follower_count_initial,
+user_follower_count,
+post_original_pic,
+post_created_at,
+post_created_at_epoch ,post_repost_count_initial,
+post_repost_count,
+post_text,
+started_tracking_at,
+started_tracking_at_epoch,
+is_deleted,
+is_retired,
+error_message,
+error_code,
+last_checked_at,
+last_checked_at_epoch,
+post_lifespan
+
+ */
 
 // read the datafile.
 d3.csv(datafile, function(d) {
+//	console.log(d);
 	return {
 		post_id: +d.post_id,
-		created_at: +d.created_at,
-		poster_id: parseFloat(d.poster_id)
+		post_created_at: +d.post_created_at_epoch,
+		last_checked_at: +d.last_checked_at_epoch,
+		post_lifespan: +d.post_lifespan,
+		user_id: parseFloat(d.user_id)
 	};
 }, function(error, rows) {
-
 
 	var data = rows;
 	var chartheight = (barheight + bargap) * data.length;
 
-	data.sort(function(a,b) { return a.created_at - b.created_at; });
-	//data.sort(function(a,b) { return a.poster_id - b.poster_id; });
+	data.sort(function(a,b) { return a.post_created_at - b.post_created_at; });
+	//data.sort(function(a,b) { return a.user_id - b.user_id; });
+	//
+	console.log(data)
 
+	var maxtime = d3.max(data, function(d) { return d["post_created_at"]; }) + timepadding + (randomTimeRange / 2);
 
-	var maxtime = d3.max(data, function(d) { return d["created_at"]; }) + timepadding + (randomTimeRange / 2);
-
-//	console.log("hopefully sorted poster ids");
-//	console.log(data.map(function(d) { return d.poster_id; }));	
-	//console.log(data.length);	
+/*	console.log("hopefully sorted poster ids");
+	console.log(data.map(function(d) { return d.user_id; }));	
+	console.log(data.length);	*/
 
 	var chart = d3.select("#chartdiv")
 		.append("svg")
@@ -77,11 +103,11 @@ d3.csv(datafile, function(d) {
 		.append("g");
 
 	var scaleTime = d3.scale.linear()
-		.domain([d3.min(data, function(d) { return d["created_at"]; }), randomTimeRange + d3.max(data, function(d) { return d["created_at"]; })])
+		.domain([d3.min(data, function(d) { return d["post_created_at"]; }), randomTimeRange + d3.max(data, function(d) { return d["post_created_at"]; })])
 		.range([0, chartwidth - 300]);
 
 	var scaleTimeForColor = d3.scale.linear()
-		.domain([d3.min(data, function(d) { return d["created_at"]; }), d3.max(data, function(d) { return d["created_at"]; })])
+		.domain([d3.min(data, function(d) { return d["post_created_at"]; }), d3.max(data, function(d) { return d["post_created_at"]; })])
 		.range([colorMin, colorMax]);
 
 	var axisTime = d3.svg.axis()
@@ -114,21 +140,21 @@ d3.csv(datafile, function(d) {
 	chart.selectAll("rect")
 		 .data(data)
 		.enter().append("rect")
-		.attr("x", function(d) { return scaleTime(d["created_at"]); })
+		.attr("x", function(d) { return scaleTime(d["post_created_at"]); })
 		.attr("y", function(d, i) { return i * (barheight + bargap); })
-		 //.attr("width", function(d) { return (scaleTime(d["created_at"])); })
-		 .attr("width", function(d) { return (randomTimeOffset() + scaleTime(maxtime) - scaleTime(d["created_at"])); })
+		 //.attr("width", function(d) { return (scaleTime(d["post_created_at"])); })
+		 .attr("width", function(d) { return (randomTimeOffset() + scaleTime(maxtime) - scaleTime(d["post_created_at"])); })
 		 //.attr("width", function(d) { return ; })
 		 .attr("height", barheight)
 		 .attr("name", function(d, i) { return i; })
 		 .attr("fill", function(d) { 
-				//console.log(moment.duration(maxtime - d["created_at"], 'seconds').humanize()); //duration
-				var dig = dec2hex((d.poster_id) % 256);
+				//console.log(moment.duration(maxtime - d["post_created_at"], 'seconds').humanize()); //duration
+				var dig = dec2hex((d.user_id) % 256);
 				var thiscolor = "#" + dig + "FF" + dig;
-				var thiscolor2 = "#" + ((d.poster_id) % 16777216).toString(16);
-				console.log(scaleTimeForColor(maxtime) - scaleTimeForColor(d["created_at"]));
-				//var thiscolor_time = dec2hex(Math.round(scaleTimeForColor(maxtime) - scaleTimeForColor(d["created_at"])));
-				var thiscolor_time = dec2hex(colorMax - (Math.round(scaleTimeForColor(maxtime) - scaleTimeForColor(d["created_at"]))));
+				var thiscolor2 = "#" + ((d.user_id) % 16777216).toString(16);
+				console.log(scaleTimeForColor(maxtime) - scaleTimeForColor(d["post_created_at"]));
+				//var thiscolor_time = dec2hex(Math.round(scaleTimeForColor(maxtime) - scaleTimeForColor(d["post_created_at"])));
+				var thiscolor_time = dec2hex(colorMax - (Math.round(scaleTimeForColor(maxtime) - scaleTimeForColor(d["post_created_at"]))));
 				console.log(thiscolor_time);
 				console.log("#" + "FF" + thiscolor_time + thiscolor_time);				
 				return "#" + "FF" + thiscolor_time + thiscolor_time;				
@@ -168,7 +194,7 @@ d3.csv(datafile, function(d) {
 	chart.selectAll("text")
 		 .data(data)
 	   .enter().append("text")
-		.attr("x", function(d) { return scaleTime(d["created_at"]) + 0; })
+		.attr("x", function(d) { return scaleTime(d["post_created_at"]) + 0; })
 		.attr("y", function(d, i) { return (i * (barheight + bargap)) + (barheight / 2); })
 		 .attr("dx", -3) // padding-right
 		 .attr("dy", ".35em") // vertical-align: middle
@@ -176,7 +202,7 @@ d3.csv(datafile, function(d) {
 		 .attr("name", function(d, i) { return i; })
 		 .attr("fill", "#CCC")
 		 .text(function(d) { 
-			return dateformat(new Date(d["created_at"] * 1000)) + " -- " + rehumanize(moment.duration(maxtime - d["created_at"], 'seconds'));
+			return dateformat(new Date(d["post_created_at"] * 1000)) + " -- " + rehumanize(moment.duration(maxtime - d["post_created_at"], 'seconds'));
 		});
 
 chart.selectAll("rect")
@@ -202,7 +228,7 @@ durdiv.selectAll("div")
 		.data(data)
 		.enter()
 		.append("div")
-		.text(function(d) { return rehumanize(moment.duration(maxtime - d["created_at"], 'seconds')); })
+		.text(function(d) { return rehumanize(moment.duration(maxtime - d["post_created_at"], 'seconds')); })
 		 .attr("class", "duration")
 		 .attr("name", function(d, i) { return i; })
 

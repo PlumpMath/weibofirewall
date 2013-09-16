@@ -13,7 +13,6 @@ import weibo_module
 import sys
 
 
-csv_header='post_id,user_id,user_name,user_follower_count_initial,user_follower_count,post_original_pic,post_created_at,post_repost_count_initial,post_repost_count,post_text,started_tracking_at,is_deleted,is_retired,error_message,error_code,last_checked_at,time_elapsed,post_lifespan'
 
 
 #if exclude_error_code = false, use error_code as filter
@@ -32,6 +31,7 @@ def csvize_deleted_unique(csv_filename, error_code=-1, exclude_error_code=False)
 	with codecs.open(csv_filename, "w", "utf-16") as wf:
 
 		#write csv header
+		csv_header = weibo_module.get_csv_header()
 		wf.write(csv_header + "\n")
 		print csv_header
 
@@ -71,6 +71,7 @@ def csvize_deleted_repost_timeline(csv_filename, error_code=-1, exclude_error_co
 	with codecs.open(csv_filename, "w", "utf-16") as wf:
 
 		#write csv header
+		csv_header = weibo_module.get_csv_header()
 		wf.write(csv_header + "\n")
 		print csv_header
 
