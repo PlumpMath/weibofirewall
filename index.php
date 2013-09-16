@@ -56,6 +56,8 @@ function epochToDate(epoch) {
 	return new Date(epoch * 1000);
 }
 
+
+
 /* THIS IS THE CSVLINE 
 	*
 	post_id,
@@ -81,8 +83,8 @@ post_lifespan
  */
 
 // read the datafile.
-d3.csv(datafile, function(d) {
-	//	console.log(d);
+d3.csv(datafile, function(d, i) {
+//		console.log(i);
 	//
 	// this is the format of what we need, adopted from weibo_module's make_csvline_from_post 
 	return {
@@ -106,14 +108,15 @@ d3.csv(datafile, function(d) {
 	};
 }, function(error, rows) {
 
-
 	// now let's massage that data
 	var data = rows;
 	var chartheight = ((barheight + bargap) * data.length) + chartheight_padding;
 
+	console.log(data.length);
 	data.sort(function(a,b) { return a.post_created_at - b.post_created_at; });
 	//data.sort(function(a,b) { return a.user_id - b.user_id; });
 	//
+	console.log(data.length);
 	console.log(data)
 
 //	var maxtime = d3.max(data, function(d) { return d["post_created_at"]; }) + timepadding + (randomTimeRange / 2);
@@ -158,34 +161,68 @@ d3.csv(datafile, function(d) {
 		.ticks(d3.time.hour, 12)
 		.tickFormat(d3.time.format("%m-%d %H:%m"));
 
-	var mouseoverFunction = function(d, i) {
+	var barselect_mouseover = function(d, i) {
+		console.log(d);
 		d3.select(d3.event.target).classed("highlight", true); 
-		d3.select("#hoverimg-" + i).classed("hover", true); 
+		d3.select("#hoverimg-" + d["post_id"]).classed("hover", true); 
+		d3.select("text[name='" + d["post_id"] + "']").attr("class", "hover");
 	}
 
-	var mouseoutFunction = function(d, i) {
+	var barselect_mouseout = function(d, i) {
 		d3.select(d3.event.target).classed("highlight", false); 
-		d3.select("#hoverimg-" + i).classed("hover", false); 
+		d3.select("#hoverimg-" + d["post_id"]).classed("hover", false);
+		d3.select("text[name='" + d["post_id"] + "']").attr("class", "");
 	}
+
+	var barselect_click = function(d, i) {
+		var thispostid = d["post_id"];
+		//alert(imgdir + (data[thisid].post_id) + ".jpg");
+		window.location = (imgdir + (thispostid) + ".jpg");
+	}
+
+	// add x-axis ticks
+	chart.selectAll("line")
+		.data(scaleTime.ticks(d3.time.hour, 1)).enter()
+		.append("line")
+		.attr("class", "tickline")
+		.attr("x1", scaleTime)
+		.attr("x2", scaleTime)
+		.attr("y1", 0)
+		.attr("y2", chartheight)
+		.style("stroke", "#EEE");
+
+	// Add the x-axis labels
+	chart.append("g")
+		.attr("class", "x axis")
+		.attr("transform", "translate(0," + (chartheight - 1) + ")")
+		.call(axisTime)
+		//rotate the text, too
+		.selectAll("text")  
+            .style("text-anchor", "start")
+            .attr("dx", "5em")
+            .attr("dy", "4em")
+            .attr("transform", function(d) {
+                return "rotate(-45)" 
+                });
 
 	// let's select the imgdiv, and add our images to it that will hover
 	var imgdiv = d3.select("#imgdiv");
-	imgdiv.selectAll("div").
+	imgdiv.selectAll("div")
 		// plug in our data
-		data(data).enter()
+		.data(data).enter()
 		//let's add an img tag with all this stuff
 		.append("img")
 		.attr("src", function(d) { return imgdir + d["post_id"] + ".jpg"; })
 		.attr("class", "hoverimg resizeme")
-		.attr("id", function(d,i) { return "hoverimg-" + i; });
+		.attr("id", function(d,i) { return "hoverimg-" + d["post_id"]; });
 
 	// let's select the chart and add our bars to it	
-	chart.selectAll("rect")
+	chart.selectAll("bar")
 		// plug in our data
 		.data(data).enter()
 		//and now:
 		 .append("rect")
-		 .attr("x", function(d) { 
+		 .attr("x", function(d, i) { 
 			 console.log("post_created_at " + d["post_created_at"]);
 			 console.log("scaled = " + scaleTime((d["post_created_at"]))); 
 			 return scaleTime(d["post_created_at"]); 
@@ -202,7 +239,7 @@ d3.csv(datafile, function(d) {
 		})
 		 //.attr("width", function(d) { return ; })
 		 .attr("height", barheight)
-		 .attr("name", function(d, i) { return i; })
+		 .attr("name", function(d, i) { return d["post_id"]; })
 		 .attr("fill", function(d) { 
 
 				// generate colors per user 
@@ -218,81 +255,47 @@ d3.csv(datafile, function(d) {
 				console.log(thiscolor_bytime);
 				return thiscolor_bytime;
 				//return thiscolor_byuser_2;
-			});
-/*	  .on("mouseover", mouseoverFunction)
-	  .on("mouseout", mouseoutFunction);*/
-
-
-
-	// some jquery to handle hovering
-	$("rect, text").hover(function() {
-		var thisid = $(this).attr("name");
-		$("#hoverimg-" + thisid).addClass("hover");
-		$("text[name=" + thisid + "]").attr("class", "hover");
-	}, function() {
-		var thisid = $(this).attr("name");
-		$("#hoverimg-" + thisid).removeClass("hover");
-		$("text[name=" + thisid + "]").attr("class", "");
-	});
-
-
-
-	// some jquery to handle opening the image
-	$("rect").click(function() {
-		var thisid = $(this).attr("name");
-		//alert(imgdir + (data[thisid].post_id) + ".jpg");
-		window.location = (imgdir + (data[thisid].post_id) + ".jpg");
-
-	});
-
-	// add x-axis ticks
-	chart.selectAll("line")
-		 .data(scaleTime.ticks(d3.time.hour, 1))
-	   .enter().append("line")
-		  .attr("class", "tickline")
-		 .attr("x1", scaleTime)
-		 .attr("x2", scaleTime)
-		 .attr("y1", 0)
-		 .attr("y2", chartheight)
-		 .style("stroke", "#EEE");
-
-	// Add the x-axis labels
-	chart.append("g")
-		.attr("class", "x axis")
-		.attr("transform", "translate(0," + (chartheight - 1) + ")")
-		.call(axisTime)
-		//rotate the text, too
-		.selectAll("text")  
-            .style("text-anchor", "start")
-            .attr("dx", "5em")
-            .attr("dy", "4em")
-            .attr("transform", function(d) {
-                return "rotate(-45)" 
-                });
+			})
+	  .on("mouseover", barselect_mouseover)
+	  .on("mouseout", barselect_mouseout) 
+	  .on("click", barselect_click);
 
 	// add bar labels
-	chart.selectAll("text")
-		 .data(data)
-	   .enter().append("text")
-		.attr("x", function(d) { return scaleTime(d["post_created_at"]) + 0; })
+	chart.selectAll("bar")
+		.data(data).enter()
+		.append("text")
+//		.attr("x", function(d) { return 300; })
+		.attr("x", function(d, i) {console.log("Adding = " + i); return scaleTime(d["post_created_at"]); })
 		.attr("y", function(d, i) { return (i * (barheight + bargap)) + (barheight / 2); })
-		 .attr("dx", -3) // padding-right
-		 .attr("dy", ".35em") // vertical-align: middle
-		 .attr("text-anchor", "end") // text-align: right
-		 .attr("name", function(d, i) { return i; })
-		 .attr("fill", "#CCC")
-		 .attr("name", function(d, i) { return i; })
-		 .text(function(d) { 
+		.attr("dx", -3) // padding-right
+		.attr("dy", ".35em") // vertical-align: middle
+		.attr("text-anchor", "end") // text-align: right
+		.attr("name", function(d, i) { return d["post_id"]; })
+		.attr("fill", "#CCC")
+		.text(function(d,i) { 
+			console.log(i);
 			console.log(d["last_checked_at"]);
 			console.log(d["post_created_at"]);
 			console.log(d["last_checked_at"].getTime());
 			console.log(d["post_created_at"].getTime());
 			elapsedtimeseconds = (d["last_checked_at"].getTime() - d["post_created_at"].getTime()) / 1000; 
 			console.log(elapsedtimeseconds);
-			return d["user_name"] + ":" + "lifespan: " + lifespanFormat(elapsedtimeseconds)
-			return d["user_name"] + ": " + bar_dateformat(d["post_created_at"]) + "-- lifespan: " + lifespanFormat(elapsedtimeseconds)
-//			return dateformat(new Date(d["post_created_at"] * 1000)) + " -- " + rehumanize(moment.duration(maxdate - d["post_created_at"], 'seconds'));
-		});
+			return d["user_name"] + ":" + "lifespan: " + lifespanFormat(elapsedtimeseconds);
+			return d["user_name"] + ": " + bar_dateformat(d["post_created_at"]) + "-- lifespan: " + lifespanFormat(elapsedtimeseconds);
+		})
+	  .on("mouseover", barselect_mouseover)
+	  .on("mouseout", barselect_mouseout)
+	  .on("click", barselect_click);
+/*
+	// some jquery to handle opening the image
+	$("rect").click(function() {
+		var thispostid = $(this).attr("name");
+		//alert(imgdir + (data[thisid].post_id) + ".jpg");
+		window.location = (imgdir + (thispostid) + ".jpg");
+
+	});*/
+
+
 
 chart.selectAll("rect")
 		 .data(data)
@@ -309,7 +312,7 @@ imgdiv.selectAll("div").
 		.append("img")
 		.attr("src", function(d) { return imgdir + d["post_id"] + ".jpg"; })
 		.attr("class", "hoverimg resizeme")
-		.attr("id", function(d,i) { return "hoverimg-" + i; });
+		.attr("id", function(d,i) { return "hoverimg-" + d["post_id"]; });
 
 
 var durdiv = d3.select("#durdiv");
