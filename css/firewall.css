@@ -1,0 +1,121 @@
+
+div {
+//	border: 1px cyan solid;
+}
+
+#container {
+	width: 1024px;
+}
+
+#chartdiv {
+	margin-top: 30px;
+	margin-left: 250px;
+	width: 960px;
+	height: 960px;
+}
+
+#chartdiv text {
+  font: 10px sans-serif;
+  background-color: steelblue;
+  text-align: right;
+  padding: 3px;
+  margin: 1px;
+  color: white;
+}
+
+#durdiv {
+	display: none;
+}
+
+rect {
+	/*fill: cyan; */
+}
+
+.tickline {
+	pointer-events: none;
+}
+	
+
+.highlight {
+	fill: cyan;
+}
+
+.hoverimg {
+	display: none;
+	position: absolute;
+	border: 1px dotted #F33;
+	padding: 5px;
+	background-color: white;
+}
+
+img.hover {
+	display: block !important;
+}
+
+text.hover {
+	fill: #000;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    font-family: sans-serif;
+    font-size: 11px;
+}
+
+
+
+.grid .tick {
+    stroke: lightgrey;
+    opacity: 0.7;
+}
+.grid path {
+      stroke-width: 0;
+}
+
+/* infobox */
+
+#infobox {
+	font-family: 'PT Sans', sans-serif;
+	position: fixed;
+	left: 20px;
+	top: 20px;
+	z-index: 1000;
+	width: 200px;
+	background-color: white;
+	text-align: center;
+	padding: 5px;
+	font-size: 0.6em;
+}
+#infobox-inner {
+	padding: 10px;
+	border: 1px dotted #888;
+}
+#infobox .logo {
+	font-weight: bold;
+	font-size: 1.4em;
+}
+#infobox .parameters {
+	margin-bottom: 20px;
+}
+#infobox .parameters div {
+}
+#infobox .info {
+	margin-top: 10px;
+	margin-bottom: 20px;
+}
+#infobox .locinfo {
+	font-size: 0.65em;
+}
+
+
+h1, h2, h3, .title {
+	font-family: 'PT Sans', sans-serif;
+}
+
+
