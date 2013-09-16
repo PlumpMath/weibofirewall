@@ -45,6 +45,8 @@ function randomTimeOffset() {
 	return Math.ceil((Math.random() * randomTimeRange) + (randomTimeRange / 2));
 }
 
+
+// read the datafile.
 d3.csv(datafile, function(d) {
 	return {
 		post_id: +d.post_id,
