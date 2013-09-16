@@ -15,8 +15,8 @@
 <script>
 
 
-var datafile = "data/130616_deleted_weibo.csv";
-var imgdir = "images/deleted_sample_img/";
+var datafile = "data/deleted_weibo_log.csv";
+var imgdir = "weibo_images/"
 var chartwidth = 960;
 var chartheight = 960;
 var barheight = 10;

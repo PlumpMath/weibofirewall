@@ -57,8 +57,8 @@ track_posts_override = 70
 #timeout - if a post is alive past this many seconds, then go onto the next
 track_posts_timeout = 14400 #4 houts
 
-unique_csv_filename = "deleted_weibo.csv"
-log_csv_filename = "deleted_weibo_log.csv"
+unique_csv_filename = "/home/provolot/www/SIDL/firewall/data/deleted_weibo.csv"
+log_csv_filename = "/home/provolot/www/SIDL/firewall/data/deleted_weibo_log.csv"
 
 #period, in seconds
 tracking_period_seconds = tracking_period * 3600
