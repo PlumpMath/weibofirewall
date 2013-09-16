@@ -18,20 +18,27 @@
 var datafile = "data/deleted_weibo_log.csv";
 var imgdir = "weibo_images/"
 var chartwidth = 960;
-var chartheight = 960;
+//var chartheight = 960;
+var chartheight_padding = 80;
 var barheight = 10;
 var bargap = 1;
-var dateformat = d3.time.format("%b %e, %Y %H:%M");
+var bar_dateformat = d3.time.format("%b %e, %Y %H:%M");
 var timepadding = 3600; //one hour
-var colorMin = 50;
-var colorMax = 200;
+var colorMin = 250;
+var colorMax = 100;
 var randomTimeRange= 20;
 
-function make_y_axis() {        
-    return d3.svg.axis()
-        .scale(y)
-        .orient("left")
-        .ticks(5)
+function pad (str, max) {
+  str = str.toString();
+  return str.length < max ? pad("0" + str, max) : str;
+}
+
+function lifespanFormat(seconds) {
+	var minutes = Math.floor(seconds / 60);
+	var hours = Math.floor(seconds / 3600);
+	minutes = minutes % 60;
+	seconds = seconds % 60;
+	return pad(hours,2) + ":" + pad(minutes,2) + ":" + pad(seconds,2);
 }
 
 function dec2hex(i) {
@@ -43,6 +50,10 @@ function dec2hex(i) {
 
 function randomTimeOffset() {
 	return Math.ceil((Math.random() * randomTimeRange) + (randomTimeRange / 2));
+}
+
+function epochToDate(epoch) {
+	return new Date(epoch * 1000);
 }
 
 /* THIS IS THE CSVLINE 
@@ -81,16 +92,16 @@ d3.csv(datafile, function(d) {
 		user_follower_count_initial: +d.user_follower_count_initial,
 		user_follower_count: +d.user_follower_count,
 		post_original_pic: d.post_original_pic,
-		post_created_at : +d.post_created_at_epoch,
+		post_created_at : epochToDate(d.post_created_at_epoch),
 		post_repost_count_initial: +d.post_repost_count_initial,
 		post_repost_count: +d.post_repost_count,
 		post_text: d.post_text,
-		started_tracking_at: +d.started_tracking_at_epoch,
+		started_tracking_at: epochToDate(+d.started_tracking_at_epoch),
 		is_deleted: d.is_deleted,
 		is_retired: d.is_retired,
 		error_message: d.error_message,
 		error_code: +d.error_code,
-		last_checked_at: +d.last_checked_at_epoch,
+		last_checked_at: epochToDate(+d.last_checked_at_epoch),
 		post_lifespan: +d.post_lifespan
 	};
 }, function(error, rows) {
@@ -98,45 +109,54 @@ d3.csv(datafile, function(d) {
 
 	// now let's massage that data
 	var data = rows;
-	var chartheight = (barheight + bargap) * data.length;
+	var chartheight = ((barheight + bargap) * data.length) + chartheight_padding;
 
 	data.sort(function(a,b) { return a.post_created_at - b.post_created_at; });
 	//data.sort(function(a,b) { return a.user_id - b.user_id; });
 	//
-//	console.log(data)
+	console.log(data)
 
 //	var maxtime = d3.max(data, function(d) { return d["post_created_at"]; }) + timepadding + (randomTimeRange / 2);
-	var mintime = d3.min(data, function(d) { return d["post_created_at"]; });
-	var maxtime = d3.max(data, function(d) { return d["last_checked_at"]; });
+	var mindate = d3.min(data, function(d) { return d["post_created_at"]; });
+	var maxdate = d3.max(data, function(d) { return d["last_checked_at"]; });
+
+	//var mindate = epochToDate(d3.min(data, function(d) { return d["post_created_at"]; }));
+//	var maxdate = epochToDate(d3.max(data, function(d) { return d["last_checked_at"]; }));
 
 /*	console.log("hopefully sorted poster ids");
 	console.log(data.map(function(d) { return d.user_id; }));	
 	console.log(data.length);	*/
+	console.log(data.length);	
 
+	console.log("mindate = " + mindate)
+	console.log("maxdate = " + maxdate)
 
 	// create chart, set dimensions based on # of deleted posts
 	var chart = d3.select("#chartdiv")
 		.append("svg")
-			.attr("class", "chart")
-			.attr("width", chartwidth)
-			.attr("height", (barheight + bargap) * data.length)
+		.attr("class", "chart")
+		.attr("width", chartwidth)
+		.attr("height", chartheight)
 		.append("g");
 
-	// let's specify the x-axis
-	var scaleTime = d3.scale.linear()
+	// let's specify the x-axis scale
+	var scaleTime = d3.time.scale()
 		// domain is min max of time
-		.domain([mintime, maxtime])
-		.range([0, chartwidth]);
+		.domain([mindate, maxdate])
+		.range([0, chartwidth])
 
-	var scaleTimeForColor = d3.scale.linear()
-		.domain([mintime, maxtime])
-		.range([colorMin, colorMax]);
+	// let's specify color scale
+	var scaleTimeForColor = d3.time.scale.utc()
+		.domain([mindate, maxdate])
+		.range([colorMin, colorMax])
+		.nice(d3.time.hour);
 
+	// let's specify x-axis
 	var axisTime = d3.svg.axis()
 		.scale(scaleTime)
-		.orient("bottom")
-		.ticks(5)
-		.tickFormat(d3.time.format("%Y-%m-%d"));
+		.orient("top")
+		.ticks(d3.time.hour, 12)
+		.tickFormat(d3.time.format("%m-%d %H:%m"));
 
 	var mouseoverFunction = function(d, i) {
 		d3.select(d3.event.target).classed("highlight", true); 
@@ -148,44 +168,64 @@ d3.csv(datafile, function(d) {
 		d3.select("#hoverimg-" + i).classed("hover", false); 
 	}
 
+	// let's select the imgdiv, and add our images to it that will hover
 	var imgdiv = d3.select("#imgdiv");
-
-
 	imgdiv.selectAll("div").
+		// plug in our data
 		data(data).enter()
+		//let's add an img tag with all this stuff
 		.append("img")
 		.attr("src", function(d) { return imgdir + d["post_id"] + ".jpg"; })
 		.attr("class", "hoverimg resizeme")
 		.attr("id", function(d,i) { return "hoverimg-" + i; });
 
-
+	// let's select the chart and add our bars to it	
 	chart.selectAll("rect")
-		 .data(data)
-		.enter().append("rect")
-		.attr("x", function(d) { return scaleTime(d["post_created_at"]); })
+		// plug in our data
+		.data(data).enter()
+		//and now:
+		 .append("rect")
+		 .attr("x", function(d) { 
+			 console.log("post_created_at " + d["post_created_at"]);
+			 console.log("scaled = " + scaleTime((d["post_created_at"]))); 
+			 return scaleTime(d["post_created_at"]); 
+		 })
+
 		.attr("y", function(d, i) { return i * (barheight + bargap); })
 		 //.attr("width", function(d) { return (scaleTime(d["post_created_at"])); })
-		 .attr("width", function(d) { return (randomTimeOffset() + scaleTime(maxtime) - scaleTime(d["post_created_at"])); })
+		.attr("width", function(d) { 
+			elapsedtime = scaleTime(d["last_checked_at"]) - scaleTime(d["post_created_at"]); 
+			console.log(elapsedtime);
+			//return (scaleTime(maxdate) - scaleTime(d["post_created_at"])); 
+//			return 100;
+			return elapsedtime;
+		})
 		 //.attr("width", function(d) { return ; })
 		 .attr("height", barheight)
 		 .attr("name", function(d, i) { return i; })
 		 .attr("fill", function(d) { 
-				//console.log(moment.duration(maxtime - d["post_created_at"], 'seconds').humanize()); //duration
-				var dig = dec2hex((d.user_id) % 256);
-				var thiscolor = "#" + dig + "FF" + dig;
-				var thiscolor2 = "#" + ((d.user_id) % 16777216).toString(16);
-				console.log(scaleTimeForColor(maxtime) - scaleTimeForColor(d["post_created_at"]));
-				//var thiscolor_time = dec2hex(Math.round(scaleTimeForColor(maxtime) - scaleTimeForColor(d["post_created_at"])));
-				var thiscolor_time = dec2hex(colorMax - (Math.round(scaleTimeForColor(maxtime) - scaleTimeForColor(d["post_created_at"]))));
-				console.log(thiscolor_time);
-				console.log("#" + "FF" + thiscolor_time + thiscolor_time);				
-				return "#" + "FF" + thiscolor_time + thiscolor_time;				
-				//console.log(thiscolor2);
+
+				// generate colors per user 
+			 	var dig = dec2hex((d.user_id) % 256);
+				var thiscolor_byuser = "#" + dig + "FF" + dig;
+				var thiscolor_byuser_2 = "#" + ((d.user_id) % 16777216).toString(16);
+
+				// generate colors by time
+				elapsedtimecolor = scaleTimeForColor(d["last_checked_at"]) - scaleTimeForColor(d["post_created_at"]); 
+				var thiscolor_value = dec2hex(colorMax - (Math.round(elapsedtimecolor)));
+				// create hexvalue
+				thiscolor_bytime = "#" + thiscolor_value + thiscolor_value + thiscolor_value;				
+				console.log(thiscolor_bytime);
+				return thiscolor_bytime;
+				//return thiscolor_byuser_2;
 			});
 /*	  .on("mouseover", mouseoverFunction)
 	  .on("mouseout", mouseoutFunction);*/
 
-	$("rect").hover(function() {
+
+
+	// some jquery to handle hovering
+	$("rect, text").hover(function() {
 		var thisid = $(this).attr("name");
 		$("#hoverimg-" + thisid).addClass("hover");
 		$("text[name=" + thisid + "]").attr("class", "hover");
@@ -195,6 +235,9 @@ d3.csv(datafile, function(d) {
 		$("text[name=" + thisid + "]").attr("class", "");
 	});
 
+
+
+	// some jquery to handle opening the image
 	$("rect").click(function() {
 		var thisid = $(this).attr("name");
 		//alert(imgdir + (data[thisid].post_id) + ".jpg");
@@ -202,9 +245,9 @@ d3.csv(datafile, function(d) {
 
 	});
 
-
+	// add x-axis ticks
 	chart.selectAll("line")
-		 .data(scaleTime.ticks(9))
+		 .data(scaleTime.ticks(d3.time.hour, 1))
 	   .enter().append("line")
 		  .attr("class", "tickline")
 		 .attr("x1", scaleTime)
@@ -213,6 +256,21 @@ d3.csv(datafile, function(d) {
 		 .attr("y2", chartheight)
 		 .style("stroke", "#EEE");
 
+	// Add the x-axis labels
+	chart.append("g")
+		.attr("class", "x axis")
+		.attr("transform", "translate(0," + (chartheight - 1) + ")")
+		.call(axisTime)
+		//rotate the text, too
+		.selectAll("text")  
+            .style("text-anchor", "start")
+            .attr("dx", "5em")
+            .attr("dy", "4em")
+            .attr("transform", function(d) {
+                return "rotate(-45)" 
+                });
+
+	// add bar labels
 	chart.selectAll("text")
 		 .data(data)
 	   .enter().append("text")
@@ -223,8 +281,17 @@ d3.csv(datafile, function(d) {
 		 .attr("text-anchor", "end") // text-align: right
 		 .attr("name", function(d, i) { return i; })
 		 .attr("fill", "#CCC")
+		 .attr("name", function(d, i) { return i; })
 		 .text(function(d) { 
-			return dateformat(new Date(d["post_created_at"] * 1000)) + " -- " + rehumanize(moment.duration(maxtime - d["post_created_at"], 'seconds'));
+			console.log(d["last_checked_at"]);
+			console.log(d["post_created_at"]);
+			console.log(d["last_checked_at"].getTime());
+			console.log(d["post_created_at"].getTime());
+			elapsedtimeseconds = (d["last_checked_at"].getTime() - d["post_created_at"].getTime()) / 1000; 
+			console.log(elapsedtimeseconds);
+			return d["user_name"] + ":" + "lifespan: " + lifespanFormat(elapsedtimeseconds)
+			return d["user_name"] + ": " + bar_dateformat(d["post_created_at"]) + "-- lifespan: " + lifespanFormat(elapsedtimeseconds)
+//			return dateformat(new Date(d["post_created_at"] * 1000)) + " -- " + rehumanize(moment.duration(maxdate - d["post_created_at"], 'seconds'));
 		});
 
 chart.selectAll("rect")
@@ -250,7 +317,7 @@ durdiv.selectAll("div")
 		.data(data)
 		.enter()
 		.append("div")
-		.text(function(d) { return rehumanize(moment.duration(maxtime - d["post_created_at"], 'seconds')); })
+		.text(function(d) { return rehumanize(moment.duration(maxdate - d["post_created_at"], 'seconds')); })
 		 .attr("class", "duration")
 		 .attr("name", function(d, i) { return i; })
 
