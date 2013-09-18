@@ -533,7 +533,8 @@ def get_all_posts(post_id):
 
 def get_csv_header():
 	csv_header = 'post_id,user_id,user_name,user_follower_count_initial,user_follower_count,post_original_pic,post_created_at,post_created_at_epoch,post_repost_count_initial,post_repost_count,post_text,started_tracking_at,started_tracking_at_epoch,is_deleted,is_retired,error_message,error_code,last_checked_at,last_checked_at_epoch,time_elapsed,post_lifespan'
-	return csv_header
+	csv_header_unicode = csv_header.sub(',', u'\uFFFD')
+	return csv_header_unicode
 
 
 def make_csvline_from_post(this_post):

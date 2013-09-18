@@ -1,3 +1,4 @@
+<?php header('Content-Type: text/html; charset=utf-8'); ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -55,27 +56,32 @@ function csv_get_post($post_id, $filename='', $delimiter=',')
     $data = array();
     if (($handle = fopen_utf8($filename, 'r')) !== FALSE)
     {
-        while (($row = fgetcsv($handle, 5000, $delimiter)) !== FALSE)
-		{
+		while (($row = fgets($handle, 4096)) !== FALSE) {
+			$row_csv = mb_split(",", $row);
+//			print_r($row_csv);
+	//	}
+    //    while (($row = fgetcsv($handle, 5000, $delimiter)) !== FALSE)
+	//	{
 
             if(!$header) {
-				$header = $row;
+				$header = $row_csv;
 //				array_push($data, $header);
 			}
 			else
-//				print_r($row[0]);
-				if($row[0] == $post_id) {
+//				print_r($row_csv[0]);
+				if($row_csv[0] == $post_id) {
 					print_r($row);
+					print_r($row_csv);
 					//print count($header);
 					$headerlen = count($header);
 					// okay we got it. let's split data into post info and log info
-					$postinfo = array_combine($header, array_slice($row, 0, $headerlen));
-					$loginfo = array_slice($row, $headerlen + 1);
+					$postinfo = array_combine($header, array_slice($row_csv, 0, $headerlen));
+					$loginfo = array_slice($row_csv, $headerlen + 1);
 					array_push($data, $postinfo);
 					array_push($data, $loginfo);
 					return $data;
 				}
-        }
+		}
         fclose($handle);
     }
 //    return $data;
@@ -87,8 +93,10 @@ function csv_get_post($post_id, $filename='', $delimiter=',')
 
 <?php
 	$data = csv_get_post($post_id, $datafile);
-	print_r($data);
 	print "<img src=" . $imgdir . $post_id . ".jpg>";
+	print '<pre>';
+	print_r($data);
+	print '</pre>';
 ?>
 
 </div>
