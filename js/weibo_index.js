@@ -69,19 +69,13 @@ post_lifespan
 
  */
 
-/*var dsv = d3.dsv("|", "text/plain");
-d3.text("tempdsv", function(text) {
-	console.log(dsv.parseRows(text));
-});
-
-console.log(dsv.parse("tempdsv"));*/
 
 //get delimiter from weibo_settings.py
 var dsv = d3.dsv("|||", "text/plain");
 
 // read the datafile.START
 dsv(datafile, function(d, i) {
-		console.log(d);
+//		//console.log(d);
 	//
 	// this is the format of what we need, adopted from weibo_module's make_csvline_from_post 
 	if(i < datastartindex) {
@@ -112,24 +106,19 @@ dsv(datafile, function(d, i) {
 	var data = rows;
 	var chartheight = ((barheight + bargap) * data.length) + chartheight_padding;
 
-	console.log(data.length);
+//	//console.log(data.length);
 	data.sort(function(a,b) { return a.post_created_at - b.post_created_at; });
-	//data.sort(function(a,b) { return a.user_id - b.user_id; });
-	//
-	console.log(data.length);
-	console.log(data)
+//	//console.log(data.length);
+//	//console.log(data)
 
-//	var maxtime = d3.max(data, function(d) { return d["post_created_at"]; }) + timepadding + (randomTimeRange / 2);
 	var mindate = d3.min(data, function(d) { return d["post_created_at"]; });
 	var maxdate = d3.max(data, function(d) { return d["last_checked_at"]; });
 
-	//var mindate = epochToDate(d3.min(data, function(d) { return d["post_created_at"]; }));
-//	var maxdate = epochToDate(d3.max(data, function(d) { return d["last_checked_at"]; }));
 
-	console.log(data.length);	
+	//console.log(data.length);	
 
-	console.log("mindate = " + mindate)
-	console.log("maxdate = " + maxdate)
+	//console.log("mindate = " + mindate)
+	//console.log("maxdate = " + maxdate)
 
 	// create chart, set dimensions based on # of deleted posts
 	var chart = d3.select("#chartdiv")
@@ -159,7 +148,7 @@ dsv(datafile, function(d, i) {
 		.tickFormat(d3.time.format("%m-%d %H:%m"));
 
 	var barselect_mouseover = function(d, i) {
-		console.log(d);
+		//console.log(d);
 		d3.select(d3.event.target).classed("highlight", true); 
 		d3.select("#hoverimg-" + d["post_id"]).classed("hover", true); 
 		d3.select("text[name='" + d["post_id"] + "']").attr("class", "hover");
@@ -221,8 +210,8 @@ dsv(datafile, function(d, i) {
 		//and now:
 		 .append("rect")
 		 .attr("x", function(d, i) { 
-			 console.log("post_created_at " + d["post_created_at"]);
-			 console.log("scaled = " + scaleTime((d["post_created_at"]))); 
+			 //console.log("post_created_at " + d["post_created_at"]);
+			 //console.log("scaled = " + scaleTime((d["post_created_at"]))); 
 			 return scaleTime(d["post_created_at"]); 
 		 })
 
@@ -230,7 +219,7 @@ dsv(datafile, function(d, i) {
 		 //.attr("width", function(d) { return (scaleTime(d["post_created_at"])); })
 		.attr("width", function(d) { 
 			elapsedtime = scaleTime(d["last_checked_at"]) - scaleTime(d["post_created_at"]); 
-			console.log(elapsedtime);
+			//console.log(elapsedtime);
 			//return (scaleTime(maxdate) - scaleTime(d["post_created_at"])); 
 //			return 100;
 			return elapsedtime;
@@ -250,7 +239,7 @@ dsv(datafile, function(d, i) {
 				var thiscolor_value = dec2hex(colorMax - (Math.round(elapsedtimecolor)));
 				// create hexvalue
 				thiscolor_bytime = "#" + thiscolor_value + thiscolor_value + thiscolor_value;				
-				console.log(thiscolor_bytime);
+				//console.log(thiscolor_bytime);
 				return thiscolor_bytime;
 				//return thiscolor_byuser_2;
 			})
@@ -290,7 +279,7 @@ dsv(datafile, function(d, i) {
 				var thiscolor_value = dec2hex(colorMax - (Math.round(elapsedtimecolor)));
 				// create hexvalue
 				thiscolor_bytime = "#" + thiscolor_value + thiscolor_value + thiscolor_value;				
-				console.log(thiscolor_bytime);
+				//console.log(thiscolor_bytime);
 				return thiscolor_bytime;
 				//return thiscolor_byuser_2;
 			})
@@ -304,7 +293,7 @@ dsv(datafile, function(d, i) {
 		.data(data).enter()
 		.append("text")
 //		.attr("x", function(d) { return 300; })
-		.attr("x", function(d, i) {console.log("Adding = " + i); return scaleTime(d["post_created_at"]); })
+		.attr("x", function(d, i) { return scaleTime(d["post_created_at"]); })
 		.attr("y", function(d, i) { return (i * (barheight + bargap)) + (barheight / 2); })
 		.attr("dx", -3) // padding-right
 		.attr("dy", ".35em") // vertical-align: middle
@@ -312,13 +301,13 @@ dsv(datafile, function(d, i) {
 		.attr("name", function(d, i) { return d["post_id"]; })
 		.attr("fill", "#CCC")
 		.text(function(d,i) { 
-			console.log(i);
-			console.log(d["last_checked_at"]);
-			console.log(d["post_created_at"]);
-			console.log(d["last_checked_at"].getTime());
-			console.log(d["post_created_at"].getTime());
+			//console.log(i);
+			//console.log(d["last_checked_at"]);
+			//console.log(d["post_created_at"]);
+			//console.log(d["last_checked_at"].getTime());
+			//console.log(d["post_created_at"].getTime());
 			elapsedtimeseconds = (d["last_checked_at"].getTime() - d["post_created_at"].getTime()) / 1000; 
-			console.log(elapsedtimeseconds);
+			//console.log(elapsedtimeseconds);
 			return d["user_name"] + ":" + "lifespan: " + lifespanFormat(elapsedtimeseconds);
 			return d["user_name"] + ": " + bar_dateformat(d["post_created_at"]) + "-- lifespan: " + lifespanFormat(elapsedtimeseconds);
 		})
