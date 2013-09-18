@@ -95,7 +95,7 @@ def csvize_deleted_repost_timeline(csv_filename, error_code=-1, exclude_error_co
 #				print "CHECKEDAT "  , this_log["checked_at"]
 				if 'post_repost_count' in this_log and this_log["post_repost_count"] <> None:
 #					print this_log["post_repost_count"], " :: " , this_log["checked_at"]
-					this_log_line += ","  + str(this_log["post_repost_count"]) + "," + str(this_log["checked_at"])
+					this_log_line += weibo_settings.delim  + str(this_log["post_repost_count"]) + weibo_settings.delim + str(this_log["checked_at"])
 #				print "##############################tpalE"
 							
 

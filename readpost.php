@@ -57,7 +57,7 @@ function csv_get_post($post_id, $filename='', $delimiter=',')
     if (($handle = fopen_utf8($filename, 'r')) !== FALSE)
     {
 		while (($row = fgets($handle, 4096)) !== FALSE) {
-			$row_csv = mb_split(",", $row);
+			$row_csv = mb_split("\|\|\|", $row);
 //			print_r($row_csv);
 	//	}
     //    while (($row = fgetcsv($handle, 5000, $delimiter)) !== FALSE)
