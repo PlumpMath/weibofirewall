@@ -7,6 +7,9 @@ from json import loads
 from urllib import urlretrieve
 from os.path import splitext, isdir
 from dateutil import parser
+import urllib2
+import socket
+socket.setdefaulttimeout(30)
 
 
 ## WHAT WE DO HERE
@@ -203,6 +206,15 @@ for i in xrange(weibo_settings.pagemax):
 			imgpath = weibo_settings.imgdir + str(thispost["post_id"])+ splitext(thispost["post_original_pic"])[1]
 			print "Storing postID -- tracking post #" , (num_currently_tracking + newpostcount)
 			print "Storing postID " + str(thispost["post_id"] + " image to file")
+
+
+			#DOWNLOAD IMAGE
+			"""	req = urllib2.Request(thispost["post_original_pic"])
+			response = urllib2.urlopen(req)
+			output = open(l'wb')
+			output.write(response.read())
+			output.close()"""
+
 			urlretrieve(thispost["post_original_pic"], imgpath)
 
 			print "Storing postID " + str(thispost["post_id"] + " to database")

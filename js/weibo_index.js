@@ -1,10 +1,13 @@
 //var datafile = "../_archive/firewall_pre_git/data/130616_deleted_weibo.csv";
 var datafile = "data/deleted_weibo_log.csv";
-var imgdir = "weibo_images/"
+var datastartindex = 15;
+var imgdir = "weibo_images/";
 var chartwidth = 960;
 //var chartheight = 960;
 var chartheight_padding = 80;
+var chartpadding=100;
 var barheight = 10;
+var heightscale = 10; // reposts per pixel
 var bargap = 1;
 var bar_dateformat = d3.time.format("%b %e, %Y %H:%M");
 var timepadding = 3600; //one hour
@@ -68,9 +71,12 @@ post_lifespan
 
 // read the datafile.
 d3.csv(datafile, function(d, i) {
-//		console.log(i);
+		console.log(d);
 	//
 	// this is the format of what we need, adopted from weibo_module's make_csvline_from_post 
+	if(i < datastartindex) {
+		return null;
+	} 
 	return {
 		post_id: +d.post_id,
 		user_id: parseFloat(d.user_id),
@@ -130,7 +136,7 @@ d3.csv(datafile, function(d, i) {
 	var scaleTime = d3.time.scale()
 		// domain is min max of time
 		.domain([mindate, maxdate])
-		.range([0, chartwidth])
+		.range([chartpadding, chartwidth - chartpadding])
 
 	// let's specify color scale
 	var scaleTimeForColor = d3.time.scale.utc()
@@ -161,7 +167,8 @@ d3.csv(datafile, function(d, i) {
 	var barselect_click = function(d, i) {
 		var thispostid = d["post_id"];
 		//alert(imgdir + (data[thisid].post_id) + ".jpg");
-		window.location = (imgdir + (thispostid) + ".jpg");
+		window.location = "readpost.php?post_id=" + thispostid;
+		//window.location = (imgdir + (thispostid) + ".jpg");
 	}
 
 	// add x-axis ticks
@@ -244,6 +251,47 @@ d3.csv(datafile, function(d, i) {
 	  .on("mouseout", barselect_mouseout) 
 	  .on("click", barselect_click);
 
+	// let's select the chart and add our bars to it	
+	chart.selectAll("wedge")
+		// plug in our data
+		.data(data).enter()
+		//and now:
+		 .append("path")
+		.attr('d', function(d, i) { 
+			var x = scaleTime(d["post_created_at"]); 
+			var y = i * (barheight + bargap) + (barheight / 2);
+			var width = scaleTime(d["last_checked_at"]) - scaleTime(d["post_created_at"]); 
+			width += 5;
+			//var height = barheight;
+			var height = (d["post_repost_count"] - d["post_repost_count_initial"]);
+			height /= heightscale;
+			height += 5;
+			
+			return 'M ' + x +' '+ y + ' l ' + width + ' ' + (height / 2) + ' l 0 -' + height + ' z';
+		})
+		.style('opacity', .5)
+		 .attr("name", function(d, i) { return d["post_id"]; })
+		 .attr("fill", function(d) { 
+
+				// generate colors per user 
+			 	var dig = dec2hex((d.user_id) % 256);
+				var thiscolor_byuser = "#" + dig + "FF" + dig;
+				var thiscolor_byuser_2 = "#" + ((d.user_id) % 16777216).toString(16);
+
+				// generate colors by time
+				elapsedtimecolor = scaleTimeForColor(d["last_checked_at"]) - scaleTimeForColor(d["post_created_at"]); 
+				var thiscolor_value = dec2hex(colorMax - (Math.round(elapsedtimecolor)));
+				// create hexvalue
+				thiscolor_bytime = "#" + thiscolor_value + thiscolor_value + thiscolor_value;				
+				console.log(thiscolor_bytime);
+				return thiscolor_bytime;
+				//return thiscolor_byuser_2;
+			})
+	  .on("mouseover", barselect_mouseover)
+	  .on("mouseout", barselect_mouseout) 
+	  .on("click", barselect_click);
+
+
 	// add bar labels
 	chart.selectAll("bar")
 		.data(data).enter()
@@ -316,7 +364,7 @@ durdiv.selectAll("div")
 	$( ".resizeme" ).aeImageResize({ height: 400, width: 400 });
 
 	$("body").mousemove(function(e){
-		  $('.hover').css({'top': e.pageY + 20, 'left': e.pageX + 20});
+		  $('.hover').css({'top': e.pageY + 10, 'left': e.pageX + 10});
 	});
 });
 

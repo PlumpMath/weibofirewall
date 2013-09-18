@@ -21,7 +21,6 @@
 		<div id="imgdiv"></div>
 	</div>
 
-
 	<div id="infobox">
 		<div id="infobox-inner">
 			 <div class="logo">

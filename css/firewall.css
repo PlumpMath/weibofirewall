@@ -28,6 +28,7 @@ div {
 }
 
 rect {
+	display: none;
 	/*fill: cyan; */
 }
 
