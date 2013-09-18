@@ -55,15 +55,26 @@ function csv_get_post($post_id, $filename='', $delimiter=',')
     $data = array();
     if (($handle = fopen_utf8($filename, 'r')) !== FALSE)
     {
-        while (($row = fgetcsv($handle, 1000, $delimiter)) !== FALSE)
+        while (($row = fgetcsv($handle, 5000, $delimiter)) !== FALSE)
 		{
 
-            if(!$header)
-                $header = $row;
+            if(!$header) {
+				$header = $row;
+//				array_push($data, $header);
+			}
 			else
 //				print_r($row[0]);
-				if($row[0] == $post_id)
-					return $row;
+				if($row[0] == $post_id) {
+					print_r($row);
+					//print count($header);
+					$headerlen = count($header);
+					// okay we got it. let's split data into post info and log info
+					$postinfo = array_combine($header, array_slice($row, 0, $headerlen));
+					$loginfo = array_slice($row, $headerlen + 1);
+					array_push($data, $postinfo);
+					array_push($data, $loginfo);
+					return $data;
+				}
         }
         fclose($handle);
     }
