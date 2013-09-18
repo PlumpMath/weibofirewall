@@ -69,8 +69,18 @@ post_lifespan
 
  */
 
-// read the datafile.
-d3.csv(datafile, function(d, i) {
+/*var dsv = d3.dsv("|", "text/plain");
+d3.text("tempdsv", function(text) {
+	console.log(dsv.parseRows(text));
+});
+
+console.log(dsv.parse("tempdsv"));*/
+
+//get delimiter from weibo_settings.py
+var dsv = d3.dsv("|||", "text/plain");
+
+// read the datafile.START
+dsv(datafile, function(d, i) {
 		console.log(d);
 	//
 	// this is the format of what we need, adopted from weibo_module's make_csvline_from_post 
@@ -116,9 +126,6 @@ d3.csv(datafile, function(d, i) {
 	//var mindate = epochToDate(d3.min(data, function(d) { return d["post_created_at"]; }));
 //	var maxdate = epochToDate(d3.max(data, function(d) { return d["last_checked_at"]; }));
 
-/*	console.log("hopefully sorted poster ids");
-	console.log(data.map(function(d) { return d.user_id; }));	
-	console.log(data.length);	*/
 	console.log(data.length);	
 
 	console.log("mindate = " + mindate)
@@ -318,15 +325,6 @@ d3.csv(datafile, function(d, i) {
 	  .on("mouseover", barselect_mouseover)
 	  .on("mouseout", barselect_mouseout)
 	  .on("click", barselect_click);
-/*
-	// some jquery to handle opening the image
-	$("rect").click(function() {
-		var thispostid = $(this).attr("name");
-		//alert(imgdir + (data[thisid].post_id) + ".jpg");
-		window.location = (imgdir + (thispostid) + ".jpg");
-
-	});*/
-
 
 
 chart.selectAll("rect")
@@ -366,7 +364,8 @@ durdiv.selectAll("div")
 	$("body").mousemove(function(e){
 		  $('.hover').css({'top': e.pageY + 10, 'left': e.pageX + 10});
 	});
-});
+}); 
+//END
 
 function rehumanize(time){
 	time = time._data;

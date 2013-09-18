@@ -46,7 +46,7 @@ def csvize_deleted_unique(csv_filename, error_code=-1, exclude_error_code=False)
 			csvline = map((lambda x: unicode(x)), csvline)
 
 			#not csv, this is our delimiter now
-			csvline = u'\uFFFD'.join(csvline)
+			csvline = weibo_settings.delim.join(csvline)
 
 			print csvline
 			wf.write(csvline + "\n")
@@ -104,7 +104,7 @@ def csvize_deleted_repost_timeline(csv_filename, error_code=-1, exclude_error_co
 		
 			csvline = map((lambda x: unicode(x)), csvline)
 			#not csv, this is our delimiter now
-			csvline = u'\uFFFD'.join(csvline)
+			csvline = weibo_settings.delim.join(csvline)
 #			csvline = u','.join(csvline)
 
 			csvline += this_log_line
