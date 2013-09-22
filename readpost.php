@@ -43,6 +43,19 @@ function fopen_utf8($filename){
     return  ($handle);
 } 
 
+function process_loginfo($loginfo) {
+	$loginfo = str_getcsv($loginfo);
+	$data = array();
+	for($i = 0; $i < (count($loginfo)); $i+=2) {
+		$thislog = array();
+		$thislog['post_repost_count'] = $loginfo[$i];
+		$thislog['checked_at'] = $loginfo[$i + 1];
+		array_push($data, $thislog);
+	}
+
+	return $data;
+}
+
 function csv_get_post($post_id, $filename='', $delimiter=',')
 {
 
@@ -70,15 +83,13 @@ function csv_get_post($post_id, $filename='', $delimiter=',')
 			else
 //				print_r($row_csv[0]);
 				if($row_csv[0] == $post_id) {
-//					print_r($row);
-//					print_r($row_csv);
-					//print count($header);
 					$headerlen = count($header);
 					// okay we got it. let's split data into post info and log info
-					$postinfo = array_combine($header, array_slice($row_csv, 0, $headerlen));
-					$loginfo = array_slice($row_csv, $headerlen + 1);
-					array_push($data, $postinfo);
-					array_push($data, $loginfo);
+					$postinfo = array_combine(array_slice($header, 0, $headerlen - 1), array_slice($row_csv, 0, $headerlen - 1));
+					$loginfo = $row_csv[$headerlen - 1];
+					$loginfo = process_loginfo($loginfo);
+					$data["postinfo"] = $postinfo; 
+					$data["loginfo"] = $loginfo; 
 					return $data;
 				}
 		}
