@@ -45,6 +45,17 @@ function epochToDate(epoch) {
 
 
 
+function rehumanize(time){
+	time = time._data;
+    if(time.years   > 0){   return time.years   + ' years and '     + time.months   + ' months';}
+    if(time.months  > 0){   return time.months  + ' months and '    + time.days     + ' days';}
+    if(time.days    > 0){   return time.days    + ' days and '      + time.hours    + ' hours';}
+    if(time.hours   > 0){   return time.hours   + ' hours and '     + time.minutes  + ' mins and ' + time.seconds + ' secs';}
+    if(time.minutes > 0){   return time.minutes + ' mins and '   + time.seconds  + ' secs';}
+    if(time.seconds > 0){   return time.seconds + ' secs';}
+    return "Time's up!";
+}
+
 /* THIS IS THE CSVLINE 
 	*
 	post_id,
@@ -66,6 +77,7 @@ error_code,
 last_checked_at,
 last_checked_at_epoch,
 post_lifespan
+post_repostlog
 
  */
 
@@ -81,6 +93,7 @@ dsv(datafile, function(d, i) {
 	if(i < datastartindex) {
 		return null;
 	} 
+	console.log(d);
 	return {
 		post_id: +d.post_id,
 		user_id: parseFloat(d.user_id),
@@ -98,7 +111,8 @@ dsv(datafile, function(d, i) {
 		error_message: d.error_message,
 		error_code: +d.error_code,
 		last_checked_at: epochToDate(+d.last_checked_at_epoch),
-		post_lifespan: +d.post_lifespan
+		post_lifespan: +d.post_lifespan,
+		post_repostlog: d.post_repostlog
 	};
 }, function(error, rows) {
 
@@ -109,7 +123,7 @@ dsv(datafile, function(d, i) {
 //	//console.log(data.length);
 	data.sort(function(a,b) { return a.post_created_at - b.post_created_at; });
 //	//console.log(data.length);
-//	//console.log(data)
+	console.log(data)
 
 	var mindate = d3.min(data, function(d) { return d["post_created_at"]; });
 	var maxdate = d3.max(data, function(d) { return d["last_checked_at"]; });
@@ -355,17 +369,6 @@ durdiv.selectAll("div")
 	});
 }); 
 //END
-
-function rehumanize(time){
-	time = time._data;
-    if(time.years   > 0){   return time.years   + ' years and '     + time.months   + ' months';}
-    if(time.months  > 0){   return time.months  + ' months and '    + time.days     + ' days';}
-    if(time.days    > 0){   return time.days    + ' days and '      + time.hours    + ' hours';}
-    if(time.hours   > 0){   return time.hours   + ' hours and '     + time.minutes  + ' mins and ' + time.seconds + ' secs';}
-    if(time.minutes > 0){   return time.minutes + ' mins and '   + time.seconds  + ' secs';}
-    if(time.seconds > 0){   return time.seconds + ' secs';}
-    return "Time's up!";
-}
 
 
 

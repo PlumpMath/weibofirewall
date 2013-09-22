@@ -64,3 +64,4 @@ log_csv_filename = "/home/provolot/www/SIDL/firewall/data/deleted_weibo_log.csv"
 tracking_period_seconds = tracking_period * 3600
 
 delim = u'|||'
+delim_log = u','

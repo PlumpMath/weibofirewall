@@ -48,7 +48,7 @@ def csvize_deleted_unique(csv_filename, error_code=-1, exclude_error_code=False)
 			#not csv, this is our delimiter now
 			csvline = weibo_settings.delim.join(csvline)
 
-			print csvline
+#			print csvline
 			wf.write(csvline + "\n")
 
 
@@ -95,7 +95,7 @@ def csvize_deleted_repost_timeline(csv_filename, error_code=-1, exclude_error_co
 #				print "CHECKEDAT "  , this_log["checked_at"]
 				if 'post_repost_count' in this_log and this_log["post_repost_count"] <> None:
 #					print this_log["post_repost_count"], " :: " , this_log["checked_at"]
-					this_log_line += weibo_settings.delim  + str(this_log["post_repost_count"]) + weibo_settings.delim + str(this_log["checked_at"])
+					this_log_line += weibo_settings.delim_log  + str(this_log["post_repost_count"]) + weibo_settings.delim_log + str(this_log["checked_at"])
 #				print "##############################tpalE"
 							
 
@@ -109,7 +109,7 @@ def csvize_deleted_repost_timeline(csv_filename, error_code=-1, exclude_error_co
 
 			csvline += this_log_line
 
-#			print csvline
+			print csvline
 			wf.write(csvline + "\n")
 
 #################################

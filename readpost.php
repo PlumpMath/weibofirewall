@@ -70,8 +70,8 @@ function csv_get_post($post_id, $filename='', $delimiter=',')
 			else
 //				print_r($row_csv[0]);
 				if($row_csv[0] == $post_id) {
-					print_r($row);
-					print_r($row_csv);
+//					print_r($row);
+//					print_r($row_csv);
 					//print count($header);
 					$headerlen = count($header);
 					// okay we got it. let's split data into post info and log info

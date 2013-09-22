@@ -532,7 +532,7 @@ def get_all_posts(post_id):
 
 
 def get_csv_header():
-	csv_header = 'post_id,user_id,user_name,user_follower_count_initial,user_follower_count,post_original_pic,post_created_at,post_created_at_epoch,post_repost_count_initial,post_repost_count,post_text,started_tracking_at,started_tracking_at_epoch,is_deleted,is_retired,error_message,error_code,last_checked_at,last_checked_at_epoch,time_elapsed,post_lifespan'
+	csv_header = 'post_id,user_id,user_name,user_follower_count_initial,user_follower_count,post_original_pic,post_created_at,post_created_at_epoch,post_repost_count_initial,post_repost_count,post_text,started_tracking_at,started_tracking_at_epoch,is_deleted,is_retired,error_message,error_code,last_checked_at,last_checked_at_epoch,time_elapsed,post_lifespan,post_repostlog'
 	csv_header_unicode = csv_header.replace(',', weibo_settings.delim)
 	return csv_header_unicode
 
@@ -541,5 +541,6 @@ def make_csvline_from_post(this_post):
 #	print "THISPOST" , this_post
 
 	csvline = this_post["post_id"] , this_post["user_id"] , this_post["user_name"] , this_post["user_follower_count_initial"] , this_post["user_follower_count"] , this_post["post_original_pic"] , this_post["post_created_at"] , this_post["post_created_at_epoch"] ,this_post["post_repost_count_initial"] , this_post["post_repost_count"] , this_post["post_text"] , this_post["started_tracking_at"] , this_post["started_tracking_at_epoch"] , this_post["is_deleted"] , this_post["is_retired"] , this_post["error_message"] , this_post["error_code"] , this_post["last_checked_at"] , this_post["last_checked_at_epoch"] , this_post["post_lifespan"]
+	print "wmodule csvline= " , csvline
 	return csvline
 
