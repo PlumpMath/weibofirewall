@@ -102,8 +102,12 @@ function csv_get_post($post_id, $filename='', $delimiter=',')
 
 <div id="container">
 
+
 <?php
 	$data = csv_get_post($post_id, $datafile);
+	$thistext = $data["postinfo"]["post_text"]; 
+	print "<a href=http://translate.google.com/#zh-CN/en/" . $thistext . ">" . $thistext . "</a>";
+	print "<br>";
 	print "<img src=" . $imgdir . $post_id . ".jpg>";
 	print '<pre>';
 	print_r($data);

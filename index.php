@@ -5,10 +5,12 @@
 <link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Alef' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'>
-<link rel="stylesheet" href="css/firewall.css" type="text/css" />
+<!-- <link rel="stylesheet" href="css/firewall.css" type="text/css" /> -->
+<link rel="stylesheet/less" href="css/firewall.less" type="text/css" />
 </head>
 <body>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="js/less-1.4.1.min.js"></script>
 <script src="js/moment.min.js"></script>
 <script src="js/jquery.hoverIntent.minified.js"></script>
 <script src="js/jquery.ae.image.resize.min.js"></script>
@@ -18,8 +20,7 @@
 <div id="container">
 	<div id="chartdiv"></div>
 	<div id="durdiv"></div>
-	<div id="imagesdiv">
-		<div id="imgdiv"></div>
+	<div id="postsdiv">
 	</div>
 
 	<div id="infobox">

@@ -2,7 +2,7 @@
 var datafile = "data/deleted_weibo_log.csv";
 var datastartindex = 15;
 var imgdir = "weibo_images/";
-var chartwidth = 1960;
+var chartwidth = 3960;
 //var chartheight = 960;
 var chartheight_padding = 80;
 var chartpadding=100;
@@ -50,7 +50,7 @@ function getcolor_byuser(d) {
 	var thiscolor_byuser = "#" + dig + "FF" + dig;
 	var thiscolor_byuser_2 = "#" + ((d.user_id) % 16777216).toString(16);
 
-	//console.log(thiscolor_bytime);
+	////console.log(thiscolor_bytime);
 	//return thiscolor_bytime;
 //	var thiscolor_byuser = getcolor_byuser(d.user_id);
 	return thiscolor_byuser_2;
@@ -98,13 +98,13 @@ var dsv = d3.dsv("|||", "text/plain");
 
 // read the datafile.START
 dsv(datafile, function(d, i) {
-//		//console.log(d);
+//		////console.log(d);
 	//
 	// this is the format of what we need, adopted from weibo_module's make_csvline_from_post 
 	if(i < datastartindex) {
 		return null;
 	} 
-	console.log(d);
+	//console.log(d);
 	return {
 		post_id: +d.post_id,
 		user_id: parseFloat(d.user_id),
@@ -131,19 +131,19 @@ dsv(datafile, function(d, i) {
 	var data = rows;
 	var chartheight = ((barheight + bargap) * data.length) + chartheight_padding;
 
-//	//console.log(data.length);
+//	////console.log(data.length);
 	data.sort(function(a,b) { return a.post_created_at - b.post_created_at; });
-//	//console.log(data.length);
-	console.log(data)
+//	////console.log(data.length);
+	//console.log(data)
 
 	var mindate = d3.min(data, function(d) { return d["post_created_at"]; });
 	var maxdate = d3.max(data, function(d) { return d["last_checked_at"]; });
 
 
-	//console.log(data.length);	
+	////console.log(data.length);	
 
-	//console.log("mindate = " + mindate)
-	//console.log("maxdate = " + maxdate)
+	////console.log("mindate = " + mindate)
+	////console.log("maxdate = " + maxdate)
 
 	// create chart, set dimensions based on # of deleted posts
 	var chart = d3.select("#chartdiv")
@@ -173,7 +173,7 @@ dsv(datafile, function(d, i) {
 		.tickFormat(d3.time.format("%m-%d %H:%m"));
 
 	var barselect_mouseover = function(d, i) {
-		//console.log(d);
+		////console.log(d);
 		d3.select(d3.event.target).classed("highlight", true); 
 		d3.select("#hoverimg-" + d["post_id"]).classed("hover", true); 
 		d3.select("text[name='" + d["post_id"] + "']").classed("hover", true);
@@ -223,14 +223,15 @@ dsv(datafile, function(d, i) {
                 return "rotate(-45)" 
                 });
 
-	// let's select the imgdiv, and add our images to it that will hover
-	var imgdiv = d3.select("#imgdiv");
-	imgdiv.selectAll("div")
+	// let's select the postsdiv, and add our images to it that will hover
+	var postsdiv = d3.select("#postsdiv");
+	postsdiv.selectAll("div")
 		// plug in our data
 		.data(data).enter()
+		.append("div").attr("class", function(d, i) { return "postdiv post-" + d["post_id"] + " user-" + d["user_id"]; })
 		//let's add an img tag with all this stuff
 		.append("img")
-		.attr("src", function(d) { return imgdir + d["post_id"] + ".jpg"; })
+		.attr("src", function(d) { return imgdir + d["post_id"] + "." + d["post_original_pic"].split(/[\.]+/).pop(); })
 		.attr("class", "hoverimg resizeme")
 		.attr("id", function(d,i) { return "hoverimg-" + d["post_id"]; });
 
@@ -241,8 +242,8 @@ dsv(datafile, function(d, i) {
 		//and now:
 		 .append("rect")
 		 .attr("x", function(d, i) { 
-			 //console.log("post_created_at " + d["post_created_at"]);
-			 //console.log("scaled = " + scaleTime((d["post_created_at"]))); 
+			 ////console.log("post_created_at " + d["post_created_at"]);
+			 ////console.log("scaled = " + scaleTime((d["post_created_at"]))); 
 			 return scaleTime(d["post_created_at"]); 
 		 })
 
@@ -250,7 +251,7 @@ dsv(datafile, function(d, i) {
 		 //.attr("width", function(d) { return (scaleTime(d["post_created_at"])); })
 		.attr("width", function(d) { 
 			elapsedtime = scaleTime(d["last_checked_at"]) - scaleTime(d["post_created_at"]); 
-			//console.log(elapsedtime);
+			////console.log(elapsedtime);
 			//return (scaleTime(maxdate) - scaleTime(d["post_created_at"])); 
 //			return 100;
 			return elapsedtime;
@@ -282,20 +283,73 @@ dsv(datafile, function(d, i) {
 		//and now:
 		 .append("path")
 		.attr('d', function(d, i) { 
+			
+
+			// GET X Y COORDINATES
 			var x = scaleTime(d["post_created_at"]); 
 			var y = i * (barheight + bargap) + (barheight / 2);
+
+			// WIDTH = TIME, SCALED
 			var width = scaleTime(d["last_checked_at"]) - scaleTime(d["post_created_at"]); 
 			width += 5;
-			//var height = barheight;
 			var height = (d["post_repost_count"] - d["post_repost_count_initial"]);
 			height /= heightscale;
-			height += 5;
-			
-			return 'M ' + x +' '+ y + ' l ' + width + ' ' + (height / 2) + ' l 0 -' + height + ' z';
+			height += (barheight / 2); // have a minimum height
+		
+			// M syntax
+			// MOVE TO (x-value) (y-value) 
+			// RELATIVE LINE TO (width, height / w), 
+			// RELATIVE LINE TO (0, -height), 
+			// CLOSE LINE
+			wedgestring =  'M ' + x +' '+ y + ' l ' + width + ' ' + (height / 2) + ' l 0 -' + height + ' z';
+
+
+			if (d["post_repostlog"] == "") {
+				return wedgestring;
+			}
+
+			// OKAY LET'S TRY A SPARKLINE
+			//console.log("okay this is try :: " + i + " -- ");
+			var repostlog = d["post_repostlog"].split(",");
+			//console.log(repostlog.length);
+			var repostlog_post_repost_count = [];
+			var repostlog_checked_at = [];
+
+			var checked_at_format = d3.time.format("%Y-%m-%d %H:%M:%S");
+
+			for (var j = 0; j < repostlog.length; j+= 2) {
+				repostlog_post_repost_count.push(repostlog[j]);
+				repostlog_checked_at.push(checked_at_format.parse(repostlog[j+1]));
+			}
+
+			sparklinestring = 'M ' + x + ' ' + y + ' ';
+			//string goes up
+			for (var j = 0; j < repostlog_checked_at.length; j++) {
+				var thisX = scaleTime(repostlog_checked_at[j]);
+				var thisY = y - (repostlog_post_repost_count[j] / heightscale / 2);
+				sparklinestring += 'L ' + thisX + ' ' + thisY + ' ';
+			}
+			//mirror this; string goes back to origin
+			for (var j = repostlog_checked_at.length - 1; j >= 0; j--) {
+//				//console.log("repostlog_checked_at " + j + " ::: " +repostlog_checked_at[j]);
+				var thisX = scaleTime(repostlog_checked_at[j]);
+//				//console.log("scaletTime = " + thisX);
+				var thisY = y + (repostlog_post_repost_count[j] / heightscale / 2);
+//				//console.log("thisY = " + thisY);
+				sparklinestring += 'L ' + thisX + ' ' + thisY + ' ';
+			}
+
+			sparklinestring += ' z';
+
+			//console.log(sparklinestring);
+			return sparklinestring;
+			//return wedgestring;
 		})
 		.style('opacity', .5)
 		.attr("class", function(d, i) { return "post-" + d["post_id"] + " user-" + d["user_id"]; })
 		 .attr("name", function(d, i) { return d["post_id"]; })
+//		 .attr("fill", "none")
+		 .attr("stroke-width", 1)
 		 .attr("fill", function(d) { 
 
 				// generate colors per user 
@@ -308,7 +362,7 @@ dsv(datafile, function(d, i) {
 				var thiscolor_value = dec2hex(colorMax - (Math.round(elapsedtimecolor)));
 				// create hexvalue
 				thiscolor_bytime = "#" + thiscolor_value + thiscolor_value + thiscolor_value;				
-				//console.log(thiscolor_bytime);
+				////console.log(thiscolor_bytime);
 				return thiscolor_bytime;
 				var thiscolor_byuser = getcolor_byuser(d);
 				return thiscolor_byuser;
@@ -330,15 +384,15 @@ dsv(datafile, function(d, i) {
 		.attr("text-anchor", "end") // text-align: right
 		.attr("name", function(d, i) { return d["post_id"]; })
 		.attr("class", function(d, i) { return "post-" + d["post_id"] + " user-" + d["user_id"]; })
-		.attr("fill", "#CCC")
+//		.attr("fill", "#CCC")
 		.text(function(d,i) { 
-			//console.log(i);
-			//console.log(d["last_checked_at"]);
-			//console.log(d["post_created_at"]);
-			//console.log(d["last_checked_at"].getTime());
-			//console.log(d["post_created_at"].getTime());
+			////console.log(i);
+			////console.log(d["last_checked_at"]);
+			////console.log(d["post_created_at"]);
+			////console.log(d["last_checked_at"].getTime());
+			////console.log(d["post_created_at"].getTime());
 			elapsedtimeseconds = (d["last_checked_at"].getTime() - d["post_created_at"].getTime()) / 1000; 
-			//console.log(elapsedtimeseconds);
+			////console.log(elapsedtimeseconds);
 			return d["user_name"] + ":" + "lifespan: " + lifespanFormat(elapsedtimeseconds);
 			return d["user_name"] + ": " + bar_dateformat(d["post_created_at"]) + "-- lifespan: " + lifespanFormat(elapsedtimeseconds);
 		})
@@ -357,10 +411,10 @@ chart.selectAll("rect")
 		 .attr("fill", "#FA3");
 
 
-imgdiv.selectAll("div").
+postsdiv.selectAll("div").
 		data(data).enter()
 		.append("img")
-		.attr("src", function(d) { return imgdir + d["post_id"] + ".jpg"; })
+		.attr("src", function(d) { return imgdir + d["post_id"] + "." + d["post_original_pic"].split(/[\.]+/).pop(); })
 		.attr("class", "hoverimg resizeme")
 		.attr("id", function(d,i) { return "hoverimg-" + d["post_id"]; });
 

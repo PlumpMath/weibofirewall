@@ -1,9 +1,19 @@
 body {
 	background-color: #222;
+	color: #DDD;
 }
 
 div {
 //	border: 1px cyan solid;
+}
+
+a {
+	text-decoration: underline;
+	color: #BBB;
+}
+
+a:hover{
+	color: #FFF;
 }
 
 #container {
@@ -23,7 +33,7 @@ div {
   text-align: right;
   padding: 3px;
   margin: 1px;
-  color: white;
+  fill: #666;
 }
 
 #durdiv {
@@ -47,7 +57,7 @@ rect {
 .hoverimg {
 	display: none;
 	position: absolute;
-	border: 1px dotted #F33;
+	border: 1px dotted #ddd;
 	padding: 5px;
 	background-color: white;
 }
@@ -91,10 +101,11 @@ text.hover {
 	top: 20px;
 	z-index: 1000;
 	width: 200px;
-	background-color: white;
+	background-color: #EEE;
 	text-align: center;
 	padding: 5px;
 	font-size: 0.6em;
+	color: #333;
 }
 #infobox-inner {
 	padding: 10px;
@@ -123,6 +134,6 @@ h1, h2, h3, .title {
 }
 
 .same-user-hover {
-	fill: #F0F !important; 
+	fill: #FFF !important; 
 }
 
