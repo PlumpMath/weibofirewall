@@ -43,7 +43,17 @@ function epochToDate(epoch) {
 	return new Date(epoch * 1000);
 }
 
+function getcolor_byuser(d) {
+// generate colors per user 
+	var dig = dec2hex((d.user_id) % 256);
+	var thiscolor_byuser = "#" + dig + "FF" + dig;
+	var thiscolor_byuser_2 = "#" + ((d.user_id) % 16777216).toString(16);
 
+	//console.log(thiscolor_bytime);
+	//return thiscolor_bytime;
+//	var thiscolor_byuser = getcolor_byuser(d.user_id);
+	return thiscolor_byuser;
+}
 
 function rehumanize(time){
 	time = time._data;
@@ -244,9 +254,6 @@ dsv(datafile, function(d, i) {
 		 .attr("fill", function(d) { 
 
 				// generate colors per user 
-			 	var dig = dec2hex((d.user_id) % 256);
-				var thiscolor_byuser = "#" + dig + "FF" + dig;
-				var thiscolor_byuser_2 = "#" + ((d.user_id) % 16777216).toString(16);
 
 				// generate colors by time
 				elapsedtimecolor = scaleTimeForColor(d["last_checked_at"]) - scaleTimeForColor(d["post_created_at"]); 
@@ -254,8 +261,9 @@ dsv(datafile, function(d, i) {
 				// create hexvalue
 				thiscolor_bytime = "#" + thiscolor_value + thiscolor_value + thiscolor_value;				
 				//console.log(thiscolor_bytime);
-				return thiscolor_bytime;
-				//return thiscolor_byuser_2;
+				//return thiscolor_bytime;
+				var thiscolor_byuser = getcolor_byuser(d);
+				return thiscolor_byuser;
 			})
 	  .on("mouseover", barselect_mouseover)
 	  .on("mouseout", barselect_mouseout) 
