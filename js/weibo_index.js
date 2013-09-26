@@ -2,7 +2,7 @@
 var datafile = "data/deleted_weibo_log.csv";
 var datastartindex = 15;
 var imgdir = "weibo_images/";
-var chartwidth = 960;
+var chartwidth = 1960;
 //var chartheight = 960;
 var chartheight_padding = 80;
 var chartpadding=100;
@@ -11,9 +11,10 @@ var heightscale = 10; // reposts per pixel
 var bargap = 1;
 var bar_dateformat = d3.time.format("%b %e, %Y %H:%M");
 var timepadding = 3600; //one hour
-var colorMin = 250;
-var colorMax = 100;
+var colorMin = 50;
+var colorMax = 220;
 var randomTimeRange= 20;
+var tickstrokecolor = "#444";
 
 function pad (str, max) {
   str = str.toString();
@@ -52,7 +53,7 @@ function getcolor_byuser(d) {
 	//console.log(thiscolor_bytime);
 	//return thiscolor_bytime;
 //	var thiscolor_byuser = getcolor_byuser(d.user_id);
-	return thiscolor_byuser;
+	return thiscolor_byuser_2;
 }
 
 function rehumanize(time){
@@ -175,13 +176,19 @@ dsv(datafile, function(d, i) {
 		//console.log(d);
 		d3.select(d3.event.target).classed("highlight", true); 
 		d3.select("#hoverimg-" + d["post_id"]).classed("hover", true); 
-		d3.select("text[name='" + d["post_id"] + "']").attr("class", "hover");
+		d3.select("text[name='" + d["post_id"] + "']").classed("hover", true);
+
+		//highlight same users
+		d3.selectAll(".user-" + d["user_id"]).classed("same-user-hover", true);
 	}
 
 	var barselect_mouseout = function(d, i) {
 		d3.select(d3.event.target).classed("highlight", false); 
 		d3.select("#hoverimg-" + d["post_id"]).classed("hover", false);
-		d3.select("text[name='" + d["post_id"] + "']").attr("class", "");
+		d3.select("text[name='" + d["post_id"] + "']").classed("hover", false);
+
+		//highlight same users
+		d3.selectAll(".user-" + d["user_id"]).classed("same-user-hover", false);
 	}
 
 	var barselect_click = function(d, i) {
@@ -193,14 +200,14 @@ dsv(datafile, function(d, i) {
 
 	// add x-axis ticks
 	chart.selectAll("line")
-		.data(scaleTime.ticks(d3.time.hour, 1)).enter()
+		.data(scaleTime.ticks(d3.time.day, 1)).enter()
 		.append("line")
 		.attr("class", "tickline")
 		.attr("x1", scaleTime)
 		.attr("x2", scaleTime)
 		.attr("y1", 0)
 		.attr("y2", chartheight)
-		.style("stroke", "#EEE");
+		.style("stroke", tickstrokecolor);
 
 	// Add the x-axis labels
 	chart.append("g")
@@ -260,10 +267,9 @@ dsv(datafile, function(d, i) {
 				var thiscolor_value = dec2hex(colorMax - (Math.round(elapsedtimecolor)));
 				// create hexvalue
 				thiscolor_bytime = "#" + thiscolor_value + thiscolor_value + thiscolor_value;				
-				//console.log(thiscolor_bytime);
-				//return thiscolor_bytime;
 				var thiscolor_byuser = getcolor_byuser(d);
-				return thiscolor_byuser;
+				return thiscolor_bytime;
+				//return thiscolor_byuser;
 			})
 	  .on("mouseover", barselect_mouseover)
 	  .on("mouseout", barselect_mouseout) 
@@ -288,6 +294,7 @@ dsv(datafile, function(d, i) {
 			return 'M ' + x +' '+ y + ' l ' + width + ' ' + (height / 2) + ' l 0 -' + height + ' z';
 		})
 		.style('opacity', .5)
+		.attr("class", function(d, i) { return "post-" + d["post_id"] + " user-" + d["user_id"]; })
 		 .attr("name", function(d, i) { return d["post_id"]; })
 		 .attr("fill", function(d) { 
 
@@ -303,7 +310,8 @@ dsv(datafile, function(d, i) {
 				thiscolor_bytime = "#" + thiscolor_value + thiscolor_value + thiscolor_value;				
 				//console.log(thiscolor_bytime);
 				return thiscolor_bytime;
-				//return thiscolor_byuser_2;
+				var thiscolor_byuser = getcolor_byuser(d);
+				return thiscolor_byuser;
 			})
 	  .on("mouseover", barselect_mouseover)
 	  .on("mouseout", barselect_mouseout) 
@@ -321,6 +329,7 @@ dsv(datafile, function(d, i) {
 		.attr("dy", ".35em") // vertical-align: middle
 		.attr("text-anchor", "end") // text-align: right
 		.attr("name", function(d, i) { return d["post_id"]; })
+		.attr("class", function(d, i) { return "post-" + d["post_id"] + " user-" + d["user_id"]; })
 		.attr("fill", "#CCC")
 		.text(function(d,i) { 
 			//console.log(i);

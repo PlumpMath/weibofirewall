@@ -1,3 +1,6 @@
+body {
+	background-color: #222;
+}
 
 div {
 //	border: 1px cyan solid;
@@ -119,4 +122,7 @@ h1, h2, h3, .title {
 	font-family: 'PT Sans', sans-serif;
 }
 
+.same-user-hover {
+	fill: #F0F !important; 
+}
 
