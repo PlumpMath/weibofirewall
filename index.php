@@ -16,6 +16,9 @@
 <script src="js/jquery.ae.image.resize.min.js"></script>
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src="js/weibo_index.js" charset="utf-8"></script>
+<script type="text/javascript">
+     less.env = "development";
+</script>
 
 <div id="container">
 	<div id="chartdiv"></div>

@@ -9,9 +9,6 @@ body {
 	color: @light-text;
 }
 
-div {
-//	border: 1px cyan solid;
-}
 
 a {
 	text-decoration: underline;
@@ -48,7 +45,6 @@ a:hover{
 
 rect {
 	display: none;
-	/*fill: cyan; */
 }
 
 .tickline {
@@ -56,21 +52,14 @@ rect {
 }
 	
 
-.highlight {
-	fill: cyan;
-}
 
 .postdiv {
-	display: none;
+	display: none; 
 	position: absolute;
 	border: 1px dotted #ddd;
 	padding: 5px;
 	background-color: white;
 }
-
-/* text.hover {
-	fill: #000;
-} */
 
 .axis path,
 .axis line {
@@ -135,9 +124,10 @@ h1, h2, h3, .title {
 	font-family: 'PT Sans', sans-serif;
 }
 
-.posthover {
+.post-hover {
 	display: block !important;
 	border: 10px solid cyan;
+	fill: #FF00FF !important; 
 }
 
 .same-user-hover {

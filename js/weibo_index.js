@@ -18,6 +18,9 @@ var tickstrokecolor = "#444";
 var url = document.URL;
 var baseurl=url.substring(0,url.lastIndexOf("/"));
 
+var wedgeMinimumX = 5;
+var wedgeMinimumY = 1;
+
 function pad (str, max) {
   str = str.toString();
   return str.length < max ? pad("0" + str, max) : str;
@@ -175,20 +178,14 @@ dsv(datafile, function(d, i) {
 		.tickFormat(d3.time.format("%m-%d %H:%m"));
 
 	var barselect_mouseover = function(d, i) {
-//		console.log(d["post_id"]);
-//		d3.select(d3.event.target).classed("highlight", true); 
-		//d3.selectAll(".postdiv .post-" + d["post_id"]).classed("hover", true); 
-		d3.selectAll(".postdiv.post-" + d["post_id"]).classed("posthover", true); 
+		d3.selectAll(".postdiv.post-" + d["post_id"]).classed("post-hover", true); 
 
 		//highlight same users
 		d3.selectAll(".user-" + d["user_id"]).classed("same-user-hover", true);
 	}
 
 	var barselect_mouseout = function(d, i) {
-//		d3.select(d3.event.target).classed("highlight", false); 
-//		d3.select(".postdiv .post-" + d["post_id"]).classed("hover", false);
-//		d3.selectAll(".postdiv.post-" + d["post_id"]).classed("posthover", false); 
-//		d3.select("text[name='" + d["post_id"] + "']").classed("hover", false);
+		d3.selectAll(".postdiv.post-" + d["post_id"]).classed("post-hover", false); 
 
 		//highlight same users
 		d3.selectAll(".user-" + d["user_id"]).classed("same-user-hover", false);
@@ -338,17 +335,16 @@ dsv(datafile, function(d, i) {
 			sparklinestring = 'M ' + x + ' ' + y + ' ';
 			//string goes up
 			for (var j = 0; j < repostlog_checked_at.length; j++) {
-				var thisX = scaleTime(repostlog_checked_at[j]);
+				var thisX = scaleTime(repostlog_checked_at[j]) + wedgeMinimumX;
 				var thisY = y - (repostlog_post_repost_count[j] / heightscale / 2);
+				thisY -= wedgeMinimumY; //minimum so that unshared posts are still visible
 				sparklinestring += 'L ' + thisX + ' ' + thisY + ' ';
 			}
 			//mirror this; string goes back to origin
 			for (var j = repostlog_checked_at.length - 1; j >= 0; j--) {
-//				//console.log("repostlog_checked_at " + j + " ::: " +repostlog_checked_at[j]);
-				var thisX = scaleTime(repostlog_checked_at[j]);
-//				//console.log("scaletTime = " + thisX);
+				var thisX = scaleTime(repostlog_checked_at[j]) + wedgeMinimumX;
 				var thisY = y + (repostlog_post_repost_count[j] / heightscale / 2);
-//				//console.log("thisY = " + thisY);
+				thisY += wedgeMinimumY; //minimum
 				sparklinestring += 'L ' + thisX + ' ' + thisY + ' ';
 			}
 
@@ -449,7 +445,7 @@ durdiv.selectAll("div")
 	$( ".resizeme" ).aeImageResize({ height: 400, width: 400 });
 
 	$("body").mousemove(function(e){
-		  $('.posthover').css({'top': e.pageY + 10, 'left': e.pageX + 10});
+		  $('.post-hover').css({'top': e.pageY + 10, 'left': e.pageX + 10});
 	});
 }); 
 //END
