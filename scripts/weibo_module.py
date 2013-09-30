@@ -88,7 +88,7 @@ def post_alert():
 	if (weibo_settings.track_posts_override >= num_can_track):
 		return "WARNING - you can only track " + str(num_can_track) + ", yet you're trying to track " + str(weibo_settings.track_posts_override)
 
-	return ""
+	return "You can track " + str(num_can_track) + " posts"
 
 #get a new token- starting from the first token and working its way to the end
 def getnewtoken():
@@ -541,6 +541,6 @@ def make_csvline_from_post(this_post):
 #	print "THISPOST" , this_post
 
 	csvline = this_post["post_id"] , this_post["user_id"] , this_post["user_name"] , this_post["user_follower_count_initial"] , this_post["user_follower_count"] , this_post["post_original_pic"] , this_post["post_created_at"] , this_post["post_created_at_epoch"] ,this_post["post_repost_count_initial"] , this_post["post_repost_count"] , this_post["post_text"] , this_post["started_tracking_at"] , this_post["started_tracking_at_epoch"] , this_post["is_deleted"] , this_post["is_retired"] , this_post["error_message"] , this_post["error_code"] , this_post["last_checked_at"] , this_post["last_checked_at_epoch"] , this_post["post_lifespan"]
-	print "wmodule csvline= " , csvline
+#	print "wmodule csvline= " , csvline
 	return csvline
 

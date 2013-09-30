@@ -173,18 +173,21 @@ dsv(datafile, function(d, i) {
 		.tickFormat(d3.time.format("%m-%d %H:%m"));
 
 	var barselect_mouseover = function(d, i) {
-		////console.log(d);
-		d3.select(d3.event.target).classed("highlight", true); 
-		d3.select("#hoverimg-" + d["post_id"]).classed("hover", true); 
-		d3.select("text[name='" + d["post_id"] + "']").classed("hover", true);
+//		console.log(d["post_id"]);
+//		d3.select(d3.event.target).classed("highlight", true); 
+		//d3.selectAll(".postdiv .post-" + d["post_id"]).classed("hover", true); 
+		d3.select(".postdiv .post-" + d["post_id"]).classed("hover", true); 
 
+//		d3.selectAll(".post-" + d["post_id"]).classed("hover", true); 
+		//d3.select("text[name='" + d["post_id"] + "']").classed("hover", true);
 		//highlight same users
 		d3.selectAll(".user-" + d["user_id"]).classed("same-user-hover", true);
 	}
 
 	var barselect_mouseout = function(d, i) {
-		d3.select(d3.event.target).classed("highlight", false); 
-		d3.select("#hoverimg-" + d["post_id"]).classed("hover", false);
+//		d3.select(d3.event.target).classed("highlight", false); 
+//		d3.select(".postdiv .post-" + d["post_id"]).classed("hover", false);
+		d3.selectAll(".post-" + d["post_id"]).classed("hover", false); 
 		d3.select("text[name='" + d["post_id"] + "']").classed("hover", false);
 
 		//highlight same users
@@ -228,12 +231,14 @@ dsv(datafile, function(d, i) {
 	postsdiv.selectAll("div")
 		// plug in our data
 		.data(data).enter()
-		.append("div").attr("class", function(d, i) { return "postdiv post-" + d["post_id"] + " user-" + d["user_id"]; })
+		// wrap everything in a div
+		.append("div")
+			.attr("class", function(d, i) { return "postdiv post-" + d["post_id"] + " user-" + d["user_id"]; })
 		//let's add an img tag with all this stuff
 		.append("img")
-		.attr("src", function(d) { return imgdir + d["post_id"] + "." + d["post_original_pic"].split(/[\.]+/).pop(); })
-		.attr("class", "hoverimg resizeme")
-		.attr("id", function(d,i) { return "hoverimg-" + d["post_id"]; });
+			.attr("src", function(d) { return imgdir + d["post_id"] + "." + d["post_original_pic"].split(/[\.]+/).pop(); })
+			.attr("class", "resizeme")
+//			.attr("id", function(d,i) { return "hoverpost-" + d["post_id"]; });
 
 	// let's select the chart and add our bars to it	
 	chart.selectAll("bar")
@@ -410,14 +415,14 @@ chart.selectAll("rect")
 		 .attr("height", barheight)
 		 .attr("fill", "#FA3");
 
-
+/*
 postsdiv.selectAll("div").
 		data(data).enter()
 		.append("img")
 		.attr("src", function(d) { return imgdir + d["post_id"] + "." + d["post_original_pic"].split(/[\.]+/).pop(); })
-		.attr("class", "hoverimg resizeme")
-		.attr("id", function(d,i) { return "hoverimg-" + d["post_id"]; });
-
+		.attr("class", "hoverpost resizeme")
+		.attr("id", function(d,i) { return "hoverpost-" + d["post_id"]; });
+*/
 
 var durdiv = d3.select("#durdiv");
 durdiv.selectAll("div")

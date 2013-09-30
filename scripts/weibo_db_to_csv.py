@@ -33,7 +33,7 @@ def csvize_deleted_unique(csv_filename, error_code=-1, exclude_error_code=False)
 		#write csv header
 		csv_header = weibo_module.get_csv_header()
 		wf.write(csv_header + "\n")
-		print csv_header
+		#print csv_header
 
 		#iterate through posts
 		for this_post_id in deleted_post_ids:
@@ -48,13 +48,13 @@ def csvize_deleted_unique(csv_filename, error_code=-1, exclude_error_code=False)
 			#not csv, this is our delimiter now
 			csvline = weibo_settings.delim.join(csvline)
 
-#			print csvline
+#			#print csvline
 			wf.write(csvline + "\n")
 
 
 
 ###
-#let's print a log of all deleted posts, with the repost count/checked time following as pairs. so:
+#let's #print a log of all deleted posts, with the repost count/checked time following as pairs. so:
 # post_id, user id, etc....... and then , unixepoch, repost count, unixepoch, repost count.... 
 
 #if exclude_error_code = false, use error_code as filter
@@ -75,7 +75,7 @@ def csvize_deleted_repost_timeline(csv_filename, error_code=-1, exclude_error_co
 		#write csv header
 		csv_header = weibo_module.get_csv_header()
 		wf.write(csv_header + "\n")
-		print csv_header
+		#print csv_header
 
 		#iterate through posts
 		for this_post_id in deleted_post_ids:
@@ -84,14 +84,14 @@ def csvize_deleted_repost_timeline(csv_filename, error_code=-1, exclude_error_co
 			# okay first we get the initial post
 			this_post = weibo_module.merge_deleted_from_new_old(this_post_id)
 
-#			print "THISPOST" , this_post
+#			#print "THISPOST" , this_post
 			# and then we scan the rest 
 			this_post_all_logs =  weibo_module.get_all_posts(this_post_id)
 
 			this_log_line = []
 			for this_log in this_post_all_logs:
 				if 'post_repost_count' in this_log and this_log["post_repost_count"] <> None:
-#					print this_log["post_repost_count"], " :: " , this_log["checked_at"]
+#					#print this_log["post_repost_count"], " :: " , this_log["checked_at"]
 					#this_log_line += weibo_settings.delim_log  + str(this_log["post_repost_count"]) + weibo_settings.delim_log + str(this_log["checked_at"])
 					this_log_line.append(str(this_log["post_repost_count"]))
 					this_log_line.append(str(this_log["checked_at"]))
@@ -109,7 +109,7 @@ def csvize_deleted_repost_timeline(csv_filename, error_code=-1, exclude_error_co
 
 			csvline += this_log_line
 
-			print csvline
+			#print csvline
 			wf.write(csvline + "\n")
 
 #################################

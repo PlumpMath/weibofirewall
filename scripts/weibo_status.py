@@ -147,11 +147,12 @@ print "##################################"
 print "########## WEIBO STATUS ##########"
 print "##################################"
 
+print weibo_module.post_alert()
 nowdatetime = weibo_module.get_current_chinatime()
 numlive = check_for_live_posts()
 if numlive > 0:
 	list_live_posts()
-list_retired_posts()
-list_deleted_posts()
+#list_retired_posts()
+#list_deleted_posts()
 
 
