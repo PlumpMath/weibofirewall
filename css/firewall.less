@@ -20,7 +20,7 @@ a:hover{
 }
 
 #container {
-	width: 1024px;
+/*	width: 1024px; */
 }
 
 #chartdiv {
@@ -83,6 +83,23 @@ rect {
       stroke-width: 0;
 }
 
+#loadingsplash {
+	position: fixed;
+	top: 0; left: 0; bottom: 0; right: 0;
+	margin: auto;
+	width: 128px;
+	height: 128px;
+	z-index: 5;
+
+	background-color: transparent;
+	padding: 10px;
+
+	font-family: 'PT Sans', sans-serif;
+	text-align: center;
+	font-size: 3em;
+	color: #333;
+}
+
 /* infobox */
 
 #infobox {
@@ -90,7 +107,7 @@ rect {
 	position: fixed;
 	left: 20px;
 	top: 20px;
-	z-index: 1000;
+	z-index: 10;
 	width: 250px;
 	background-color: #EEE;
 	text-align: left;

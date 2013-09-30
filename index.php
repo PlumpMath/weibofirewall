@@ -18,13 +18,36 @@
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src="js/weibo_index.js" charset="utf-8"></script>
 <script type="text/javascript">
-     less.env = "development";
+// Destroys the localStorage copy of CSS that less.js creates
+ 
+function destroyLessCache(pathToCss) { // e.g. '/css/' or '/stylesheets/'
+ 
+  if (!window.localStorage || !less || less.env !== 'development') {
+    return;
+  }
+  var host = window.location.host;
+  var protocol = window.location.protocol;
+  var keyPrefix = protocol + '//' + host + pathToCss;
+  
+  for (var key in window.localStorage) {
+    if (key.indexOf(keyPrefix) === 0) {
+      delete window.localStorage[key];
+    }
+  }
+}
+$(document).ready(function() {
+	destroyLessCache();
+});
 </script>
 
 <div id="container">
 	<div id="chartdiv"></div>
 	<div id="durdiv"></div>
 	<div id="postsdiv">
+	</div>
+
+	<div id="loadingsplash">
+		<img src="images/loading.gif">
 	</div>
 
 	<div id="infobox">

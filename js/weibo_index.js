@@ -75,6 +75,11 @@ function rehumanize(time){
     return "Time's up!";
 }
 
+
+function hideLoadingSplash() {
+	$("#loadingsplash").fadeOut(1000);
+}
+
 function handleMouse(e) {
 
   //what we weant to do: proportional to client, scroll page.
@@ -130,7 +135,6 @@ var dsv = d3.dsv("|||", "text/plain");
 // read the datafile.START
 dsv(datafile, function(d, i) {
 //		////console.log(d);
-	//
 	// this is the format of what we need, adopted from weibo_module's make_csvline_from_post 
 	if(i < datastartindex) {
 		return null;
@@ -158,6 +162,7 @@ dsv(datafile, function(d, i) {
 	};
 }, function(error, rows) {
 
+	//
 	// now let's massage that data
 	var data = rows;
 	var chartheight = ((barheight + bargap) * data.length) + chartheight_padding;
@@ -478,7 +483,7 @@ durdiv.selectAll("div")
 	$("body").mousemove(function(e){
 		  $('.post-hover').css({'top': e.pageY + 10, 'left': e.pageX + 10});
 	});
-}); 
+});
 //END
 
 
