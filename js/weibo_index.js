@@ -179,6 +179,7 @@ dsv(datafile, function(d, i) {
 
 	var barselect_mouseover = function(d, i) {
 		d3.selectAll(".postdiv.post-" + d["post_id"]).classed("post-hover", true); 
+//		d3.selectAll(".postdiv.post-" + d["post_id"]).transition().style("displayay", "block !important");
 
 		//highlight same users
 		d3.selectAll(".user-" + d["user_id"]).classed("same-user-hover", true);
@@ -237,14 +238,17 @@ dsv(datafile, function(d, i) {
 					var thisimage = imgdir + d["post_id"] + "." + d["post_original_pic"].split(/[\.]+/).pop(); 
 					var thisresizedimage = "https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?url=" 
 						+ baseurl 
+						+ "/"
 						+ thisimage 
-						+ "&container=focus&resize_w=300&resize_h=300&refresh=2592000";
-					return thisimage;
+						+ "&container=focus&resize_h=200&refresh=2592000";
 					return thisresizedimage;
+					return thisimage;
 			})
 			.attr("class", "resizeme")
 //			.attr("id", function(d,i) { return "hoverpost-" + d["post_id"]; });
-
+//
+//
+	
 	// let's select the chart and add our bars to it	
 	chart.selectAll("bar")
 		// plug in our data
@@ -402,6 +406,7 @@ dsv(datafile, function(d, i) {
 			////console.log(d["post_created_at"].getTime());
 			elapsedtimeseconds = (d["last_checked_at"].getTime() - d["post_created_at"].getTime()) / 1000; 
 			////console.log(elapsedtimeseconds);
+			return d["user_name"];
 			return d["user_name"] + ":" + "lifespan: " + lifespanFormat(elapsedtimeseconds);
 			return d["user_name"] + ": " + bar_dateformat(d["post_created_at"]) + "-- lifespan: " + lifespanFormat(elapsedtimeseconds);
 		})
