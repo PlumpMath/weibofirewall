@@ -21,6 +21,9 @@ var baseurl=url.substring(0,url.lastIndexOf("/"));
 var wedgeMinimumX = 5;
 var wedgeMinimumY = 1;
 
+
+
+
 function pad (str, max) {
   str = str.toString();
   return str.length < max ? pad("0" + str, max) : str;
@@ -72,6 +75,25 @@ function rehumanize(time){
     return "Time's up!";
 }
 
+function handleMouse(e) {
+
+  //what we weant to do: proportional to client, scroll page.
+	//so: if cursor is 25% of clientX and 25% of clientY, scroll page to 25% of pageX and 25% of pageY.
+	var scrollToX = e.clientX / $(window).width() * $(document).width();
+	var scrollToY = e.clientY / $(window).height() * $(document).height();
+  //
+
+//	console.log("client: " + e.clientX + "," + e.clientY);
+//	console.log("windowmax: " + $(window).width() + "," + $(window).height());
+//	console.log(scrollToX + " " +  scrollToY);
+	window.scrollTo(scrollToX, scrollToY);
+
+}
+
+// Assign handleMouse to mouse movement events
+document.onmousemove = handleMouse;
+
+
 /* THIS IS THE CSVLINE 
 	*
 	post_id,
@@ -97,7 +119,11 @@ post_repostlog
 
  */
 
-
+///////////////////////////////////////////////////
+///////////////////////////////////////////////////
+//D3 START
+///////////////////////////////////////////////////
+///////////////////////////////////////////////////
 //get delimiter from weibo_settings.py
 var dsv = d3.dsv("|||", "text/plain");
 

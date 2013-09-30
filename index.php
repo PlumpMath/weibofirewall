@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<title>Jumping The Great Firewall</title>
 <link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Alef' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'>
@@ -32,13 +33,20 @@
 			   Jumping The Great Firewall (alpha) </div>
 
 			 <div class="info">
-				Using data collected by Yi Du, the visualization seeks to outline a timeline of Weibo image posts, and their subsequent deletion by the human censors of the Great Firewall.
-<br>
-<br>
-Note: This visualization prototype is currently working with limited data. For example, we are currently missing the specific deletion times for all Weibo posts. We hope to change the data collection process and to collect not only deletion times, but to track the increase in repost rate through time. As such, we hope to find a relationship between repost rate and deletion time -- suspecting that the faster a post is reposted, the faster it is deleted. 
-<br>
-<br>
-			 The end goal is not to visualize censorship within a straightforward timeline, which displays a series of events as within an immutable, sealed-off history. Rather, the desire is to find an appropriate visualization that would express censorship as a series of sudden and violent acts, in order to posit a desired alternative to work towards -- namely, non-censored expression. 
+<i>In collaboration with Penn Voices, and Mark Hansen, Brown Institute, School of Journalism</i>
+<br><br>
+<b>Project Director</b><br>
+Laura Kurgan<br>
+<b>Research Associate and Data Visualization<br></b>
+Dan Taeyoung Lee<br>
+<b>Research Associate, School of Journalism<br></b>
+Yi Du
+<br><br>
+This project is an attempt at the visualization of new phenomenon, which can be called free expression in China. The title, .Jumping the Great Firewall. derives from something that already is happening in China by the users of Weibo a Chinese, Twitter-like microblog. 
+<br><br>
+As we have all read on media around the world, The Internet in China is policed by something known as the Great Firewall. It is a name for a human and technological program that keeps unacceptable or .sensitive. content (words and articles about the Tiananmen Square massacre, for example), off the Chinese Internet and from the computers of those who could, potentially, create a movement inside the country. It is a system of control. Twitter and Facebook are therefore, blocked, as are many western news outlets and human rights web sites; web searches are seriously curtailed; sensitive words are blocked; and content is often removed. Those in China who wish to access blocked web sites, must do so via a Virtual Private Network, (VPN). This is known as jumping the Great Firewall.
+<br><br>
+There is a significant difference between Weibo, and Twitter: you can insert images directly into your post, without links. Images are a lot less searchable than text, which implies that content can spread more widely before it is detected. Those who know this, now take screenshots of controversial posts before they.re removed and re-post them. 
 			</div>
 		</div>
 	</div>
