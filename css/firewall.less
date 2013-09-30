@@ -1,6 +1,12 @@
+@gray-light: #333; 
+@gray-dark: #777;
+@light-text: @gray-light;
+@bar-text: @gray-dark;
+@bar-text-sameuser: #FFF;
+
 body {
 	background-color: #222;
-	color: #DDD;
+	color: @light-text;
 }
 
 div {
@@ -33,7 +39,7 @@ a:hover{
   text-align: right;
   padding: 3px;
   margin: 1px;
-  fill: #666;
+  fill: @bar-text;
 }
 
 #durdiv {
@@ -54,7 +60,7 @@ rect {
 	fill: cyan;
 }
 
-.hoverimg {
+.postdiv {
 	display: none;
 	position: absolute;
 	border: 1px dotted #ddd;
@@ -62,13 +68,9 @@ rect {
 	background-color: white;
 }
 
-img.hover {
-	display: block !important;
-}
-
-text.hover {
+/* text.hover {
 	fill: #000;
-}
+} */
 
 .axis path,
 .axis line {
@@ -133,7 +135,12 @@ h1, h2, h3, .title {
 	font-family: 'PT Sans', sans-serif;
 }
 
+.posthover {
+	display: block !important;
+	border: 10px solid cyan;
+}
+
 .same-user-hover {
-	fill: #FFF !important; 
+	fill: @bar-text-sameuser !important; 
 }
 

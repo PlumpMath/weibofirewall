@@ -15,6 +15,8 @@ var colorMin = 50;
 var colorMax = 220;
 var randomTimeRange= 20;
 var tickstrokecolor = "#444";
+var url = document.URL;
+var baseurl=url.substring(0,url.lastIndexOf("/"));
 
 function pad (str, max) {
   str = str.toString();
@@ -176,10 +178,8 @@ dsv(datafile, function(d, i) {
 //		console.log(d["post_id"]);
 //		d3.select(d3.event.target).classed("highlight", true); 
 		//d3.selectAll(".postdiv .post-" + d["post_id"]).classed("hover", true); 
-		d3.select(".postdiv .post-" + d["post_id"]).classed("hover", true); 
+		d3.selectAll(".postdiv.post-" + d["post_id"]).classed("posthover", true); 
 
-//		d3.selectAll(".post-" + d["post_id"]).classed("hover", true); 
-		//d3.select("text[name='" + d["post_id"] + "']").classed("hover", true);
 		//highlight same users
 		d3.selectAll(".user-" + d["user_id"]).classed("same-user-hover", true);
 	}
@@ -187,8 +187,8 @@ dsv(datafile, function(d, i) {
 	var barselect_mouseout = function(d, i) {
 //		d3.select(d3.event.target).classed("highlight", false); 
 //		d3.select(".postdiv .post-" + d["post_id"]).classed("hover", false);
-		d3.selectAll(".post-" + d["post_id"]).classed("hover", false); 
-		d3.select("text[name='" + d["post_id"] + "']").classed("hover", false);
+//		d3.selectAll(".postdiv.post-" + d["post_id"]).classed("posthover", false); 
+//		d3.select("text[name='" + d["post_id"] + "']").classed("hover", false);
 
 		//highlight same users
 		d3.selectAll(".user-" + d["user_id"]).classed("same-user-hover", false);
@@ -236,7 +236,15 @@ dsv(datafile, function(d, i) {
 			.attr("class", function(d, i) { return "postdiv post-" + d["post_id"] + " user-" + d["user_id"]; })
 		//let's add an img tag with all this stuff
 		.append("img")
-			.attr("src", function(d) { return imgdir + d["post_id"] + "." + d["post_original_pic"].split(/[\.]+/).pop(); })
+			.attr("src", function(d) { 
+					var thisimage = imgdir + d["post_id"] + "." + d["post_original_pic"].split(/[\.]+/).pop(); 
+					var thisresizedimage = "https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?url=" 
+						+ baseurl 
+						+ thisimage 
+						+ "&container=focus&resize_w=300&resize_h=300&refresh=2592000";
+					return thisimage;
+					return thisresizedimage;
+			})
 			.attr("class", "resizeme")
 //			.attr("id", function(d,i) { return "hoverpost-" + d["post_id"]; });
 
@@ -441,7 +449,7 @@ durdiv.selectAll("div")
 	$( ".resizeme" ).aeImageResize({ height: 400, width: 400 });
 
 	$("body").mousemove(function(e){
-		  $('.hover').css({'top': e.pageY + 10, 'left': e.pageX + 10});
+		  $('.posthover').css({'top': e.pageY + 10, 'left': e.pageX + 10});
 	});
 }); 
 //END
