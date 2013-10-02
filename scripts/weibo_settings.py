@@ -39,7 +39,7 @@ accesstokens = [
 apiurl_accessfriends = "https://api.weibo.com/2/statuses/friends_timeline.json"
 apiurl_checkstatus = "https://api.weibo.com/2/statuses/show.json"
 
-imgdir = "/home/provolot/www/SIDL/firewall/weibo_images/" #with trailing slash
+imgdir = "/home/provolot/www/SIDL/firewall_dev/weibo_images/" #with trailing slash
 
 queries_per_token = 100 #hardcoded - set this to 100 to give us some padding, really is 150
 
@@ -69,7 +69,7 @@ track_posts_override = -1
 #timeout - if a post is alive past this many seconds, then go onto the next
 track_posts_timeout = 14400 #4 houts
 
-unique_csv_filename = "/home/provolot/www/SIDL/firewall/data/deleted_weibo.csv"
+unique_csv_filename = "/home/provolot/www/SIDL/firewall_dev/data/deleted_weibo.csv"
 log_csv_filename = "/home/provolot/www/SIDL/firewall/data/deleted_weibo_log.csv"
 
 #period, in seconds
