@@ -103,7 +103,7 @@ function csv_get_post($post_id, $filename='', $delimiter=',')
 
 function get_ocr_image($imgname) {
 	global $tesseractpath, $imgdir, $ocrimgdir;
-	if(file_exists("$ocrimgdir$imgname.txt") == false) {
+	if(file_exists("$ocrimgdir$imgname.txt") == false && file_exists("$ocrimgdir$imgname.txt.txt") == false) {
 		print `$tesseractpath $imgdir$imgname $ocrimgdir$imgname.txt -l chi_sim 2>&1`;
 	}
 }
