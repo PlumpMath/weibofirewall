@@ -77,7 +77,7 @@ function rehumanize(time){
 
 
 function hideLoadingSplash() {
-	$("#loadingsplash").fadeOut(1000);
+	$("#loadingsplash").fadeOut(2000);
 }
 
 function handleMouse(e) {
@@ -209,7 +209,7 @@ dsv(datafile, function(d, i) {
 		.tickFormat(d3.time.format("%m-%d %H:%m"));
 
 	var barselect_mouseover = function(d, i) {
-		d3.selectAll(".postdiv.post-" + d["post_id"]).classed("post-hover", true); 
+		d3.selectAll(".post-" + d["post_id"]).classed("hover", true); 
 //		d3.selectAll(".postdiv.post-" + d["post_id"]).transition().style("displayay", "block !important");
 
 		//highlight same users
@@ -217,7 +217,7 @@ dsv(datafile, function(d, i) {
 	}
 
 	var barselect_mouseout = function(d, i) {
-		d3.selectAll(".postdiv.post-" + d["post_id"]).classed("post-hover", false); 
+		d3.selectAll(".post-" + d["post_id"]).classed("hover", false); 
 
 		//highlight same users
 		d3.selectAll(".user-" + d["user_id"]).classed("same-user-hover", false);
@@ -279,6 +279,7 @@ dsv(datafile, function(d, i) {
 //			.attr("id", function(d,i) { return "hoverpost-" + d["post_id"]; });
 //
 //
+/*
 	
 	// let's select the chart and add our bars to it	
 	chart.selectAll("bar")
@@ -320,6 +321,10 @@ dsv(datafile, function(d, i) {
 	  .on("mouseover", barselect_mouseover)
 	  .on("mouseout", barselect_mouseout) 
 	  .on("click", barselect_click);
+
+
+	  */
+
 
 	// let's select the chart and add our bars to it	
 	chart.selectAll("wedge")
@@ -390,7 +395,7 @@ dsv(datafile, function(d, i) {
 			//return wedgestring;
 		})
 		.style('opacity', .5)
-		.attr("class", function(d, i) { return "post-" + d["post_id"] + " user-" + d["user_id"]; })
+		.attr("class", function(d, i) { return "sparkline post-" + d["post_id"] + " user-" + d["user_id"]; })
 		 .attr("name", function(d, i) { return d["post_id"]; })
 //		 .attr("fill", "none")
 		 .attr("stroke-width", 1)
@@ -481,9 +486,16 @@ durdiv.selectAll("div")
 	$( ".resizeme" ).aeImageResize({ height: 400, width: 400 });
 
 	$("body").mousemove(function(e){
-		  $('.post-hover').css({'top': e.pageY + 10, 'left': e.pageX + 10});
+		  $('.postdiv.hover').css({'top': e.pageY + 10, 'left': e.pageX + 10});
 	});
-});
+}).on("progress", function(event){
+        //update progress bar
+		if (d3.event.lengthComputable) {
+          var percentComplete = Math.round(d3.event.loaded * 100 / d3.event.total);
+		  if(percentComplete == 100) { hideLoadingSplash(); }
+          //console.log(percentComplete);
+       }
+    });
 //END
 
 
