@@ -54,6 +54,15 @@ function epochToDate(epoch) {
 	return new Date(epoch * 1000);
 }
 
+function getcolor_bytime(d) {
+	// generate colors per time 
+	elapsedtimecolor = scaleTimeForColor(d["last_checked_at"]) - scaleTimeForColor(d["post_created_at"]); 
+	var thiscolor_value = dec2hex(colorMax - (Math.round(elapsedtimecolor)));
+	// create hexvalue
+	thiscolor_bytime = "#" + thiscolor_value + thiscolor_value + thiscolor_value;
+	return thiscolor_bytime;
+}
+
 function getcolor_byuser(d) {
 // generate colors per user 
 	var dig = dec2hex((d.user_id) % 256);
@@ -118,6 +127,16 @@ function barselect_click(d, i) {
 	window.location = "readpost.php?post_id=" + thispostid;
 	//window.location = (imgdir + (thispostid) + ".jpg");
 }
+
+function resizeimage(imgurl) {
+	thisresizedimage = "https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?url=" 
+		+ baseurl 
+		+ "/"
+		+ imgurl
+		+ "&container=focus&resize_h=200&refresh=2592000";
+	return thisresizedimage;
+}
+
 
 
 // Assign handleMouse to mouse movement events

@@ -114,62 +114,36 @@ dsv(datafile, function(d, i) {
 		.append("img")
 			.attr("src", function(d) { 
 					var thisimage = imgdir + d["post_id"] + "." + d["post_original_pic"].split(/[\.]+/).pop(); 
-					var thisresizedimage = "https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?url=" 
-						+ baseurl 
-						+ "/"
-						+ thisimage 
-						+ "&container=focus&resize_h=200&refresh=2592000";
-					return thisresizedimage;
-					return thisimage;
+					return resizeimage(thisimage);
 			})
-			.attr("class", "resizeme")
 
-				//
-/*
-	
-	// let's select the chart and add our bars to it	
-	chart.selectAll("bar")
-		// plug in our data
-		.data(data).enter()
-		//and now:
-		 .append("rect")
-		 .attr("x", function(d, i) { 
-			 ////console.log("post_created_at " + d["post_created_at"]);
-			 ////console.log("scaled = " + scaleTime((d["post_created_at"]))); 
-			 return scaleTime(d["post_created_at"]); 
-		 })
+	if(params["bar"] == "true") {
 
-		.attr("y", function(d, i) { return i * (barheight + bargap); })
-		 //.attr("width", function(d) { return (scaleTime(d["post_created_at"])); })
-		.attr("width", function(d) { 
-			elapsedtime = scaleTime(d["last_checked_at"]) - scaleTime(d["post_created_at"]); 
-			////console.log(elapsedtime);
-			//return (scaleTime(maxdate) - scaleTime(d["post_created_at"])); 
-//			return 100;
-			return elapsedtime;
-		})
-		 //.attr("width", function(d) { return ; })
-		 .attr("height", barheight)
-		 .attr("name", function(d, i) { return d["post_id"]; })
-		 .attr("fill", function(d) { 
+		// let's select the chart and add our bars to it	
+		chart.selectAll("bar")
+			// plug in our data
+			.data(data).enter()
+			//and now:
+			.append("rect")
+			.attr("x", function(d, i) { return scaleTime(d["post_created_at"]); })
+			.attr("y", function(d, i) { return i * (barheight + bargap); })
+			.attr("width", function(d) { return scaleTime(d["last_checked_at"]) - scaleTime(d["post_created_at"]); })
+			.attr("height", barheight)
+			.attr("name", function(d, i) { return d["post_id"]; })
+			.attr("fill", function(d) { 
 
-				// generate colors per user 
+				if(params["colorbytime"] == "true") {
+					// generate colors by time
+					var thiscolor_bytime = getcolor_bytime(d);
+					return thiscolor_bytime;
+				} else {
+					// generate colors per user 
+					var thiscolor_byuser = getcolor_byuser(d);
+					//return thiscolor_byuser;
+				}	
 
-				// generate colors by time
-				elapsedtimecolor = scaleTimeForColor(d["last_checked_at"]) - scaleTimeForColor(d["post_created_at"]); 
-				var thiscolor_value = dec2hex(colorMax - (Math.round(elapsedtimecolor)));
-				// create hexvalue
-				thiscolor_bytime = "#" + thiscolor_value + thiscolor_value + thiscolor_value;				
-				var thiscolor_byuser = getcolor_byuser(d);
-				return thiscolor_bytime;
-				//return thiscolor_byuser;
 			})
-	  .on("mouseover", barselect_mouseover)
-	  .on("mouseout", barselect_mouseout) 
-	  .on("click", barselect_click);
-
-
-	  */
+	}
 
 
 	// let's select the chart and add our bars to it	
