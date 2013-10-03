@@ -56,6 +56,7 @@ $(document).ready(function() {
 		checkboxClass: 'icheckbox_flat',
 		radioClass: 'iradio_flat'
 	});
+
 });
 </script>
 
