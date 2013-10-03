@@ -8,11 +8,13 @@
 <link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'>
 <!-- <link rel="stylesheet" href="css/firewall.css" type="text/css" /> -->
 <link rel="stylesheet/less" href="css/firewall.less" type="text/css" />
+<link href="js/iCheck/skins/flat/flat.css" rel="stylesheet">
+
 </head>
 <body>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="js/less-1.4.1.min.js"></script>
-<script src="js/jquery.icheck.min.js"></script>
+<script src="js/iCheck/jquery.icheck.min.js"></script>
 <script src="js/moment.min.js"></script>
 <script src="js/purl.min.js"></script>
 <script src="js/jquery.hoverIntent.minified.js"></script>
@@ -40,7 +42,20 @@ function destroyLessCache(pathToCss) { // e.g. '/css/' or '/stylesheets/'
 }
 $(document).ready(function() {
 	destroyLessCache();
-	$('input').iCheck();
+
+
+	$('input').on('ifChecked', function(event){
+		if(event.target.name == "graphstyle") {
+			if(event.target.id == "wedge") params["graphstyle"] = "wedge"; 
+			else params["graphstyle"] = "bar"; 
+			history.pushState(null, null, "?" + makeparamstring(params));
+		}
+
+	}); 
+	$('input').iCheck({
+		checkboxClass: 'icheckbox_flat',
+		radioClass: 'iradio_flat'
+	});
 });
 </script>
 
@@ -58,13 +73,17 @@ $(document).ready(function() {
 		<div id="infobox-inner">
 			<div class="logo">
 			   Jumping The Great Firewall (alpha)
-			</div>
+			</div><br>
 			
 			<div class="options">
-				<label for="baz[1]">Foo</label>
-				<input type="radio" name="quux[2]" id="baz[1]" checked>
-				<label for="baz[2]">Bar</label>
-				<input type="radio" name="quux[2]" id="baz[2]" checked>
+				<div class="one_option">
+					<input type="radio" name="graphstyle" id="bar" checked>
+					<label for="bar">Bar</label>
+				</div>
+				<div class="one_option">
+					<input type="radio" name="graphstyle" id="wedge" checked>
+					<label for="wedge">Wedge</label>
+				</div>
 			</div>
 			<div class="info">
 <i>In collaboration with Penn Voices, and Mark Hansen, Brown Institute, School of Journalism</i>

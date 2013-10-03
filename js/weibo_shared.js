@@ -1,4 +1,4 @@
-//var datafile = "../_archive/firewall_pre_git/data/130616_deleted_weibo.csv";
+var datafile = "../_archive/firewall_pre_git/data/130616_deleted_weibo.csv";
 var datafile = "data/deleted_weibo_log.csv";
 var datastartindex = 15;
 var imgdir = "weibo_images/";
@@ -137,7 +137,28 @@ function resizeimage(imgurl) {
 	return thisresizedimage;
 }
 
+function makeparamstring(params) {
+	var s = "";
+	var keys = Object.keys(params);
+//	console.log(keys);
+	for(var i = 0; i < keys.length; i++) {
+		s += keys[i] + "=" + params[keys[i]];
+//		console.log(keys[i]);
+//		console.log(params);
+	}
+//	console.log(s);
+	return s;
+}
 
+function setoptions(params) {
+	var keys = Object.keys(params);
+	for(var i = 0; i < keys.length; i++) {
+		thiskey = keys[i];
+		$("#" + params[thiskey]).iCheck('check');
+	}
+//	console.log(setoptions);
+//	console.log(keys);
+}
 
 // Assign handleMouse to mouse movement events
 document.onmousemove = handleMouse;
@@ -169,4 +190,8 @@ post_repostlog
  */
 var params = purl().param();
 
-
+window.onpopstate = function(event) {
+	params = purl().param();
+	console.log(params);
+	setoptions(params);
+};
