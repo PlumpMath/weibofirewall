@@ -13,6 +13,7 @@
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="js/less-1.4.1.min.js"></script>
 <script src="js/moment.min.js"></script>
+<script src="js/purl.min.js"></script>
 <script src="js/jquery.hoverIntent.minified.js"></script>
 <script src="js/jquery.ae.image.resize.min.js"></script>
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>

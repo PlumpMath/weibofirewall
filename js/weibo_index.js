@@ -1,32 +1,9 @@
-/*
-var datafile = "../_archive/firewall_pre_git/data/130616_deleted_weibo.csv";
-var datafile = "data/deleted_weibo_log.csv";
-var datastartindex = 15;
-var imgdir = "weibo_images/";
-var chartwidth = 3960;
-//var chartheight = 960;
-var chartheight_padding = 80;
-var chartpadding=100;
-var barheight = 10;
-var heightscale = 10; // reposts per pixel
-var bargap = 1;
-var bar_dateformat = d3.time.format("%b %e, %Y %H:%M");
-var timepadding = 3600; //one hour
-var colorMin = 50;
-var colorMax = 220;
-var randomTimeRange= 20;
-var tickstrokecolor = "#444";
-var url = document.URL;
-var baseurl=url.substring(0,url.lastIndexOf("/"));
-var wedgeMinimumX = 5;
-var wedgeMinimumY = 1;
-*/
-
 ///////////////////////////////////////////////////
 ///////////////////////////////////////////////////
 //D3 START
 ///////////////////////////////////////////////////
 ///////////////////////////////////////////////////
+//
 //get delimiter from weibo_settings.py
 var dsv = d3.dsv("|||", "text/plain");
 
@@ -60,24 +37,14 @@ dsv(datafile, function(d, i) {
 	};
 }, function(error, rows) {
 
-	//
 	// now let's massage that data
 	var data = rows;
-	var chartheight = ((barheight + bargap) * data.length) + chartheight_padding;
 
-//	////console.log(data.length);
+	// sort data by created
 	data.sort(function(a,b) { return a.post_created_at - b.post_created_at; });
-//	////console.log(data.length);
-	//console.log(data)
 
-	var mindate = d3.min(data, function(d) { return d["post_created_at"]; });
-	var maxdate = d3.max(data, function(d) { return d["last_checked_at"]; });
-
-
-	////console.log(data.length);	
-
-	////console.log("mindate = " + mindate)
-	////console.log("maxdate = " + maxdate)
+	// get chart height
+	var chartheight = ((barheight + bargap) * data.length) + chartheight_padding;
 
 	// create chart, set dimensions based on # of deleted posts
 	var chart = d3.select("#chartdiv")
@@ -86,6 +53,10 @@ dsv(datafile, function(d, i) {
 		.attr("width", chartwidth)
 		.attr("height", chartheight)
 		.append("g");
+
+	// get min and max dates
+	var mindate = d3.min(data, function(d) { return d["post_created_at"]; });
+	var maxdate = d3.max(data, function(d) { return d["last_checked_at"]; });
 
 	// let's specify the x-axis scale
 	var scaleTime = d3.time.scale()
@@ -99,28 +70,28 @@ dsv(datafile, function(d, i) {
 		.range([colorMin, colorMax])
 		.nice(d3.time.hour);
 
-	// let's specify x-axis
+	// let's specify x-axis ticks
 	var axisTime = d3.svg.axis()
 		.scale(scaleTime)
 		.orient("top")
 		.ticks(d3.time.hour, 12)
 		.tickFormat(d3.time.format("%m-%d %H:%m"));
 
+	//define mouseover functions
 	var barselect_mouseover = function(d, i) {
 		d3.selectAll(".post-" + d["post_id"]).classed("hover", true); 
-//		d3.selectAll(".postdiv.post-" + d["post_id"]).transition().style("displayay", "block !important");
-
 		//highlight same users
 		d3.selectAll(".user-" + d["user_id"]).classed("same-user-hover", true);
 	}
 
+	// define mouseout
 	var barselect_mouseout = function(d, i) {
 		d3.selectAll(".post-" + d["post_id"]).classed("hover", false); 
-
 		//highlight same users
 		d3.selectAll(".user-" + d["user_id"]).classed("same-user-hover", false);
 	}
 
+	// define click function
 	var barselect_click = function(d, i) {
 		var thispostid = d["post_id"];
 		//alert(imgdir + (data[thisid].post_id) + ".jpg");
@@ -130,7 +101,7 @@ dsv(datafile, function(d, i) {
 
 	// add x-axis ticks
 	chart.selectAll("line")
-		.data(scaleTime.ticks(d3.time.day, 1)).enter()
+		.data(scaleTime.ticks(d3.time.day, tickinterval)).enter()
 		.append("line")
 		.attr("class", "tickline")
 		.attr("x1", scaleTime)
@@ -174,9 +145,8 @@ dsv(datafile, function(d, i) {
 					return thisimage;
 			})
 			.attr("class", "resizeme")
-//			.attr("id", function(d,i) { return "hoverpost-" + d["post_id"]; });
-//
-//
+
+				//
 /*
 	
 	// let's select the chart and add our bars to it	

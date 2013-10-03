@@ -21,6 +21,8 @@ var baseurl=thisurl.substring(0,thisurl.lastIndexOf("/"));
 var wedgeMinimumX = 5;
 var wedgeMinimumY = 1;
 
+var tickinterval = 1; //interval between ticks, in days
+
 
 
 
