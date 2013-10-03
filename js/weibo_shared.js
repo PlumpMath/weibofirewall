@@ -199,6 +199,34 @@ function cleanparams(params) {
 function refreshoptions() {
 }
 
+function dsvaccessor(d, i) {
+	// this is the format of what we need, adopted from weibo_module's make_csvline_from_post 
+	if(i < datastartindex) {
+		return null;
+	} 
+	//console.log(d);
+	return {
+		post_id: +d.post_id,
+		user_id: parseFloat(d.user_id),
+		user_name: d.user_name,
+		user_follower_count_initial: +d.user_follower_count_initial,
+		user_follower_count: +d.user_follower_count,
+		post_original_pic: d.post_original_pic,
+		post_created_at : epochToDate(d.post_created_at_epoch),
+		post_repost_count_initial: +d.post_repost_count_initial,
+		post_repost_count: +d.post_repost_count,
+		post_text: d.post_text,
+		started_tracking_at: epochToDate(+d.started_tracking_at_epoch),
+		is_deleted: d.is_deleted,
+		is_retired: d.is_retired,
+		error_message: d.error_message,
+		error_code: +d.error_code,
+		last_checked_at: epochToDate(+d.last_checked_at_epoch),
+		post_lifespan: +d.post_lifespan,
+		post_repostlog: d.post_repostlog
+	};
+}
+
 
 
 /* THIS IS THE CSVLINE 

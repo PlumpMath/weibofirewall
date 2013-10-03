@@ -8,34 +8,7 @@
 var dsv = d3.dsv("|||", "text/plain");
 
 // read the datafile.START
-dsv(datafile, function(d, i) {
-//		////console.log(d);
-	// this is the format of what we need, adopted from weibo_module's make_csvline_from_post 
-	if(i < datastartindex) {
-		return null;
-	} 
-	//console.log(d);
-	return {
-		post_id: +d.post_id,
-		user_id: parseFloat(d.user_id),
-		user_name: d.user_name,
-		user_follower_count_initial: +d.user_follower_count_initial,
-		user_follower_count: +d.user_follower_count,
-		post_original_pic: d.post_original_pic,
-		post_created_at : epochToDate(d.post_created_at_epoch),
-		post_repost_count_initial: +d.post_repost_count_initial,
-		post_repost_count: +d.post_repost_count,
-		post_text: d.post_text,
-		started_tracking_at: epochToDate(+d.started_tracking_at_epoch),
-		is_deleted: d.is_deleted,
-		is_retired: d.is_retired,
-		error_message: d.error_message,
-		error_code: +d.error_code,
-		last_checked_at: epochToDate(+d.last_checked_at_epoch),
-		post_lifespan: +d.post_lifespan,
-		post_repostlog: d.post_repostlog
-	};
-}, function(error, rows) {
+dsv(datafile, dsvaccessor, function(error, rows) {
 
 	params = purl().param();
 	params = cleanparams(params);
@@ -121,152 +94,140 @@ dsv(datafile, function(d, i) {
 					return resizeimage(thisimage);
 			})
 
-	if(params["graphstyle"] == "bar") {
 
-		// let's select the chart and add our bars to it	
-		chart.selectAll("bar")
-			// plug in our data
-			.data(data).enter()
-			//and now:
-			.append("rect")
-			.attr("x", function(d, i) { return scaleTime(d["post_created_at"]); })
-			.attr("y", function(d, i) { return i * (barheight + bargap); })
-			.attr("width", function(d) { return scaleTime(d["last_checked_at"]) - scaleTime(d["post_created_at"]); })
-			.attr("height", barheight)
-			.attr("name", function(d, i) { return d["post_id"]; })
-			.attr("fill", function(d) { 
-
-				return getthiscolor(d, scaleTimeForColor);
-
-			})
-	}
-
-
-	if(params["graphstyle"] == "wedge") {
-
-	// let's select the chart and add our wedges to it	
-		chart.selectAll("wedge")
-			// plug in our data
-			.data(data).enter()
-			//and now:
-			 .append("path")
-			.attr('d', function(d, i) { 
-				
-
-				// GET X Y COORDINATES
-				var x = scaleTime(d["post_created_at"]); 
-				var y = i * (barheight + bargap) + (barheight / 2);
-
-				// WIDTH = TIME, SCALED
-				var width = scaleTime(d["last_checked_at"]) - scaleTime(d["post_created_at"]); 
-				width += 5;
-				var height = (d["post_repost_count"] - d["post_repost_count_initial"]);
-				height /= heightscale;
-				height += (barheight / 2); // have a minimum height
-			
-				// M syntax
-				// MOVE TO (x-value) (y-value) 
-				// RELATIVE LINE TO (width, height / w), 
-				// RELATIVE LINE TO (0, -height), 
-				// CLOSE LINE
-				wedgestring =  'M ' + x +' '+ y + ' l ' + width + ' ' + (height / 2) + ' l 0 -' + height + ' z';
-
-
-				if (d["post_repostlog"] == "") {
-					return wedgestring;
-				}
-
-				// OKAY LET'S TRY A SPARKLINE
-				//console.log("okay this is try :: " + i + " -- ");
-				var repostlog = d["post_repostlog"].split(",");
-				//console.log(repostlog.length);
-				var repostlog_post_repost_count = [];
-				var repostlog_checked_at = [];
-
-				var checked_at_format = d3.time.format("%Y-%m-%d %H:%M:%S");
-
-				for (var j = 0; j < repostlog.length; j+= 2) {
-					repostlog_post_repost_count.push(repostlog[j]);
-					repostlog_checked_at.push(checked_at_format.parse(repostlog[j+1]));
-				}
-
-				sparklinestring = 'M ' + x + ' ' + y + ' ';
-				//string goes up
-				for (var j = 0; j < repostlog_checked_at.length; j++) {
-					var thisX = scaleTime(repostlog_checked_at[j]) + wedgeMinimumX;
-					var thisY = y - (repostlog_post_repost_count[j] / heightscale / 2);
-					thisY -= wedgeMinimumY; //minimum so that unshared posts are still visible
-					sparklinestring += 'L ' + thisX + ' ' + thisY + ' ';
-				}
-				//mirror this; string goes back to origin
-				for (var j = repostlog_checked_at.length - 1; j >= 0; j--) {
-					var thisX = scaleTime(repostlog_checked_at[j]) + wedgeMinimumX;
-					var thisY = y + (repostlog_post_repost_count[j] / heightscale / 2);
-					thisY += wedgeMinimumY; //minimum
-					sparklinestring += 'L ' + thisX + ' ' + thisY + ' ';
-				}
-
-				sparklinestring += ' z';
-
-				//console.log(sparklinestring);
-				return sparklinestring;
-				//return wedgestring;
-			})
-			.style('opacity', .5)
-			.attr("class", function(d, i) { return "sparkline post-" + d["post_id"] + " user-" + d["user_id"]; })
-			 .attr("name", function(d, i) { return d["post_id"]; })
-	//		 .attr("fill", "none")
-			 .attr("stroke-width", 1)
-			 .attr("fill", function(d) { 
-
-				return getthiscolor(d, scaleTimeForColor);
-			})
-		  .on("mouseover", barselect_mouseover)
-		  .on("mouseout", barselect_mouseout) 
-		  .on("click", barselect_click);
-	}
-
-	if(params["labels"] == "true") {
-
-		// add bar labels
-		chart.selectAll("bar")
-			.data(data).enter()
-			.append("text")
-	//		.attr("x", function(d) { return 300; })
-			.attr("x", function(d, i) { return scaleTime(d["post_created_at"]); })
-			.attr("y", function(d, i) { return (i * (barheight + bargap)) + (barheight / 2); })
-			.attr("dx", -3) // padding-right
-			.attr("dy", ".35em") // vertical-align: middle
-			.attr("text-anchor", "end") // text-align: right
-			.attr("name", function(d, i) { return d["post_id"]; })
-			.attr("class", function(d, i) { return "post-" + d["post_id"] + " user-" + d["user_id"]; })
-	//		.attr("fill", "#CCC")
-			.text(function(d,i) { 
-				////console.log(i);
-				////console.log(d["last_checked_at"]);
-				////console.log(d["post_created_at"]);
-				////console.log(d["last_checked_at"].getTime());
-				////console.log(d["post_created_at"].getTime());
-				elapsedtimeseconds = (d["last_checked_at"].getTime() - d["post_created_at"].getTime()) / 1000; 
-				////console.log(elapsedtimeseconds);
-				return d["user_name"];
-				return d["user_name"] + ":" + "lifespan: " + lifespanFormat(elapsedtimeseconds);
-				return d["user_name"] + ": " + bar_dateformat(d["post_created_at"]) + "-- lifespan: " + lifespanFormat(elapsedtimeseconds);
-			})
-		  .on("mouseover", barselect_mouseover)
-		  .on("mouseout", barselect_mouseout)
-		  .on("click", barselect_click);
-
-	}
-
-chart.selectAll("rect")
-		 .data(data)
-		.enter().append("rect")
-		.attr("x", function(d) { return 0; })
+	// let's select the chart and add our bars to it	
+	chart.selectAll("bar")
+		// plug in our data
+		.data(data).enter()
+		//and now:
+		.append("rect")
+		.attr("x", function(d, i) { return scaleTime(d["post_created_at"]); })
 		.attr("y", function(d, i) { return i * (barheight + bargap); })
-		 .attr("width", function(d) { return chartwidth; })
-		 .attr("height", barheight)
-		 .attr("fill", "#FA3");
+		.attr("width", function(d) { return scaleTime(d["last_checked_at"]) - scaleTime(d["post_created_at"]); })
+		.attr("height", barheight)
+		.attr("class", function(d, i) { return "bar post-" + d["post_id"] + " user-" + d["user_id"]; })
+		.attr("name", function(d, i) { return d["post_id"]; })
+		.attr("fill", function(d) { 
+
+			return getthiscolor(d, scaleTimeForColor);
+
+		})
+
+
+
+// let's select the chart and add our wedges to it	
+	chart.selectAll("wedge")
+		// plug in our data
+		.data(data).enter()
+		//and now:
+		 .append("path")
+		.attr('d', function(d, i) { 
+			
+
+			// GET X Y COORDINATES
+			var x = scaleTime(d["post_created_at"]); 
+			var y = i * (barheight + bargap) + (barheight / 2);
+
+			// WIDTH = TIME, SCALED
+			var width = scaleTime(d["last_checked_at"]) - scaleTime(d["post_created_at"]); 
+			width += 5;
+			var height = (d["post_repost_count"] - d["post_repost_count_initial"]);
+			height /= heightscale;
+			height += (barheight / 2); // have a minimum height
+		
+			// M syntax
+			// MOVE TO (x-value) (y-value) 
+			// RELATIVE LINE TO (width, height / w), 
+			// RELATIVE LINE TO (0, -height), 
+			// CLOSE LINE
+			wedgestring =  'M ' + x +' '+ y + ' l ' + width + ' ' + (height / 2) + ' l 0 -' + height + ' z';
+
+
+			if (d["post_repostlog"] == "") {
+				return wedgestring;
+			}
+
+			// OKAY LET'S TRY A SPARKLINE
+			//console.log("okay this is try :: " + i + " -- ");
+			var repostlog = d["post_repostlog"].split(",");
+			//console.log(repostlog.length);
+			var repostlog_post_repost_count = [];
+			var repostlog_checked_at = [];
+
+			var checked_at_format = d3.time.format("%Y-%m-%d %H:%M:%S");
+
+			for (var j = 0; j < repostlog.length; j+= 2) {
+				repostlog_post_repost_count.push(repostlog[j]);
+				repostlog_checked_at.push(checked_at_format.parse(repostlog[j+1]));
+			}
+
+			sparklinestring = 'M ' + x + ' ' + y + ' ';
+			//string goes up
+			for (var j = 0; j < repostlog_checked_at.length; j++) {
+				var thisX = scaleTime(repostlog_checked_at[j]) + wedgeMinimumX;
+				var thisY = y - (repostlog_post_repost_count[j] / heightscale / 2);
+				thisY -= wedgeMinimumY; //minimum so that unshared posts are still visible
+				sparklinestring += 'L ' + thisX + ' ' + thisY + ' ';
+			}
+			//mirror this; string goes back to origin
+			for (var j = repostlog_checked_at.length - 1; j >= 0; j--) {
+				var thisX = scaleTime(repostlog_checked_at[j]) + wedgeMinimumX;
+				var thisY = y + (repostlog_post_repost_count[j] / heightscale / 2);
+				thisY += wedgeMinimumY; //minimum
+				sparklinestring += 'L ' + thisX + ' ' + thisY + ' ';
+			}
+
+			sparklinestring += ' z';
+
+			//console.log(sparklinestring);
+			return sparklinestring;
+			//return wedgestring;
+		})
+		.style('opacity', .5)
+		.attr("class", function(d, i) { return "sparkline post-" + d["post_id"] + " user-" + d["user_id"]; })
+		 .attr("name", function(d, i) { return d["post_id"]; })
+//		 .attr("fill", "none")
+		 .attr("stroke-width", 1)
+		 .attr("fill", function(d) { 
+
+			return getthiscolor(d, scaleTimeForColor);
+		})
+	  .on("mouseover", barselect_mouseover)
+	  .on("mouseout", barselect_mouseout) 
+	  .on("click", barselect_click);
+
+
+	// add bar labels
+	chart.selectAll("bar")
+		.data(data).enter()
+		.append("text")
+//		.attr("x", function(d) { return 300; })
+		.attr("x", function(d, i) { return scaleTime(d["post_created_at"]); })
+		.attr("y", function(d, i) { return (i * (barheight + bargap)) + (barheight / 2); })
+		.attr("dx", -3) // padding-right
+		.attr("dy", ".35em") // vertical-align: middle
+		.attr("text-anchor", "end") // text-align: right
+		.attr("name", function(d, i) { return d["post_id"]; })
+		.attr("class", function(d, i) { return "post-" + d["post_id"] + " user-" + d["user_id"]; })
+//		.attr("fill", "#CCC")
+		.text(function(d,i) { 
+			////console.log(i);
+			////console.log(d["last_checked_at"]);
+			////console.log(d["post_created_at"]);
+			////console.log(d["last_checked_at"].getTime());
+			////console.log(d["post_created_at"].getTime());
+			elapsedtimeseconds = (d["last_checked_at"].getTime() - d["post_created_at"].getTime()) / 1000; 
+			////console.log(elapsedtimeseconds);
+			return d["user_name"];
+			return d["user_name"] + ":" + "lifespan: " + lifespanFormat(elapsedtimeseconds);
+			return d["user_name"] + ": " + bar_dateformat(d["post_created_at"]) + "-- lifespan: " + lifespanFormat(elapsedtimeseconds);
+		})
+	  .on("mouseover", barselect_mouseover)
+	  .on("mouseout", barselect_mouseout)
+	  .on("click", barselect_click);
+
+
+
 
 /*
 postsdiv.selectAll("div").
@@ -290,12 +251,38 @@ durdiv.selectAll("div")
 //	chart.append("g").attr("class", "axis").call(axisTime);
 	
 
+	function update(delay) {
+		if(params["graphstyle"] == "bar") {
+			d3.selectAll("path.sparkline").transition().duration(delay).style('opacity', 0);
+			d3.selectAll("rect.bar").transition().duration(delay).style('opacity', 1);
+		} else {
+			d3.selectAll("path.sparkline").transition().duration(delay).style('opacity', 1);
+			d3.selectAll("rect.bar").transition().duration(delay).style('opacity', 0);
+		}
+		console.log("dek");
+	}
 
-	$( ".resizeme" ).aeImageResize({ height: 400, width: 400 });
+	$("input").click(update(1000)); //"on('ifChecked', update(1000));
+	 window.focus();
+	  d3.select(window).on("keydown", function() {
+		switch (d3.event.keyCode) {
+		  case 37: year += 1; break;
+		  case 39: year -= 1; break;
+		}
+		update(1000);
+	  });
+
+	update(0);
 
 	$("body").mousemove(function(e){
 		  $('.postdiv.hover').css({'top': e.pageY + 10, 'left': e.pageX + 10});
 	});
+
+
+
+
+
+
 }).on("progress", function(event){
         //update progress bar
 		if (d3.event.lengthComputable) {
