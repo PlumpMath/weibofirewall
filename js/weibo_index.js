@@ -12,7 +12,6 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 
 	params = purl().param();
 	params = cleanparams(params);
-	console.log(params);
 
 	// now let's massage that data
 	var data = rows;
@@ -120,81 +119,34 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 		// plug in our data
 		.data(data).enter()
 		//and now:
-		 .append("path")
-		.attr('d', function(d, i) { 
-			
-
-			// GET X Y COORDINATES
-			var x = scaleTime(d["post_created_at"]); 
-			var y = i * (barheight + bargap) + (barheight / 2);
-
-			// WIDTH = TIME, SCALED
-			var width = scaleTime(d["last_checked_at"]) - scaleTime(d["post_created_at"]); 
-			width += 5;
-			var height = (d["post_repost_count"] - d["post_repost_count_initial"]);
-			height /= heightscale;
-			height += (barheight / 2); // have a minimum height
-		
-			// M syntax
-			// MOVE TO (x-value) (y-value) 
-			// RELATIVE LINE TO (width, height / w), 
-			// RELATIVE LINE TO (0, -height), 
-			// CLOSE LINE
-			wedgestring =  'M ' + x +' '+ y + ' l ' + width + ' ' + (height / 2) + ' l 0 -' + height + ' z';
+		.append("path")
+		.attr('d', function(d, i) { return wedgesparkline("wedge", d, i, scaleTime); })
+		.style('opacity', .5)
+		.attr("class", function(d, i) { return "wedge post-" + d["post_id"] + " user-" + d["user_id"]; })
+		.attr("name", function(d, i) { return d["post_id"]; })
+		.attr("stroke-width", 1)
+		.attr("fill", function(d) { return getthiscolor(d, scaleTimeForColor); })
+	.on("mouseover", barselect_mouseover)
+	.on("mouseout", barselect_mouseout) 
+	.on("click", barselect_click);
 
 
-			if (d["post_repostlog"] == "") {
-				return wedgestring;
-			}
-
-			// OKAY LET'S TRY A SPARKLINE
-			//console.log("okay this is try :: " + i + " -- ");
-			var repostlog = d["post_repostlog"].split(",");
-			//console.log(repostlog.length);
-			var repostlog_post_repost_count = [];
-			var repostlog_checked_at = [];
-
-			var checked_at_format = d3.time.format("%Y-%m-%d %H:%M:%S");
-
-			for (var j = 0; j < repostlog.length; j+= 2) {
-				repostlog_post_repost_count.push(repostlog[j]);
-				repostlog_checked_at.push(checked_at_format.parse(repostlog[j+1]));
-			}
-
-			sparklinestring = 'M ' + x + ' ' + y + ' ';
-			//string goes up
-			for (var j = 0; j < repostlog_checked_at.length; j++) {
-				var thisX = scaleTime(repostlog_checked_at[j]) + wedgeMinimumX;
-				var thisY = y - (repostlog_post_repost_count[j] / heightscale / 2);
-				thisY -= wedgeMinimumY; //minimum so that unshared posts are still visible
-				sparklinestring += 'L ' + thisX + ' ' + thisY + ' ';
-			}
-			//mirror this; string goes back to origin
-			for (var j = repostlog_checked_at.length - 1; j >= 0; j--) {
-				var thisX = scaleTime(repostlog_checked_at[j]) + wedgeMinimumX;
-				var thisY = y + (repostlog_post_repost_count[j] / heightscale / 2);
-				thisY += wedgeMinimumY; //minimum
-				sparklinestring += 'L ' + thisX + ' ' + thisY + ' ';
-			}
-
-			sparklinestring += ' z';
-
-			//console.log(sparklinestring);
-			return sparklinestring;
-			//return wedgestring;
-		})
+// let's select the chart and add our sparklines to it	
+	chart.selectAll(".sparkline")
+		// plug in our data
+		.data(data).enter()
+		//and now:
+		.append("path")
+		.attr('d', function(d, i) { return wedgesparkline("sparkline", d, i, scaleTime); })
 		.style('opacity', .5)
 		.attr("class", function(d, i) { return "sparkline post-" + d["post_id"] + " user-" + d["user_id"]; })
-		 .attr("name", function(d, i) { return d["post_id"]; })
-//		 .attr("fill", "none")
-		 .attr("stroke-width", 1)
-		 .attr("fill", function(d) { 
-
-			return getthiscolor(d, scaleTimeForColor);
-		})
-	  .on("mouseover", barselect_mouseover)
-	  .on("mouseout", barselect_mouseout) 
-	  .on("click", barselect_click);
+		.attr("name", function(d, i) { return d["post_id"]; })
+		.attr("stroke-width", 0.75)
+		.attr("fill", "none")
+		.attr("stroke", function(d) { return "#FF00FF"; return getthiscolor(d, scaleTimeForColor); })
+	.on("mouseover", barselect_mouseover)
+	.on("mouseout", barselect_mouseout) 
+	.on("click", barselect_click);
 
 
 	// add bar labels
@@ -248,31 +200,8 @@ durdiv.selectAll("div")
 		 .attr("name", function(d, i) { return i; })
 
 
-//	chart.append("g").attr("class", "axis").call(axisTime);
-	
 
-	function update(delay) {
-		if(params["graphstyle"] == "bar") {
-			d3.selectAll("path.sparkline").transition().duration(delay).style('opacity', 0);
-			d3.selectAll("rect.bar").transition().duration(delay).style('opacity', 1);
-		} else {
-			d3.selectAll("path.sparkline").transition().duration(delay).style('opacity', 1);
-			d3.selectAll("rect.bar").transition().duration(delay).style('opacity', 0);
-		}
-		console.log("dek");
-	}
-
-	$("input").click(update(1000)); //"on('ifChecked', update(1000));
-	 window.focus();
-	  d3.select(window).on("keydown", function() {
-		switch (d3.event.keyCode) {
-		  case 37: year += 1; break;
-		  case 39: year -= 1; break;
-		}
-		update(1000);
-	  });
-
-	update(0);
+	d3update(0);
 
 	$("body").mousemove(function(e){
 		  $('.postdiv.hover').css({'top': e.pageY + 10, 'left': e.pageX + 10});
@@ -293,5 +222,23 @@ durdiv.selectAll("div")
     });
 //END
 
+
+	function d3update(delay) {
+		if(params["graphstyle"] == "bar") {
+			d3.selectAll("path.sparkline").transition().duration(delay).style('opacity', 0);
+			d3.selectAll("path.wedge").transition().duration(delay).style('opacity', 0);
+			d3.selectAll("rect.bar").transition().duration(delay).style('opacity', 1);
+		} else {
+			if(params["graphstyle"] == "wedge") {
+				d3.selectAll("path.sparkline").transition().duration(delay).style('opacity', 0);
+				d3.selectAll("path.wedge").transition().duration(delay).style('opacity', 1);
+				d3.selectAll("rect.bar").transition().duration(delay).style('opacity', 0);
+			} else {
+				d3.selectAll("path.sparkline").transition().duration(delay).style('opacity', 1);
+				d3.selectAll("path.wedge").transition().duration(delay).style('opacity', 0);
+				d3.selectAll("rect.bar").transition().duration(delay).style('opacity', 0);
+			}
+		}
+	}
 
 

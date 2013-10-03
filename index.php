@@ -46,9 +46,11 @@ $(document).ready(function() {
 	$('input').on('ifChecked', function(event){
 		if(event.target.name == "graphstyle") {
 			if(event.target.id == "wedge") params["graphstyle"] = "wedge"; 
-			else params["graphstyle"] = "bar"; 
+			else if(event.target.id == "bar") params["graphstyle"] = "bar"; 
+			else params["graphstyle"] = "sparkline"; 
 			history.pushState(null, null, "?" + makeparamstring(params));
 		}
+		d3update(1000);
 	}); 
 	$('input').iCheck({
 		checkboxClass: 'icheckbox_flat',
@@ -82,6 +84,10 @@ $(document).ready(function() {
 				<div class="one_option">
 					<input type="radio" name="graphstyle" id="wedge" checked>
 					<label for="wedge">Wedge</label>
+				</div>
+				<div class="one_option">
+					<input type="radio" name="graphstyle" id="sparkline" checked>
+					<label for="sparkline">Sparkline</label>
 				</div>
 			</div>
 			<div class="info">

@@ -227,7 +227,66 @@ function dsvaccessor(d, i) {
 	};
 }
 
+function wedgesparkline(iswedge, d, i, scaleTime) {
 
+	// GET X Y COORDINATES
+	var x = scaleTime(d["post_created_at"]); 
+	var y = i * (barheight + bargap) + (barheight / 2);
+
+	// WIDTH = TIME, SCALED
+	var width = scaleTime(d["last_checked_at"]) - scaleTime(d["post_created_at"]); 
+	width += 5;
+	var height = (d["post_repost_count"] - d["post_repost_count_initial"]);
+	height /= heightscale;
+	height += (barheight / 2); // have a minimum height
+
+	// M syntax
+	// MOVE TO (x-value) (y-value) 
+	// RELATIVE LINE TO (width, height / w), 
+	// RELATIVE LINE TO (0, -height), 
+	// CLOSE LINE
+	wedgestring =  'M ' + x +' '+ y + ' l ' + width + ' ' + (height / 2) + ' l 0 -' + height + ' z';
+
+	if (d["post_repostlog"] == "") {
+		return wedgestring;
+	}
+
+	// OKAY LET'S TRY A SPARKLINE
+	var repostlog = d["post_repostlog"].split(",");
+	var repostlog_post_repost_count = [];
+	var repostlog_checked_at = [];
+	var checked_at_format = d3.time.format("%Y-%m-%d %H:%M:%S");
+
+	for (var j = 0; j < repostlog.length; j+= 2) {
+		repostlog_post_repost_count.push(repostlog[j]);
+		repostlog_checked_at.push(checked_at_format.parse(repostlog[j+1]));
+	}
+
+	sparklinestring = 'M ' + x + ' ' + y + ' ';
+	//string goes up
+	for (var j = 0; j < repostlog_checked_at.length; j++) {
+		var thisX = scaleTime(repostlog_checked_at[j]) + wedgeMinimumX;
+		var thisY = y - (repostlog_post_repost_count[j] / heightscale / 2);
+		thisY -= wedgeMinimumY; //minimum so that unshared posts are still visible
+		sparklinestring += 'L ' + thisX + ' ' + thisY + ' ';
+	}
+
+	if(iswedge == "wedge") {
+		//mirror this; string goes back to origin
+		for (var j = repostlog_checked_at.length - 1; j >= 0; j--) {
+			var thisX = scaleTime(repostlog_checked_at[j]) + wedgeMinimumX;
+			var thisY = y + (repostlog_post_repost_count[j] / heightscale / 2);
+			thisY += wedgeMinimumY; //minimum
+			sparklinestring += 'L ' + thisX + ' ' + thisY + ' ';
+		}
+
+		sparklinestring += ' z';
+	}
+
+	//console.log(sparklinestring);
+	return sparklinestring;
+	//return wedgestring;
+}
 
 /* THIS IS THE CSVLINE 
 	*
@@ -261,7 +320,7 @@ $(document).ready(function() {
 
 	window.onpopstate = function(event) {
 		params = purl().param();
-		console.log(params);
+//		console.log(params);
 		setoptions(params);
 	};
 
