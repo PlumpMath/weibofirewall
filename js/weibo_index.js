@@ -77,28 +77,6 @@ dsv(datafile, function(d, i) {
 		.ticks(d3.time.hour, 12)
 		.tickFormat(d3.time.format("%m-%d %H:%m"));
 
-	//define mouseover functions
-	var barselect_mouseover = function(d, i) {
-		d3.selectAll(".post-" + d["post_id"]).classed("hover", true); 
-		//highlight same users
-		d3.selectAll(".user-" + d["user_id"]).classed("same-user-hover", true);
-	}
-
-	// define mouseout
-	var barselect_mouseout = function(d, i) {
-		d3.selectAll(".post-" + d["post_id"]).classed("hover", false); 
-		//highlight same users
-		d3.selectAll(".user-" + d["user_id"]).classed("same-user-hover", false);
-	}
-
-	// define click function
-	var barselect_click = function(d, i) {
-		var thispostid = d["post_id"];
-		//alert(imgdir + (data[thisid].post_id) + ".jpg");
-		window.location = "readpost.php?post_id=" + thispostid;
-		//window.location = (imgdir + (thispostid) + ".jpg");
-	}
-
 	// add x-axis ticks
 	chart.selectAll("line")
 		.data(scaleTime.ticks(d3.time.day, tickinterval)).enter()

@@ -97,6 +97,29 @@ function handleMouse(e) {
 
 }
 
+//define mouseover functions
+function barselect_mouseover(d, i) {
+	d3.selectAll(".post-" + d["post_id"]).classed("hover", true); 
+	//highlight same users
+	d3.selectAll(".user-" + d["user_id"]).classed("same-user-hover", true);
+}
+
+// define mouseout
+function barselect_mouseout( d, i) {
+	d3.selectAll(".post-" + d["post_id"]).classed("hover", false); 
+	//highlight same users
+	d3.selectAll(".user-" + d["user_id"]).classed("same-user-hover", false);
+}
+
+// define click function
+function barselect_click(d, i) {
+	var thispostid = d["post_id"];
+	//alert(imgdir + (data[thisid].post_id) + ".jpg");
+	window.location = "readpost.php?post_id=" + thispostid;
+	//window.location = (imgdir + (thispostid) + ".jpg");
+}
+
+
 // Assign handleMouse to mouse movement events
 document.onmousemove = handleMouse;
 
@@ -125,5 +148,6 @@ post_lifespan
 post_repostlog
 
  */
+var params = purl().param();
 
 
