@@ -43,14 +43,12 @@ function destroyLessCache(pathToCss) { // e.g. '/css/' or '/stylesheets/'
 $(document).ready(function() {
 	destroyLessCache();
 
-
 	$('input').on('ifChecked', function(event){
 		if(event.target.name == "graphstyle") {
 			if(event.target.id == "wedge") params["graphstyle"] = "wedge"; 
 			else params["graphstyle"] = "bar"; 
 			history.pushState(null, null, "?" + makeparamstring(params));
 		}
-
 	}); 
 	$('input').iCheck({
 		checkboxClass: 'icheckbox_flat',

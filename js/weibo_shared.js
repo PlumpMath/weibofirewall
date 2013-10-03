@@ -22,6 +22,7 @@ var wedgeMinimumX = 5;
 var wedgeMinimumY = 1;
 
 var tickinterval = 1; //interval between ticks, in days
+var params = "";
 
 
 
@@ -54,7 +55,7 @@ function epochToDate(epoch) {
 	return new Date(epoch * 1000);
 }
 
-function getcolor_bytime(d) {
+function getcolor_bytime(d, scaleTimeForColor) {
 	// generate colors per time 
 	elapsedtimecolor = scaleTimeForColor(d["last_checked_at"]) - scaleTimeForColor(d["post_created_at"]); 
 	var thiscolor_value = dec2hex(colorMax - (Math.round(elapsedtimecolor)));
@@ -142,12 +143,26 @@ function makeparamstring(params) {
 	var keys = Object.keys(params);
 //	console.log(keys);
 	for(var i = 0; i < keys.length; i++) {
+		if(i > 0) s+= "&";
 		s += keys[i] + "=" + params[keys[i]];
 //		console.log(keys[i]);
 //		console.log(params);
 	}
 //	console.log(s);
 	return s;
+}
+
+function getthiscolor(d, scaleTimeForColor) {
+	if(params["colorby"] == "bytime") {
+		// generate colors by time
+		var thiscolor_bytime = getcolor_bytime(d, scaleTimeForColor);
+		return thiscolor_bytime;
+	} else {
+		// generate colors per user 
+		var thiscolor_byuser = getcolor_byuser(d);
+		return thiscolor_byuser;
+	}	
+
 }
 
 function setoptions(params) {
@@ -162,11 +177,28 @@ function setoptions(params) {
 //	console.log(keys);
 }
 
+function cleanparams(params) {
+
+	if(!("labels" in params)) {
+		params["labels"] = "true";
+	} else if(params["labels"] != "true") params["labels"] = "false";
+
+	if(!("colorby" in params)) {
+		params["colorby"] = "bytime";
+	} else if(params["colorby"] != "byuser") params["colorby"] = "bytime";
+
+	if(!("graphstyle" in params)) {
+		params["graphstyle"] = "bar";
+	} 
+
+	history.replaceState(null, null, "?" + makeparamstring(params));
+	setoptions(params);
+	return params;
+}
+
 function refreshoptions() {
 }
 
-// Assign handleMouse to mouse movement events
-document.onmousemove = handleMouse;
 
 
 /* THIS IS THE CSVLINE 
@@ -193,10 +225,20 @@ post_lifespan
 post_repostlog
 
  */
-var params = purl().param();
 
-window.onpopstate = function(event) {
-	params = purl().param();
-	console.log(params);
-	setoptions(params);
-};
+$(document).ready(function() {
+
+	// Assign handleMouse to mouse movement events
+	document.onmousemove = handleMouse;
+
+	window.onpopstate = function(event) {
+		params = purl().param();
+		console.log(params);
+		setoptions(params);
+	};
+
+
+});
+
+
+
