@@ -66,6 +66,8 @@ def csvize_repost_timeline(csv_filename, type="deleted", error_code=-1, exclude_
 		query_post_ids = weibo_module.get_deleted_postids(error_code, exclude_error_code)
 	else:
 		query_post_ids = weibo_module.get_all_postids()
+#		query_post_ids = query_post_ids[:10]
+		print query_post_ids
 
 	num_query_posts = len(query_post_ids)
 
@@ -124,10 +126,11 @@ def csvize_repost_timeline(csv_filename, type="deleted", error_code=-1, exclude_
 #our process
 #grab all the deleted posts
 #massage to CSV!
-all_log__eibo_filename = weibo_settings.all_log_csv_filename
 #csvize_deleted_repost_timeline(weibo_settings.all_log_csv_filename, 10023, True)
-csvize_repost_timeline(weibo_settings.all_log_csv_filename, "all")
-csvize_repost_timeline(weibo_settings.deleted_log_csv_filename, "deleted", 10023, True)
+if(len(sys.argv) > 1 and sys.argv[1] == "-all"):#
+	csvize_repost_timeline(weibo_settings.all_log_csv_filename, "all")
+else:
+	csvize_repost_timeline(weibo_settings.deleted_log_csv_filename, "deleted", 10023, True)
 
 #deleted_in_sample()
 

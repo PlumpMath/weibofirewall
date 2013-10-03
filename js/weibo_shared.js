@@ -96,6 +96,7 @@ function handleMouse(e) {
 
   //what we weant to do: proportional to client, scroll page.
 	//so: if cursor is 25% of clientX and 25% of clientY, scroll page to 25% of pageX and 25% of pageY.
+	//but actually. we want some padding. so: if cursor is 25% of clientX and 25% of clientY, scroll page to 25% of pageX and 25% of pageY.
 	var scrollToX = e.clientX / $(window).width() * $(document).width();
 	var scrollToY = e.clientY / $(window).height() * $(document).height();
   //
@@ -109,6 +110,7 @@ function handleMouse(e) {
 
 //define mouseover functions
 function barselect_mouseover(d, i) {
+	d3.selectAll(".postdiv.post-" + d["post_id"]).style('opacity', 1).style('z-index', 100);
 	d3.selectAll(".post-" + d["post_id"]).classed("hover", true); 
 	//highlight same users
 	d3.selectAll(".user-" + d["user_id"]).classed("same-user-hover", true);
@@ -116,6 +118,8 @@ function barselect_mouseover(d, i) {
 
 // define mouseout
 function barselect_mouseout( d, i) {
+	d3.selectAll(".postdiv.post-" + d["post_id"]).transition().duration(50).style('opacity', 0).style('z-index', 0);
+//	d3.selectAll(".postdiv.post-" + d["post_id"]).style('opacity', 0); //.style('z-index', 0);
 	d3.selectAll(".post-" + d["post_id"]).classed("hover", false); 
 	//highlight same users
 	d3.selectAll(".user-" + d["user_id"]).classed("same-user-hover", false);
@@ -227,11 +231,18 @@ function dsvaccessor(d, i) {
 	};
 }
 
+function yFunction(d, i) { 
+	console.log(d);
+	return d["user_id"] % 2000 + 300;
+//	return 300;
+	return (i * (barheight + bargap)) + (barheight / 2); 
+}
+
 function wedgesparkline(iswedge, d, i, scaleTime) {
 
 	// GET X Y COORDINATES
 	var x = scaleTime(d["post_created_at"]); 
-	var y = i * (barheight + bargap) + (barheight / 2);
+	var y = yFunction(d, i);
 
 	// WIDTH = TIME, SCALED
 	var width = scaleTime(d["last_checked_at"]) - scaleTime(d["post_created_at"]); 

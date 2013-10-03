@@ -155,7 +155,7 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 		.append("text")
 //		.attr("x", function(d) { return 300; })
 		.attr("x", function(d, i) { return scaleTime(d["post_created_at"]); })
-		.attr("y", function(d, i) { return (i * (barheight + bargap)) + (barheight / 2); })
+		.attr("y", yFunction)
 		.attr("dx", -3) // padding-right
 		.attr("dy", ".35em") // vertical-align: middle
 		.attr("text-anchor", "end") // text-align: right
