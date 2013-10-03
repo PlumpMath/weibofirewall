@@ -12,6 +12,7 @@
 <body>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="js/less-1.4.1.min.js"></script>
+<script src="js/jquery.icheck.min.js"></script>
 <script src="js/moment.min.js"></script>
 <script src="js/purl.min.js"></script>
 <script src="js/jquery.hoverIntent.minified.js"></script>
@@ -39,6 +40,7 @@ function destroyLessCache(pathToCss) { // e.g. '/css/' or '/stylesheets/'
 }
 $(document).ready(function() {
 	destroyLessCache();
+	$('input').iCheck();
 });
 </script>
 
@@ -54,10 +56,17 @@ $(document).ready(function() {
 
 	<div id="infobox">
 		<div id="infobox-inner">
-			 <div class="logo">
-			   Jumping The Great Firewall (alpha) </div>
-
-			 <div class="info">
+			<div class="logo">
+			   Jumping The Great Firewall (alpha)
+			</div>
+			
+			<div class="options">
+				<label for="baz[1]">Foo</label>
+				<input type="radio" name="quux[2]" id="baz[1]" checked>
+				<label for="baz[2]">Bar</label>
+				<input type="radio" name="quux[2]" id="baz[2]" checked>
+			</div>
+			<div class="info">
 <i>In collaboration with Penn Voices, and Mark Hansen, Brown Institute, School of Journalism</i>
 <br><br>
 <b>Project Director</b><br>
