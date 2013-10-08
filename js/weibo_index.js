@@ -165,7 +165,7 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 		.text(function(d,i) { 
 			elapsedtimeseconds = (d["last_checked_at"].getTime() - d["post_created_at"].getTime()) / 1000; 
 //			return d["user_name"] + ":" + "lifespan: " + lifespanFormat(elapsedtimeseconds);
-//			return d["user_name"];
+			return d["user_name"];
 //			return d["user_name"] + ": " + bar_dateformat(d["post_created_at"]) + "-- lifespan: " + lifespanFormat(elapsedtimeseconds);
 		})
 	  .on("mouseover", barselect_mouseover)
