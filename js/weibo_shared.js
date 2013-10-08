@@ -1,8 +1,8 @@
-var datafile = "../_archive/firewall_pre_git/data/130616_deleted_weibo.csv";
 var datafile = "data/deleted_weibo_log.csv";
+//var datafile = "data/all_weibo_log_temp.csv";
 var datastartindex = 15;
 var imgdir = "weibo_images/";
-var chartwidth = 3960;
+var chartwidth = 6000;
 //var chartheight = 960;
 var chartheight_padding = 80;
 var chartpadding=100;
@@ -97,8 +97,8 @@ function handleMouse(e) {
   //what we weant to do: proportional to client, scroll page.
 	//so: if cursor is 25% of clientX and 25% of clientY, scroll page to 25% of pageX and 25% of pageY.
 	//but actually. we want some padding. so: if cursor is 25% of clientX and 25% of clientY, scroll page to 25% of pageX and 25% of pageY.
-	var scrollToX = e.clientX / $(window).width() * $(document).width();
-	var scrollToY = e.clientY / $(window).height() * $(document).height();
+	var scrollToX = (e.clientX - 200)/ $(window).width() * $(document).width();
+	var scrollToY = (e.clientY - 200) / $(window).height() * $(document).height();
   //
 
 //	console.log("client: " + e.clientX + "," + e.clientY);
@@ -118,7 +118,7 @@ function barselect_mouseover(d, i) {
 
 // define mouseout
 function barselect_mouseout( d, i) {
-	d3.selectAll(".postdiv.post-" + d["post_id"]).transition().duration(50).style('opacity', 0).style('z-index', 0);
+	d3.selectAll(".postdiv.post-" + d["post_id"]).transition().duration(100).style('opacity', 0).style('z-index', 0);
 //	d3.selectAll(".postdiv.post-" + d["post_id"]).style('opacity', 0); //.style('z-index', 0);
 	d3.selectAll(".post-" + d["post_id"]).classed("hover", false); 
 	//highlight same users
@@ -232,8 +232,8 @@ function dsvaccessor(d, i) {
 }
 
 function yFunction(d, i) { 
-	console.log(d);
-	return d["user_id"] % 2000 + 300;
+//	console.log(d);
+//	return d["user_id"] % 2000 + 300;
 //	return 300;
 	return (i * (barheight + bargap)) + (barheight / 2); 
 }

@@ -101,7 +101,7 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 		//and now:
 		.append("rect")
 		.attr("x", function(d, i) { return scaleTime(d["post_created_at"]); })
-		.attr("y", function(d, i) { return i * (barheight + bargap); })
+		.attr("y", function(d, i) { return yFunction(d, i) - barheight / 2; })
 		.attr("width", function(d) { return scaleTime(d["last_checked_at"]) - scaleTime(d["post_created_at"]); })
 		.attr("height", barheight)
 		.attr("class", function(d, i) { return "bar post-" + d["post_id"] + " user-" + d["user_id"]; })
@@ -121,10 +121,12 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 		//and now:
 		.append("path")
 		.attr('d', function(d, i) { return wedgesparkline("wedge", d, i, scaleTime); })
-		.style('opacity', .5)
+		.style('opacity', 0.1)
 		.attr("class", function(d, i) { return "wedge post-" + d["post_id"] + " user-" + d["user_id"]; })
 		.attr("name", function(d, i) { return d["post_id"]; })
-		.attr("stroke-width", 1)
+	.attr("stroke-width", 0.75)
+		.attr("fill", "none")
+//		.attr("stroke", function(d) { return getthiscolor(d, scaleTimeForColor); })
 		.attr("fill", function(d) { return getthiscolor(d, scaleTimeForColor); })
 	.on("mouseover", barselect_mouseover)
 	.on("mouseout", barselect_mouseout) 
@@ -153,7 +155,6 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 	chart.selectAll("bar")
 		.data(data).enter()
 		.append("text")
-//		.attr("x", function(d) { return 300; })
 		.attr("x", function(d, i) { return scaleTime(d["post_created_at"]); })
 		.attr("y", yFunction)
 		.attr("dx", -3) // padding-right
@@ -161,18 +162,11 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 		.attr("text-anchor", "end") // text-align: right
 		.attr("name", function(d, i) { return d["post_id"]; })
 		.attr("class", function(d, i) { return "post-" + d["post_id"] + " user-" + d["user_id"]; })
-//		.attr("fill", "#CCC")
 		.text(function(d,i) { 
-			////console.log(i);
-			////console.log(d["last_checked_at"]);
-			////console.log(d["post_created_at"]);
-			////console.log(d["last_checked_at"].getTime());
-			////console.log(d["post_created_at"].getTime());
 			elapsedtimeseconds = (d["last_checked_at"].getTime() - d["post_created_at"].getTime()) / 1000; 
-			////console.log(elapsedtimeseconds);
-			return d["user_name"];
-			return d["user_name"] + ":" + "lifespan: " + lifespanFormat(elapsedtimeseconds);
-			return d["user_name"] + ": " + bar_dateformat(d["post_created_at"]) + "-- lifespan: " + lifespanFormat(elapsedtimeseconds);
+//			return d["user_name"] + ":" + "lifespan: " + lifespanFormat(elapsedtimeseconds);
+//			return d["user_name"];
+//			return d["user_name"] + ": " + bar_dateformat(d["post_created_at"]) + "-- lifespan: " + lifespanFormat(elapsedtimeseconds);
 		})
 	  .on("mouseover", barselect_mouseover)
 	  .on("mouseout", barselect_mouseout)
