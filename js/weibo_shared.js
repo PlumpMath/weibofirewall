@@ -97,8 +97,8 @@ function handleMouse(e) {
   //what we weant to do: proportional to client, scroll page.
 	//so: if cursor is 25% of clientX and 25% of clientY, scroll page to 25% of pageX and 25% of pageY.
 	//but actually. we want some padding. so: if cursor is 25% of clientX and 25% of clientY, scroll page to 25% of pageX and 25% of pageY.
-	var scrollToX = (e.clientX - 200)/ $(window).width() * $(document).width();
-	var scrollToY = (e.clientY - 200) / $(window).height() * $(document).height();
+	var scrollToX = (e.clientX)/ $(window).width() * $(document).width();
+	var scrollToY = (e.clientY) / $(window).height() * $(document).height();
   //
 
 //	console.log("client: " + e.clientX + "," + e.clientY);
