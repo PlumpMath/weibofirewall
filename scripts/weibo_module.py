@@ -248,6 +248,20 @@ def refreshpost(this_post_id):
 
 
 
+# find all postids!
+def get_all_postids():
+
+	db = open_db()
+	cursor = db.cursor()
+
+	query = 'SELECT DISTINCT post_id FROM %s' % (weibo_settings.checklog_tablename)
+	cursor.execute(query)
+	allpostids = cursor.fetchall()
+	allpostids = map(lambda x: x[0], allpostids)
+	
+	return allpostids
+
+
 # find posts that we're tracking
 def get_tracking_postids():
 
@@ -271,8 +285,6 @@ def get_tracking_postids():
 
 
 	trackingpostids = list(set(allpostids) - set(nottrackingpostids))
-
-
 
 	return trackingpostids
 
@@ -488,9 +500,14 @@ def merge_deleted_from_new_old(this_post_id):
 	this_post["post_repost_count"] = str(this_post_new["post_repost_count"])
 	this_post["started_tracking_at_epoch"] = this_post_old["started_tracking_at"].strftime('%s')
 	this_post["started_tracking_at"] = this_post_old["started_tracking_at"].strftime('%Y-%m-%d %H:%M:%S')
-	this_post["error_code"] = this_post_deleted["error_code"] 
-	this_post["error_message"] = this_post_deleted["error_message"] 
-	this_post["is_deleted"] = this_post_deleted["is_deleted"] 
+	if(this_post_deleted != -1):
+		this_post["error_code"] = this_post_deleted["error_code"] 
+		this_post["error_message"] = this_post_deleted["error_message"] 
+		this_post["is_deleted"] = this_post_deleted["is_deleted"] 
+	else:
+		this_post["error_code"] = ""
+		this_post["error_message"] = ""
+		this_post["is_deleted"] = 0
 	# we're setting the "deleted time" to be when it was found to be deleted
 	# that means that, depending on the interval T, 
 	# the actual deletion time is always between 0 and T later

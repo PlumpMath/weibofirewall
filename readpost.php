@@ -19,6 +19,7 @@ $datafile = "data/deleted_weibo_log.csv";
 $imgdir = "weibo_images/";
 $ocrimgdir = "weibo_ocr_images/";
 $post_id = $_GET["post_id"];
+$do_tesseract = $_GET["tesseract"];
 $tesseractpath = "/usr/local/bin/tesseract";
 
 function fopen_utf8($filename){
@@ -103,7 +104,7 @@ function csv_get_post($post_id, $filename='', $delimiter=',')
 
 function get_ocr_image($imgname) {
 	global $tesseractpath, $imgdir, $ocrimgdir;
-	if(file_exists("$ocrimgdir$imgname.txt") == false) {
+	if(file_exists("$ocrimgdir$imgname.txt") == false && file_exists("$ocrimgdir$imgname.txt.txt") == false) {
 		print `$tesseractpath $imgdir$imgname $ocrimgdir$imgname.txt -l chi_sim 2>&1`;
 	}
 }
@@ -116,14 +117,15 @@ function get_ocr_image($imgname) {
 
 <?php
 	$data = csv_get_post($post_id, $datafile);
-	$thistext = $data["postinfo"]["post_text"]; 
+$thistext = $data["postinfo"]["post_text"]; 
+	print "<h2>Post info</h2>";
 	print "<a href=http://translate.google.com/#zh-CN/en/" . $thistext . ">" . $thistext . "</a>";
 	print "<br>";
 
 	$ext = pathinfo($data["postinfo"]["post_original_pic"], PATHINFO_EXTENSION);
 	$imgname = $post_id . "." . $ext;
 
-	get_ocr_image($imgname);
+	if($do_tesseract == "true") { get_ocr_image($imgname); }
 
 	print "<img src=" . $imgdir . $imgname .  ">";
 	print '<pre>';

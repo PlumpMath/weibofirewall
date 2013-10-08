@@ -8,14 +8,19 @@
 <link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'>
 <!-- <link rel="stylesheet" href="css/firewall.css" type="text/css" /> -->
 <link rel="stylesheet/less" href="css/firewall.less" type="text/css" />
+<link href="js/iCheck/skins/flat/flat.css" rel="stylesheet">
+
 </head>
 <body>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="js/less-1.4.1.min.js"></script>
+<script src="js/iCheck/jquery.icheck.min.js"></script>
 <script src="js/moment.min.js"></script>
+<script src="js/purl.min.js"></script>
 <script src="js/jquery.hoverIntent.minified.js"></script>
 <script src="js/jquery.ae.image.resize.min.js"></script>
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="js/weibo_shared.js" charset="utf-8"></script>
 <script src="js/weibo_index.js" charset="utf-8"></script>
 <script type="text/javascript">
 // Destroys the localStorage copy of CSS that less.js creates
@@ -37,6 +42,21 @@ function destroyLessCache(pathToCss) { // e.g. '/css/' or '/stylesheets/'
 }
 $(document).ready(function() {
 	destroyLessCache();
+
+	$('input').on('ifChecked', function(event){
+		if(event.target.name == "graphstyle") {
+			if(event.target.id == "wedge") params["graphstyle"] = "wedge"; 
+			else if(event.target.id == "bar") params["graphstyle"] = "bar"; 
+			else params["graphstyle"] = "sparkline"; 
+			history.pushState(null, null, "?" + makeparamstring(params));
+		}
+		d3update(1000);
+	}); 
+	$('input').iCheck({
+		checkboxClass: 'icheckbox_flat',
+		radioClass: 'iradio_flat'
+	});
+
 });
 </script>
 
@@ -52,10 +72,25 @@ $(document).ready(function() {
 
 	<div id="infobox">
 		<div id="infobox-inner">
-			 <div class="logo">
-			   Jumping The Great Firewall (alpha) </div>
-
-			 <div class="info">
+			<div class="logo">
+			   Jumping The Great Firewall (alpha)
+			</div><br>
+			
+			<div class="options">
+				<div class="one_option">
+					<input type="radio" name="graphstyle" id="bar" checked>
+					<label for="bar">Bar</label>
+				</div>
+				<div class="one_option">
+					<input type="radio" name="graphstyle" id="wedge" checked>
+					<label for="wedge">Wedge</label>
+				</div>
+				<div class="one_option">
+					<input type="radio" name="graphstyle" id="sparkline" checked>
+					<label for="sparkline">Sparkline</label>
+				</div>
+			</div>
+			<div class="info">
 <i>In collaboration with Penn Voices, and Mark Hansen, Brown Institute, School of Journalism</i>
 <br><br>
 <b>Project Director</b><br>

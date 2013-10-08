@@ -2,7 +2,7 @@
 @gray-dark: #777;
 @light-text: @gray-light;
 @bar-text: @gray-dark;
-@bar-text-sameuser: #FFF;
+@bar-text-sameuser: #FF0;
 
 body {
 	background-color: #222;
@@ -44,7 +44,6 @@ a:hover{
 }
 
 rect {
-	display: none;
 }
 
 .tickline {
@@ -54,11 +53,13 @@ rect {
 
 
 .postdiv {
-	display: none; 
+//	display: none; 
+	opacity: 0;
 	position: absolute;
 	border: 1px dotted #ddd;
 	padding: 5px;
 	background-color: white;
+	pointer-events: none;
 }
 
 .axis path,
@@ -103,6 +104,7 @@ rect {
 /* infobox */
 
 #infobox {
+	opacity: 0.5;
 	font-family: 'PT Sans', sans-serif;
 	position: fixed;
 	left: 20px;
@@ -136,6 +138,29 @@ rect {
 	font-size: 0.65em;
 }
 
+.options {
+	padding: 20px;
+	overflow: hidden;
+}
+
+.one_option {
+	overflow: hidden;
+	margin-bottom: 5px;
+	width: 90px;
+	float: left;
+}
+
+.one_option label {
+	float: left;
+	padding-top: 4px;
+	display: block;
+}
+
+.one_option .iradio_flat {
+	float: left;
+	margin-right: 5px;
+}
+
 
 h1, h2, h3, .title {
 	font-family: 'PT Sans', sans-serif;
@@ -147,15 +172,18 @@ h1, h2, h3, .title {
 }
 
 .sparkline.hover {
-	fill: cyan !important;
-	opacity: 1 !important;
+//	opacity: 1 !important;
 	}
 
 .username {
-	color: cyan;
 }
 
 .same-user-hover {
 	fill: @bar-text-sameuser !important; 
 }
 
+#morelink {
+	font-size: 2em;
+	text-decoration: underline;
+	cursor: pointer;
+	}
