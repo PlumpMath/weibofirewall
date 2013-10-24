@@ -6,12 +6,14 @@
 //
 //get delimiter from weibo_settings.py
 var dsv = d3.dsv("|||", "text/plain");
+var wedges;
 
 // read the datafile.START
 dsv(datafile, dsvaccessor, function(error, rows) {
 
 	params = purl().param();
 	params = cleanparams(params);
+	console.log(rows);
 
 	// now let's massage that data
 	var data = rows;
@@ -66,7 +68,7 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 
 	// Add the x-axis labels
 	chart.append("g")
-		.attr("class", "x axis")
+		.attr("class", "x-axis")
 		.attr("transform", "translate(0," + (chartheight - 1) + ")")
 		.call(axisTime)
 		//rotate the text, too
@@ -115,9 +117,10 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 
 
 // let's select the chart and add our wedges to it	
-	chart.selectAll("wedge")
+	wedges = chart.selectAll("wedge")
 		// plug in our data
-		.data(data).enter()
+		.data(data)
+		.enter()
 		//and now:
 		.append("path")
 		.attr('d', function(d, i) { return wedgesparkline("wedge", d, i, scaleTime); })
@@ -194,7 +197,6 @@ durdiv.selectAll("div")
 		 .attr("name", function(d, i) { return i; })
 
 
-
 	d3update(0);
 
 	$("body").mousemove(function(e){
@@ -235,4 +237,24 @@ durdiv.selectAll("div")
 		}
 	}
 
+// define click function
+function barselect_click(d, i) {
+	var thispostid = d["post_id"];
+	//alert(imgdir + (data[thisid].post_id) + ".jpg");
+//	window.location = "readpost.php?post_id=" + thispostid;
+	//window.location = (imgdir + (thispostid) + ".jpg");
+	//
+	var newData = [];
+	for (var i = 0; i < d.length; d++) {
+		newData.push(300);
+	}
 
+	d3.select("text").transition().style("color", "red");
+
+//	console.log(newData)
+//	console.log("fire click");
+//	console.log(wedges);
+//	wedges.data(newData)
+//		.transition().duration(1000)
+//		.attr("fill", "cyan");
+}

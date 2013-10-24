@@ -125,13 +125,7 @@ function barselect_mouseout( d, i) {
 	d3.selectAll(".user-" + d["user_id"]).classed("same-user-hover", false);
 }
 
-// define click function
-function barselect_click(d, i) {
-	var thispostid = d["post_id"];
-	//alert(imgdir + (data[thisid].post_id) + ".jpg");
-	window.location = "readpost.php?post_id=" + thispostid;
-	//window.location = (imgdir + (thispostid) + ".jpg");
-}
+
 
 function resizeimage(imgurl) {
 	thisresizedimage = "https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?url=" 
@@ -145,14 +139,10 @@ function resizeimage(imgurl) {
 function makeparamstring(params) {
 	var s = "";
 	var keys = Object.keys(params);
-//	console.log(keys);
 	for(var i = 0; i < keys.length; i++) {
 		if(i > 0) s+= "&";
 		s += keys[i] + "=" + params[keys[i]];
-//		console.log(keys[i]);
-//		console.log(params);
 	}
-//	console.log(s);
 	return s;
 }
 
