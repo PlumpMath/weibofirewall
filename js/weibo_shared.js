@@ -228,6 +228,12 @@ function yFunction(d, i) {
 	return (i * (barheight + bargap)) + (barheight / 2); 
 }
 
+function transformwedgesparkline(d, i, scaleTime) {
+	var x = scaleTime(d["post_created_at"]); 
+	var y = yFunction(d, i);
+	return "translate(" + x + "," + y + ")";
+}
+
 function wedgesparkline(iswedge, d, i, scaleTime) {
 
 	// GET X Y COORDINATES
@@ -246,6 +252,15 @@ function wedgesparkline(iswedge, d, i, scaleTime) {
 	// RELATIVE LINE TO (width, height / w), 
 	// RELATIVE LINE TO (0, -height), 
 	// CLOSE LINE
+	//wedgestring =  'M ' + x +' '+ y + ' l ' + width + ' ' + (height / 2) + ' l 0 -' + height + ' z';
+
+	// M syntax
+	// MOVE TO 0, 0
+	// RELATIVE LINE TO (width, height / w), 
+	// RELATIVE LINE TO (0, -height), 
+	// CLOSE LINE
+	// ---TRANSLATE to x, y
+	x = 0; y = 0;
 	wedgestring =  'M ' + x +' '+ y + ' l ' + width + ' ' + (height / 2) + ' l 0 -' + height + ' z';
 
 	if (d["post_repostlog"] == "") {

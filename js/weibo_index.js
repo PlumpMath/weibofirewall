@@ -13,10 +13,10 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 
 	params = purl().param();
 	params = cleanparams(params);
-	console.log(rows);
 
 	// now let's massage that data
-	var data = rows;
+	//var data = rows;
+	var data = _.first(rows, 100);
 
 	// sort data by created
 	data.sort(function(a,b) { return a.post_created_at - b.post_created_at; });
@@ -124,6 +124,7 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 		//and now:
 		.append("path")
 		.attr('d', function(d, i) { return wedgesparkline("wedge", d, i, scaleTime); })
+		.attr('transform', function(d, i) { return transformwedgesparkline(d, i, scaleTime); })
 		.style('opacity', 0.1)
 		.attr("class", function(d, i) { return "wedge post-" + d["post_id"] + " user-" + d["user_id"]; })
 		.attr("name", function(d, i) { return d["post_id"]; })
@@ -143,6 +144,7 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 		//and now:
 		.append("path")
 		.attr('d', function(d, i) { return wedgesparkline("sparkline", d, i, scaleTime); })
+		.attr('transform', function(d, i) { return transformwedgesparkline(d, i, scaleTime); })
 		.style('opacity', .5)
 		.attr("class", function(d, i) { return "sparkline post-" + d["post_id"] + " user-" + d["user_id"]; })
 		.attr("name", function(d, i) { return d["post_id"]; })
@@ -239,9 +241,10 @@ durdiv.selectAll("div")
 
 // define click function
 function barselect_click(d, i) {
+
 	var thispostid = d["post_id"];
-	//alert(imgdir + (data[thisid].post_id) + ".jpg");
-//	window.location = "readpost.php?post_id=" + thispostid;
+	var thisuserid = d["user_id"];
+
 	//window.location = (imgdir + (thispostid) + ".jpg");
 	//
 	var newData = [];
@@ -249,7 +252,14 @@ function barselect_click(d, i) {
 		newData.push(300);
 	}
 
-	d3.select("text").transition().style("color", "red");
+	console.log("clicked = ")
+		console.log(d);
+	console.log("clicked");
+	d3.selectAll("path").transition().duration(1000)
+		.attr("fill", "red")
+		.attr("transform", function(d, i) {
+				if(d["user_id"] == thisuserid) {return "translate(100,100)"; }
+				});
 
 //	console.log(newData)
 //	console.log("fire click");
