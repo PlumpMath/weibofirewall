@@ -1,9 +1,14 @@
-var datafile = "data/deleted_weibo_log.csv";
+//var datafile = "data/deleted_weibo_log.csv";
+var datafile = "data/deleted_weibo_log_old.csv";
 //var datafile = "data/all_weibo_log_temp.csv";
 var datastartindex = 15;
 var imgdir = "weibo_images/";
-var chartwidth = 6000;
+
+
+var chartwidth = 2000;
 //var chartheight = 960;
+var yHorizon = screen.height / 2;
+
 var chartheight_padding = 80;
 var chartpadding=100;
 var barheight = 10;
@@ -101,10 +106,8 @@ function handleMouse(e) {
 	var scrollToY = (e.clientY) / $(window).height() * $(document).height();
   //
 
-//	console.log("client: " + e.clientX + "," + e.clientY);
-//	console.log("windowmax: " + $(window).width() + "," + $(window).height());
-//	console.log(scrollToX + " " +  scrollToY);
-	window.scrollTo(scrollToX, scrollToY);
+	//window.scrollTo(scrollToX, scrollToY);
+	$(window).scrollLeft(scrollToX);
 
 }
 
@@ -224,14 +227,14 @@ function dsvaccessor(d, i) {
 function yFunction(d, i) { 
 //	console.log(d);
 //	return d["user_id"] % 2000 + 300;
-//	return 300;
-	return (i * (barheight + bargap)) + (barheight / 2); 
+//	return (i * (barheight + bargap)) + (barheight / 2); 
+	return yHorizon;
 }
 
 function transformwedgesparkline(d, i, scaleTime) {
 	var x = scaleTime(d["post_created_at"]); 
 	var y = yFunction(d, i);
-	return "translate(0," + y + ")";
+	return crossplatformtransform("translate(0px," + y + "px)");
 }
 
 function wedgesparkline(iswedge, d, i, scaleTime) {
@@ -344,5 +347,29 @@ $(document).ready(function() {
 
 });
 
+function crossplatformtransform (transformcommand) {
+	var transformstring = 
+	//	'transform: ' + transformcommand + '; ' + 
+//		'-ms-transform: ' + transformcommand + ';' + 
+		'-webkit-transform: ' + transformcommand + ';';
+	return transformstring;
+}
 
+function scatterrandom(min, max, userid, yHorizon) {
 
+	//forget min and max
+	// we want to avoid yHorizon by +- horizonavoidance pixels
+	// hash userid (just do a simple mod) between 0 and (yHorizon - horizonavoidance)
+	// if odd, keep
+	// if even, add horizonavoidance + yHorizon
+	// so that domain of y value is between
+	// yHorizon + horizonavoidance and yHorizon * 2 
+	var horizonavoidance = 200;
+
+	thisy = userid % (yHorizon - horizonavoidance);
+	if(thisy % 2 == 0)
+		thisy += yHorizon + horizonavoidance;
+
+	return thisy;
+
+}
