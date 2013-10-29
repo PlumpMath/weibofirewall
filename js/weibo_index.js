@@ -16,7 +16,7 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 
 	// now let's massage that data
 	//var data = rows;
-	var data = _.first(rows, 100);
+	var data = _.first(rows, 1000);
 
 	// sort data by created
 	data.sort(function(a,b) { return a.post_created_at - b.post_created_at; });
@@ -151,6 +151,9 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 		.attr("stroke-width", 0.75)
 		.attr("fill", "none")
 		.attr("stroke", function(d) { return "#FF00FF"; return getthiscolor(d, scaleTimeForColor); })
+		.attr("style", function () {
+			return "-webkit-transform: perspective(800) scale(1) scale3d(1, 1, 1) rotate3d(1, 0, 0, 0deg) translate3d(0, 0, 0);";
+		})
 	.on("mouseover", barselect_mouseover)
 	.on("mouseout", barselect_mouseout) 
 	.on("click", barselect_click);
@@ -161,12 +164,13 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 		.data(data).enter()
 		.append("text")
 		.attr("x", function(d, i) { return scaleTime(d["post_created_at"]); })
-		.attr("y", yFunction)
+		.attr("y", 0)
+		.attr("transform", function(d, i) { return "translate(0, " + yFunction(d, i) + ")"; })
 		.attr("dx", -3) // padding-right
 		.attr("dy", ".35em") // vertical-align: middle
 		.attr("text-anchor", "end") // text-align: right
 		.attr("name", function(d, i) { return d["post_id"]; })
-		.attr("class", function(d, i) { return "post-" + d["post_id"] + " user-" + d["user_id"]; })
+		.attr("class", function(d, i) { return "username post-" + d["post_id"] + " user-" + d["user_id"]; })
 		.text(function(d,i) { 
 			elapsedtimeseconds = (d["last_checked_at"].getTime() - d["post_created_at"].getTime()) / 1000; 
 //			return d["user_name"] + ":" + "lifespan: " + lifespanFormat(elapsedtimeseconds);
@@ -255,11 +259,47 @@ function barselect_click(d, i) {
 	console.log("clicked = ")
 		console.log(d);
 	console.log("clicked");
+
+/*	d3.selectAll("path").transition().duration(1000)
+		.attr("fill", "red")
+		.attr("transform", function(d, i) {
+			if(d["user_id"] == thisuserid) { 
+				return "translate(0,300)"; 
+			} else { 
+				console.log(d3.select(this).attr("transform"));
+				return d3.select(this).attr("transform");
+			} 
+		});*/
+
+	d3.selectAll("text.username").transition().duration(1000)
+		.attr("fill", "red")
+		.attr("transform", function(d, i) {
+			if(d["user_id"] == thisuserid) { 
+				return "translate(0,800)"; 
+			} else { 
+				console.log(d3.select(this).attr("transform"));
+				return "translate(0,400)";
+				return "translate(0," + _.random(0, 1000) + ")"; 
+				return d3.select(this).attr("transform");
+			} 
+		});
+
 	d3.selectAll("path").transition().duration(1000)
 		.attr("fill", "red")
 		.attr("transform", function(d, i) {
-				if(d["user_id"] == thisuserid) {return "translate(100,100)"; }
-				});
+			if(d["user_id"] == thisuserid) { 
+				return "translate(0,800)"; 
+			} else { 
+				return "translate(0,400)"; 
+				console.log(d["post_id"]);
+				//console.log( d3.select("post-" + d["post_id"]ext.username").attr("transform"))
+				return "translate(0," + _.random(0, 1000) + ")"; 
+				//return d3.select(this).attr("transform");
+			}
+		}) 
+		.attr("style", function(d, i) {
+			return "-webkit-transform: perspective(800) scale(1) scale3d(1, 1, 2) rotate3d(1, 0, 0, 55deg) translate3d(0px, 198px, 0px);";
+		});
 
 //	console.log(newData)
 //	console.log("fire click");
