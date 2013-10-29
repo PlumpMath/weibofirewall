@@ -262,18 +262,41 @@ durdiv.selectAll("div")
 	}
 
 	function chart_click(d, i) { 
-		/*
-		if(scattertoggle == true) {
+		console.log("chart_click");
+		if ($(".hover").length ) {
+
+			// WE CLICKED ON A WEDGE - SO SPLIT
+			
+			// this is messy - but get userid from classes
+			var hoverclasses = $(".hover").attr("class");
+			var hovermatch = hoverclasses.match(/user-(\d*)/);
+			var thisuserid = hovermatch[1];
+
+			//TRANSITION WEDGES
+			d3.selectAll("path.wedge").transition().duration(1000)
+				.attr("style", function(d, i) {
+					if(d["user_id"] == thisuserid) { 
+						return crossplatformtransform("translate(0px, " + yHorizon + "px)");
+					} else { 
+							return crossplatformtransform("translate(0px, " + scatterrandom(0, 1000, d["user_id"], yHorizon) + "px)"); 
+					}
+				}) 
+
+		} else {
+
+			// WE CLICKED OUTSIDE - SO COLLAPSE
+		
 			d3.selectAll("path").transition().duration(1000)
 				.attr("style", function(d, i) {
 							return crossplatformtransform("translate(0px, " + yHorizon + "px)");
 				}) 
-			scattertoggle = false;
-		} */
+		}
 	}
 
 // define click function
 function barselect_click(d, i) {
+	return
+	alert("barselect_click");
 
 	var thispostid = d["post_id"];
 	var thisuserid = d["user_id"];
