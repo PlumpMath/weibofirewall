@@ -1,5 +1,5 @@
-//var datafile = "data/deleted_weibo_log.csv";
-var datafile = "data/deleted_weibo_log_old.csv";
+var datafile = "data/deleted_weibo_log.csv";
+//var datafile = "data/deleted_weibo_log_old.csv";
 //var datafile = "data/all_weibo_log_temp.csv";
 var datastartindex = 15;
 var imgdir = "weibo_images/";

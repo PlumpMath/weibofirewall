@@ -28,7 +28,7 @@ def csvize_deleted_unique(csv_filename, error_code=-1, exclude_error_code=False)
 		return
 
 	## OPEN A FILE
-	with codecs.open(csv_filename, "w", "utf-16") as wf:
+	with codecs.open(csv_filename, "wb", "utf-16") as wf:
 
 		#write csv header
 		csv_header = weibo_module.get_csv_header()
