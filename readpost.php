@@ -8,12 +8,12 @@
 <link rel="stylesheet" href="css/firewall.less" type="text/css" />
 </head>
 <body>
+<script src="js/d3.v3.min.js"></script>
 <script src="js/jquery-latest.min.js"></script>
 <script src="js/less-1.4.1.min.js"></script>
 <script src="js/moment.min.js"></script>
 <script src="js/jquery.hoverIntent.minified.js"></script>
 <script src="js/jquery.ae.image.resize.min.js"></script>
-<script src="js/d3.v3.min.js" charset="utf-8"></script>
 
 <?php
 $datafile = "data/deleted_weibo_log.csv";
@@ -63,8 +63,12 @@ function process_loginfo($loginfo) {
 function csv_get_post($post_id, $filename='', $delimiter=',')
 {
 
+
 	if(!$post_id)
 		return FALSE;
+
+	//cast to number
+	$post_id += 0;
 
     if(!file_exists($filename) || !is_readable($filename))
         return FALSE;
@@ -76,10 +80,8 @@ function csv_get_post($post_id, $filename='', $delimiter=',')
 		while (($row = fgets($handle, 4096)) !== FALSE) {
 //			$row_csv = mb_split("\|\|\|", $row);
 			$row_csv = mb_split($delimiter, $row);
+			print $delimiter;
 //			print_r($row_csv);
-	//	}
-    //    while (($row = fgetcsv($handle, 5000, $delimiter)) !== FALSE)
-	//	{
 
             if(!$header) {
 				$header = $row_csv;
@@ -118,7 +120,7 @@ function get_ocr_image($imgname) {
 
 
 <?php
-	$data = csv_get_post($post_id, $datafile, chr(23));
+	$data = csv_get_post($post_id, $datafile, chr(31));
 $thistext = $data["postinfo"]["post_text"]; 
 	print "<h2>Post info</h2>";
 	print "<a href=http://translate.google.com/#zh-CN/en/" . $thistext . ">" . $thistext . "</a>";

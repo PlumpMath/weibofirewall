@@ -76,7 +76,7 @@ def csvize_repost_timeline(csv_filename, type="deleted", error_code=-1, exclude_
 		return
 
 	## OPEN A FILE
-	with codecs.open(csv_filename, "w", "utf-16") as wf:
+	with codecs.open(csv_filename, "wb", "utf-16") as wf:
 
 		#write csv header
 		csv_header = weibo_module.get_csv_header()

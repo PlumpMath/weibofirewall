@@ -3,6 +3,7 @@ var datafile = "data/deleted_weibo_log.csv";
 //var datafile = "data/all_weibo_log_temp.csv";
 
 var datadelim = String.fromCharCode(31);
+//var datadelim = "|||";
 
 
 var datastartindex = 15;
@@ -116,7 +117,6 @@ function handleMouse(e) {
 	//but actually. we want some padding. so: if cursor is 25% of clientX and 25% of clientY, scroll page to 25% of pageX and 25% of pageY.
 	var scrollToX = (e.clientX)/ $(window).width() * $(document).width();
 	var scrollToY = (e.clientY) / $(window).height() * $(document).height();
-  //
 
 	//window.scrollTo(scrollToX, scrollToY);
 	$(window).scrollLeft(scrollToX);
@@ -213,7 +213,7 @@ function dsvaccessor(d, i) {
 	if(i < datastartindex) {
 		return null;
 	} 
-	console.log(d);
+	//console.log(d);
 	return {
 		post_id: +d.post_id,
 		user_id: parseFloat(d.user_id),
@@ -289,6 +289,8 @@ function wedgesparkline(iswedge, d, i, scaleTime) {
 
 	for (var j = 0; j < repostlog.length; j+= 2) {
 		repostlog_post_repost_count.push(repostlog[j]);
+		console.log(checked_at_format.parse(repostlog[j+1]));
+		console.log("i = " + i );
 		repostlog_checked_at.push(checked_at_format.parse(repostlog[j+1]));
 	}
 

@@ -143,7 +143,7 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 		//and now:
 		.append("path")
 		.attr('d', function(d, i) { return wedgesparkline("wedge", d, i, scaleTime); })
-		.attr('transform', function(d, i) { return transformwedgesparkline(d, i, scaleTime); })
+		.attr('style', function(d, i) { return transformwedgesparkline(d, i, scaleTime); })
 		.style('opacity', 0.2)
 		.attr("class", function(d, i) { return "wedge post-" + d["post_id"] + " user-" + d["user_id"]; })
 		.attr("name", function(d, i) { return d["post_id"]; })
@@ -179,13 +179,13 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 	.on("click", barselect_click);
 */
 
-	/*
+/*	
 	// add labels
 	chart.selectAll("label")
 		.data(data).enter()
 		.append("text")
 		.attr("x", function(d, i) { return scaleTime(d["post_created_at"]); })
-		.attr("transform", function(d, i) { return "translate(0, " + yFunction(d, i) + ")"; })
+		.attr('style', function(d, i) { return transformwedgesparkline(d, i, scaleTime); })
 		.attr("dx", -3) // padding-right
 		.attr("dy", ".35em") // vertical-align: middle
 		.attr("text-anchor", "end") // text-align: right
@@ -200,8 +200,6 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 	  .on("mouseover", barselect_mouseover)
 	  .on("mouseout", barselect_mouseout)
 	  .on("click", barselect_click);
-
-
 */
 
 /*
@@ -298,6 +296,19 @@ durdiv.selectAll("div")
 								return crossplatformtransform("translate(0px, " + scatterrandom(0, 1000, d["user_id"], yHorizon) + "px)"); 
 						}
 					}) 
+
+/*
+				//TRANSITION USERNAMES
+				d3.selectAll("path.wedge").transition().duration(1000)
+					.attr("style", function(d, i) {
+						if(d["user_id"] == thisuserid) { 
+							return crossplatformtransform("translate(0px, " + yHorizon + "px)");
+						} else { 
+								return crossplatformtransform("translate(0px, " + scatterrandom(0, 1000, d["user_id"], yHorizon) + "px)"); 
+						}
+					}) 
+*/
+
 			}
 
 		} else {
@@ -316,6 +327,6 @@ durdiv.selectAll("div")
 
 // define click function
 function barselect_click(d, i) {
-	return
+	return;
 }
-	0
+
