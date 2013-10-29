@@ -81,5 +81,6 @@ all_log_csv_filename = "/home/provolot/www/SIDL/firewall_dev/data/all_weibo_log.
 #period, in seconds
 tracking_period_seconds = tracking_period * 3600
 
-delim = u'|||'
+#delim = u'|||'
+delim = chr(31)
 delim_log = u','

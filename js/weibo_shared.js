@@ -1,6 +1,10 @@
 var datafile = "data/deleted_weibo_log.csv";
 //var datafile = "data/deleted_weibo_log_old.csv";
 //var datafile = "data/all_weibo_log_temp.csv";
+
+var datadelim = String.fromCharCode(31);
+
+
 var datastartindex = 15;
 var imgdir = "weibo_images/";
 
@@ -60,12 +64,20 @@ function epochToDate(epoch) {
 	return new Date(epoch * 1000);
 }
 
-function getcolor_bytime(d, scaleTimeForColor) {
+function getcolor_bytime(d, i, scaleTimeForColor) {
 	// generate colors per time 
-	elapsedtimecolor = scaleTimeForColor(d["last_checked_at"]) - scaleTimeForColor(d["post_created_at"]); 
+	elapsedtimecolor = scaleTimeForColor(d["last_checked_at"]-d["post_created_at"]); 
+	console.log("i = " + i + ", postid = " + d["post_id"] + ", user_id = " + d["user_id"]);
+	console.log(d);
+	console.log(d["last_checked_at"])
+	console.log(d["post_created_at"]); 
+	console.log(d["last_checked_at"]-d["post_created_at"]); 
 	var thiscolor_value = dec2hex(colorMax - (Math.round(elapsedtimecolor)));
 	// create hexvalue
 	thiscolor_bytime = "#" + thiscolor_value + thiscolor_value + thiscolor_value;
+	console.log( thiscolor_bytime);
+	console.log( thiscolor_bytime);
+	console.log(scaleTimeForColor.domain());
 	return thiscolor_bytime;
 }
 
@@ -149,10 +161,10 @@ function makeparamstring(params) {
 	return s;
 }
 
-function getthiscolor(d, scaleTimeForColor) {
+function getthiscolor(d, i, scaleTimeForColor) {
 	if(params["colorby"] == "bytime") {
 		// generate colors by time
-		var thiscolor_bytime = getcolor_bytime(d, scaleTimeForColor);
+		var thiscolor_bytime = getcolor_bytime(d, i, scaleTimeForColor);
 		return thiscolor_bytime;
 	} else {
 		// generate colors per user 
@@ -201,7 +213,7 @@ function dsvaccessor(d, i) {
 	if(i < datastartindex) {
 		return null;
 	} 
-	//console.log(d);
+	console.log(d);
 	return {
 		post_id: +d.post_id,
 		user_id: parseFloat(d.user_id),

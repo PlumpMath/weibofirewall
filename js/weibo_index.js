@@ -5,7 +5,7 @@
 ///////////////////////////////////////////////////
 //
 //get delimiter from weibo_settings.py
-var dsv = d3.dsv("|||", "text/plain");
+var dsv = d3.dsv(datadelim, "text/plain");
 var wedges;
 var scattertoggle = true;
 var clickeduserid = null;
@@ -38,11 +38,9 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 		.append("g");
 
 	d3.select("#chartdiv").on("click", chart_click);
+
 	// get min and max dates
-	var mindate = d3.min(data, function(d) { 
-			console.log(d["post_created_at"]);
-			return d["post_created_at"]; });
-	console.log("mindate = " + mindate);
+	var mindate = d3.min(data, function(d) { return d["post_created_at"]; });
 	var maxdate = d3.max(data, function(d) { return d["last_checked_at"]; });
 
 	// let's specify the x-axis scale
@@ -51,11 +49,14 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 		.domain([mindate, maxdate])
 		.range([chartpadding, chartwidth - chartpadding])
 
+	// get min and max elapsed time
+	var mindateelapsed = d3.min(data, function(d) { return d["last_checked_at"] - d["post_created_at"]; });
+	var maxdateelapsed = d3.max(data, function(d) { return d["last_checked_at"] - d["post_created_at"]; });
+
 	// let's specify color scale
 	var scaleTimeForColor = d3.time.scale.utc()
-		.domain([mindate, maxdate])
+		.domain([mindateelapsed, maxdateelapsed])
 		.range([colorMin, colorMax])
-		.nice(d3.time.hour);
 
 	// let's specify x-axis ticks
 	var axisTime = d3.svg.axis()
@@ -128,8 +129,8 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 		.attr("height", barheight)
 		.attr("class", function(d, i) { return "bar post-" + d["post_id"] + " user-" + d["user_id"]; })
 		.attr("name", function(d, i) { return d["post_id"]; })
-		.attr("fill", function(d) { 
-			return getthiscolor(d, scaleTimeForColor);
+		.attr("fill", function(d, i) { 
+			return getthiscolor(d, i, scaleTimeForColor);
 		})
 */
 
@@ -148,8 +149,8 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 		.attr("name", function(d, i) { return d["post_id"]; })
 	.attr("stroke-width", 0.75)
 		.attr("fill", "none")
-//		.attr("stroke", function(d) { return getthiscolor(d, scaleTimeForColor); })
-		.attr("fill", function(d) { return getthiscolor(d, scaleTimeForColor); })
+//		.attr("stroke", function(d, i) { return getthiscolor(d, i, scaleTimeForColor); })
+		.attr("fill", function(d, i) { return getthiscolor(d, i, scaleTimeForColor); })
 	.on("mouseover", barselect_mouseover)
 	.on("mouseout", barselect_mouseout) 
 	.on("click", barselect_click);
@@ -169,7 +170,7 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 		.attr("name", function(d, i) { return d["post_id"]; })
 		.attr("stroke-width", 0.75)
 		.attr("fill", "none")
-		.attr("stroke", function(d) { return "#FF00FF"; return getthiscolor(d, scaleTimeForColor); })
+		.attr("stroke", function(d, i) { return "#FF00FF"; return getthiscolor(d, i, scaleTimeForColor); })
 		.attr("style", function () {
 			return "-webkit-transform: perspective(800) scale(1) scale3d(1, 1, 1) rotate3d(1, 0, 0, 0deg) translate3d(0, 0, 0);";
 		})
@@ -303,10 +304,11 @@ durdiv.selectAll("div")
 			// WE CLICKED OUTSIDE - SO COLLAPSE
 			//void global
 			clickeduserid = null;
-		
+	
+			console.log("clicked outside");
 			d3.selectAll("path").transition().duration(1000)
 				.attr("style", function(d, i) {
-							return crossplatformtransform("translate(0px, " + yHorizon + "px)");
+						return crossplatformtransform("translate(0px, " + yHorizon + "px)");
 				}) 
 		}
 	}
