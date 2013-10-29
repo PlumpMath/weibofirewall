@@ -21,7 +21,7 @@
 <script src="js/purl.min.js"></script>
 <script src="js/jquery.hoverIntent.minified.js"></script>
 <script src="js/jquery.ae.image.resize.min.js"></script>
-<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="js/d3.v3.min.js" charset="utf-8"></script>
 <script src="js/weibo_shared.js" charset="utf-8"></script>
 <script src="js/weibo_index.js" charset="utf-8"></script>
 <script type="text/javascript">

@@ -281,6 +281,7 @@ durdiv.selectAll("div")
 				//we clicked on OLD wedge
 				var postmatch = hoverclasses.match(/post-(\d*)/);
 				var thispostid = postmatch[1];
+				console.log('window.location = "readpost.php?post_id="' + thispostid);
 				window.location = "readpost.php?post_id=" + thispostid;
 			} else {
 

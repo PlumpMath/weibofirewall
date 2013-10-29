@@ -5,14 +5,15 @@
 <link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Alef' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'>
-<link rel="stylesheet" href="css/firewall.css" type="text/css" />
+<link rel="stylesheet" href="css/firewall.less" type="text/css" />
 </head>
 <body>
-<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="js/jquery-latest.min.js"></script>
+<script src="js/less-1.4.1.min.js"></script>
 <script src="js/moment.min.js"></script>
 <script src="js/jquery.hoverIntent.minified.js"></script>
 <script src="js/jquery.ae.image.resize.min.js"></script>
-<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="js/d3.v3.min.js" charset="utf-8"></script>
 
 <?php
 $datafile = "data/deleted_weibo_log.csv";
@@ -73,7 +74,8 @@ function csv_get_post($post_id, $filename='', $delimiter=',')
     if (($handle = fopen_utf8($filename, 'r')) !== FALSE)
     {
 		while (($row = fgets($handle, 4096)) !== FALSE) {
-			$row_csv = mb_split("\|\|\|", $row);
+//			$row_csv = mb_split("\|\|\|", $row);
+			$row_csv = mb_split($delimiter, $row);
 //			print_r($row_csv);
 	//	}
     //    while (($row = fgetcsv($handle, 5000, $delimiter)) !== FALSE)
@@ -116,7 +118,7 @@ function get_ocr_image($imgname) {
 
 
 <?php
-	$data = csv_get_post($post_id, $datafile);
+	$data = csv_get_post($post_id, $datafile, chr(23));
 $thistext = $data["postinfo"]["post_text"]; 
 	print "<h2>Post info</h2>";
 	print "<a href=http://translate.google.com/#zh-CN/en/" . $thistext . ">" . $thistext . "</a>";
