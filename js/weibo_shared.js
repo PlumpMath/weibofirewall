@@ -1,9 +1,9 @@
 var datafile = "data/deleted_weibo_log.csv";
-//var datafile = "data/deleted_weibo_log_old.csv";
+var datafile = "data/deleted_weibo_log_old.csv";
 //var datafile = "data/all_weibo_log_temp.csv";
 
 var datadelim = String.fromCharCode(31);
-//var datadelim = "|||";
+var datadelim = "|||";
 
 
 var datastartindex = 15;
@@ -67,18 +67,20 @@ function epochToDate(epoch) {
 
 function getcolor_bytime(d, i, scaleTimeForColor) {
 	// generate colors per time 
-	elapsedtimecolor = scaleTimeForColor(d["last_checked_at"]-d["post_created_at"]); 
-	console.log("i = " + i + ", postid = " + d["post_id"] + ", user_id = " + d["user_id"]);
+	//elapsedtimecolor = scaleTimeForColor(d["last_checked_at"]-d["post_created_at"]); 
+	elapsedtimecolor = scaleTimeForColor(d["last_checked_at"]) - scaleTimeForColor(d["post_created_at"]); 
+	/*
+	 * console.log("i = " + i + ", postid = " + d["post_id"] + ", user_id = " + d["user_id"]);
 	console.log(d);
 	console.log(d["last_checked_at"])
 	console.log(d["post_created_at"]); 
-	console.log(d["last_checked_at"]-d["post_created_at"]); 
+	console.log(d["last_checked_at"]-d["post_created_at"]);  */
 	var thiscolor_value = dec2hex(colorMax - (Math.round(elapsedtimecolor)));
 	// create hexvalue
 	thiscolor_bytime = "#" + thiscolor_value + thiscolor_value + thiscolor_value;
+/*	console.log( thiscolor_bytime);
 	console.log( thiscolor_bytime);
-	console.log( thiscolor_bytime);
-	console.log(scaleTimeForColor.domain());
+	console.log(scaleTimeForColor.domain()); */
 	return thiscolor_bytime;
 }
 
@@ -123,6 +125,9 @@ function handleMouse(e) {
 
 }
 
+function wedgeopacity() {
+	return "opacity:0.3;"
+}
 //define mouseover functions
 function barselect_mouseover(d, i) {
 	d3.selectAll(".postdiv.post-" + d["post_id"]).style('opacity', 1).style('z-index', 100);
@@ -246,7 +251,9 @@ function yFunction(d, i) {
 function transformwedgesparkline(d, i, scaleTime) {
 	var x = scaleTime(d["post_created_at"]); 
 	var y = yFunction(d, i);
-	return crossplatformtransform("translate(0px," + y + "px)");
+	//console.log(crossplatformtransform("translate(0px," + y + "px)"));
+	//return crossplatformtransform("translate(0px," + y + "px)");
+	return crossplatformtransform("translate3d(" + x + "px," + y + "px, 0px)");
 }
 
 function wedgesparkline(iswedge, d, i, scaleTime) {
@@ -289,8 +296,8 @@ function wedgesparkline(iswedge, d, i, scaleTime) {
 
 	for (var j = 0; j < repostlog.length; j+= 2) {
 		repostlog_post_repost_count.push(repostlog[j]);
-		console.log(checked_at_format.parse(repostlog[j+1]));
-		console.log("i = " + i );
+		//console.log(checked_at_format.parse(repostlog[j+1]));
+		//console.log("i = " + i );
 		repostlog_checked_at.push(checked_at_format.parse(repostlog[j+1]));
 	}
 

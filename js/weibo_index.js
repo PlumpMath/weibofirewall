@@ -17,8 +17,8 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 	params = cleanparams(params);
 
 	// now let's massage that data
-	//var data = rows;
-	var data = _.first(rows, 1000);
+	var data = rows;
+//	var data = _.first(rows, 1000);
 
 	// sort data by created
 	data.sort(function(a,b) { return a.post_created_at - b.post_created_at; });
@@ -53,9 +53,10 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 	var mindateelapsed = d3.min(data, function(d) { return d["last_checked_at"] - d["post_created_at"]; });
 	var maxdateelapsed = d3.max(data, function(d) { return d["last_checked_at"] - d["post_created_at"]; });
 
-	// let's specify color scale
+	// let's specify color scale -- by elapsed time..
 	var scaleTimeForColor = d3.time.scale.utc()
-		.domain([mindateelapsed, maxdateelapsed])
+		//.domain([mindateelapsed, maxdateelapsed])
+		.domain([mindate, maxdate])
 		.range([colorMin, colorMax])
 
 	// let's specify x-axis ticks
@@ -89,7 +90,7 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 	// Add the x-axis labels
 	chart.append("g")
 		.attr("class", "x-axis")
-		.attr("transform", "translate(0," + (chartheight - 1) + ")")
+		.attr("transform", "translate3d(0," + (chartheight - 1) + ", 0)")
 		.call(axisTime)
 		//rotate the text, too
 		.selectAll("text")  
@@ -143,12 +144,11 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 		//and now:
 		.append("path")
 		.attr('d', function(d, i) { return wedgesparkline("wedge", d, i, scaleTime); })
-		.attr('style', function(d, i) { return transformwedgesparkline(d, i, scaleTime); })
-		.style('opacity', 0.2)
+		.attr('style', function(d, i) { return wedgeopacity() + transformwedgesparkline(d, i, scaleTime); })
 		.attr("class", function(d, i) { return "wedge post-" + d["post_id"] + " user-" + d["user_id"]; })
 		.attr("name", function(d, i) { return d["post_id"]; })
 	.attr("stroke-width", 0.75)
-		.attr("fill", "none")
+//		.attr("fill", "none")
 //		.attr("stroke", function(d, i) { return getthiscolor(d, i, scaleTimeForColor); })
 		.attr("fill", function(d, i) { return getthiscolor(d, i, scaleTimeForColor); })
 	.on("mouseover", barselect_mouseover)
@@ -179,12 +179,13 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 	.on("click", barselect_click);
 */
 
-/*	
 	// add labels
-	chart.selectAll("label")
+	chart.selectAll("textlabel")
 		.data(data).enter()
 		.append("text")
-		.attr("x", function(d, i) { return scaleTime(d["post_created_at"]); })
+//		.attr("x", "0")
+//		.attr("y", "0")
+//		.attr("x", function(d, i) { return scaleTime(d["post_created_at"]); })
 		.attr('style', function(d, i) { return transformwedgesparkline(d, i, scaleTime); })
 		.attr("dx", -3) // padding-right
 		.attr("dy", ".35em") // vertical-align: middle
@@ -200,7 +201,6 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 	  .on("mouseover", barselect_mouseover)
 	  .on("mouseout", barselect_mouseout)
 	  .on("click", barselect_click);
-*/
 
 /*
 postsdiv.selectAll("div").
@@ -291,23 +291,23 @@ durdiv.selectAll("div")
 				d3.selectAll("path.wedge").transition().duration(1000)
 					.attr("style", function(d, i) {
 						if(d["user_id"] == thisuserid) { 
-							return crossplatformtransform("translate(0px, " + yHorizon + "px)");
+							return wedgeopacity() + crossplatformtransform("translate3d(0px, " + yHorizon + "px, 0px)");
 						} else { 
-								return crossplatformtransform("translate(0px, " + scatterrandom(0, 1000, d["user_id"], yHorizon) + "px)"); 
+							return wedgeopacity() + crossplatformtransform("translate3d(0px, " + scatterrandom(0, 1000, d["user_id"], yHorizon) + "px, 0px)"); 
 						}
 					}) 
 
-/*
 				//TRANSITION USERNAMES
-				d3.selectAll("path.wedge").transition().duration(1000)
+				d3.selectAll("text").transition().duration(1000)
 					.attr("style", function(d, i) {
 						if(d["user_id"] == thisuserid) { 
-							return crossplatformtransform("translate(0px, " + yHorizon + "px)");
+							return crossplatformtransform("translate3d(0px, " + yHorizon + "px, 0px)");
+							//return yHorizon;
 						} else { 
-								return crossplatformtransform("translate(0px, " + scatterrandom(0, 1000, d["user_id"], yHorizon) + "px)"); 
+							return crossplatformtransform("translate3d(0px, " + scatterrandom(0, 1000, d["user_id"], yHorizon) + "px, 0px)"); 
+							//return scatterrandom(0, 1000, d["user_id"], yHorizon);
 						}
 					}) 
-*/
 
 			}
 
@@ -320,7 +320,7 @@ durdiv.selectAll("div")
 			console.log("clicked outside");
 			d3.selectAll("path").transition().duration(1000)
 				.attr("style", function(d, i) {
-						return crossplatformtransform("translate(0px, " + yHorizon + "px)");
+						return wedgeopacity() + crossplatformtransform("translate3d(0px, " + yHorizon + "px, 0px)");
 				}) 
 		}
 	}
