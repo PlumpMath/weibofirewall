@@ -10,6 +10,12 @@ var wedges;
 var scattertoggle = true;
 var clickeduserid = null;
 
+console.log(datafile_json);
+d3.json(datafile_json, function(data) {
+		console.log(data.length);
+		alert(data.length);
+	})
+
 // read the datafile.START
 dsv(datafile, dsvaccessor, function(error, rows) {
 

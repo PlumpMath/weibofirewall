@@ -78,10 +78,6 @@ def csvize_repost_timeline(csv_filename, type="deleted", error_code=-1, exclude_
 	## OPEN A FILE
 	with codecs.open(csv_filename, "wb", "utf-16") as wf:
 
-		#write csv header
-		csv_header = weibo_module.get_csv_header()
-		wf.write(csv_header + "\n")
-
 		#iterate through posts
 		postno = 0
 		for this_post_id in query_post_ids:
