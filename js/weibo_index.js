@@ -10,25 +10,19 @@ var wedges;
 var scattertoggle = true;
 var clickeduserid = null;
 
-console.log(datafile_json);
 d3.json(datafile_json, function(error, json) {
 	if (error) return console.warn(error);
-	data = json;
-	console.log(data)
-});
-
-// read the datafile.START
-dsv(datafile, dsvaccessor, function(error, rows) {
 
 	params = purl().param();
 	params = cleanparams(params);
 
 	// now let's massage that data
-	var data = rows;
-//	var data = _.first(rows, 1000);
+	var data = json;
 
 	// sort data by created
 	data.sort(function(a,b) { return a.post_created_at - b.post_created_at; });
+
+	console.log(data);
 
 	// get chart height
 	//var chartheight = ((barheight + bargap) * data.length) + chartheight_padding;
@@ -55,6 +49,7 @@ dsv(datafile, dsvaccessor, function(error, rows) {
 		// domain is min max of time
 		.domain([mindate, maxdate])
 		.range([chartpadding, chartwidth - chartpadding])
+
 
 	// get min and max elapsed time
 	var mindateelapsed = d3.min(data, function(d) { return d["last_checked_at"] - d["post_created_at"]; });

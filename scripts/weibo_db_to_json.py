@@ -107,7 +107,7 @@ def csvize_repost_timeline(csv_filename, type="deleted", error_code=-1, exclude_
 			jsonline = weibo_module.make_jsonlist_from_post(this_post)
 
 			#merge logline into 
-			jsonline['log_line'] = this_log_list
+			jsonline['post_repostlog'] = this_log_list
 
 			#wf.write(json.dumps(jsonline, ensure_ascii=False))
 			wf.write(json.dumps(jsonline))

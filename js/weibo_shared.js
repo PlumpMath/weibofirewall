@@ -259,6 +259,9 @@ function transformwedgesparkline(d, i, scaleTime) {
 
 function wedgesparkline(iswedge, d, i, scaleTime) {
 
+	console.log("inside wedgesparkline");
+	console.log(d);
+
 	// GET X Y COORDINATES
 	var x = scaleTime(d["post_created_at"]); 
 	var y = yFunction(d, i);
@@ -290,34 +293,39 @@ function wedgesparkline(iswedge, d, i, scaleTime) {
 	}
 
 	// OKAY LET'S TRY A SPARKLINE
-	var repostlog = d["post_repostlog"].split(",");
+	var repostlog = d["post_repost_log"]
+	/*console.log(repostlog)
 	var repostlog_post_repost_count = [];
 	var repostlog_checked_at = [];
-	var checked_at_format = d3.time.format("%Y-%m-%d %H:%M:%S");
 
 	for (var j = 0; j < repostlog.length; j+= 2) {
 		repostlog_post_repost_count.push(repostlog[j]);
 		//console.log(checked_at_format.parse(repostlog[j+1]));
 		//console.log("i = " + i );
 		repostlog_checked_at.push(checked_at_format.parse(repostlog[j+1]));
-	}
+	} */
+
+	var checked_at_format = d3.time.format("%Y-%m-%d %H:%M:%S");
 
 	//sparklinestring = 'M ' + x + ' ' + y + ' ';
 	sparklinestring = 'M ' + x + ' ' + 0 + ' ';
 	//string goes up
-	for (var j = 0; j < repostlog_checked_at.length; j++) {
-		var thisX = scaleTime(repostlog_checked_at[j]) + wedgeMinimumX;
-		var thisY = y - (repostlog_post_repost_count[j] / heightscale / 2);
+	for (var j = 0; j < repostlog.length; j++) {
+		console.log(repostlog[j]["checked_at"]));
+		console.log(scaleTime(checked_at_format.parse(repostlog[j]["checked_at"])));
+		var thisX = scaleTime(checked_at_format.parse(repostlog[j]["checked_at"])) + wedgeMinimumX;
+		var thisY = y - (repostlog[j]["post_repost_count"] / heightscale / 2);
 		thisY -= wedgeMinimumY; //minimum so that unshared posts are still visible
 		sparklinestring += 'L ' + (thisX ) + ' ' + (thisY - y) + ' ';
 //		sparklinestring += 'L ' + thisX + ' ' + thisY + ' ';
 	}
+	console.log(thisX, "::::", thisY);
 
 	if(iswedge == "wedge") {
 		//mirror this; string goes back to origin
-		for (var j = repostlog_checked_at.length - 1; j >= 0; j--) {
-			var thisX = scaleTime(repostlog_checked_at[j]) + wedgeMinimumX;
-			var thisY = y + (repostlog_post_repost_count[j] / heightscale / 2);
+		for (var j = repostlog.length - 1; j >= 0; j--) {
+			var thisX = scaleTime(checked_at_format.parse(repostlog[j]["checked_at"])) + wedgeMinimumX;
+			var thisY = y - (repostlog[j]["post_repost_count"] / heightscale / 2);
 			thisY += wedgeMinimumY; //minimum
 			sparklinestring += 'L ' + (thisX ) + ' ' + (thisY - y) + ' ';
 		}
