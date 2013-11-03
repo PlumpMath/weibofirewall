@@ -1,5 +1,5 @@
 var datafile = "data/deleted_weibo_log.csv";
-var datafile = "data/deleted_weibo_log_old.csv";
+//var datafile = "data/deleted_weibo_log_old.csv";
 //var datafile = "data/all_weibo_log_temp.csv";
 
 var datadelim = String.fromCharCode(31);

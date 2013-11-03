@@ -76,6 +76,7 @@ track_posts_timeout = 14400 #4 houts
 
 deleted_csv_filename = "/home/provolot/www/SIDL/firewall_dev_dev/data/deleted_weibo.csv"
 deleted_log_csv_filename = "/home/provolot/www/SIDL/firewall_dev/data/deleted_weibo_log.csv"
+deleted_log_json_filename = "/home/provolot/www/SIDL/firewall_dev/data/deleted_weibo_log.json"
 all_log_csv_filename = "/home/provolot/www/SIDL/firewall_dev/data/all_weibo_log.csv"
 
 #period, in seconds

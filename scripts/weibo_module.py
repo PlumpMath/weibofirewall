@@ -561,3 +561,29 @@ def make_csvline_from_post(this_post):
 #	print "wmodule csvline= " , csvline
 	return csvline
 
+
+def make_jsonlist_from_post(this_post):
+#	print "THISPOST" , this_post
+
+	thislist = { "post_id": this_post["post_id"],
+		"user_id": this_post["user_id"],
+		"user_name": this_post["user_name"],
+		"user_follower_count_initial": this_post["user_follower_count_initial"],
+		"user_follower_count": this_post["user_follower_count"],
+		"post_original_pic": this_post["post_original_pic"],
+		"post_created_at": this_post["post_created_at"],
+		"post_created_at_epoch": this_post["post_created_at_epoch"],
+		"post_repost_count_initial": this_post["post_repost_count_initial"],
+		"post_repost_count": int(this_post["post_repost_count"]),
+		"post_text": this_post["post_text"],
+		"started_tracking_at": this_post["started_tracking_at"],
+		"started_tracking_at_epoch": this_post["started_tracking_at_epoch"],
+		"is_deleted": this_post["is_deleted"],
+		"is_retired": this_post["is_retired"],
+		"error_message": this_post["error_message"],
+		"error_code": this_post["error_code"],
+		"last_checked_at": this_post["last_checked_at"],
+		"last_checked_at_epoch": this_post["last_checked_at_epoch"],
+		"post_lifespan": this_post["post_lifespan"] }
+	return thislist
+
