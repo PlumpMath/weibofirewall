@@ -76,16 +76,16 @@ def csvize_repost_timeline(csv_filename, type="deleted", error_code=-1, exclude_
 		return
 
 	## OPEN A FILE
-	with codecs.open(csv_filename, "wb", "utf-16") as wf:
+	with codecs.open(csv_filename, "wb") as wf:
 
-		wf.write("{" + "\n")
+		wf.write("[ " + "\n")
 
 		#iterate through posts
 		postno = 0
 		for this_post_id in query_post_ids:
 
 			postno += 1
-			print "\n==WRITING (", postno, " / ", len(query_post_ids), ") POST #=========", this_post_id
+			print "\n==WRITING (", postno, " / ", num_query_posts, ") POST #=========", this_post_id
 
 			# okay first we get the initial post
 			this_post = weibo_module.merge_deleted_from_new_old(this_post_id)
@@ -110,9 +110,14 @@ def csvize_repost_timeline(csv_filename, type="deleted", error_code=-1, exclude_
 			jsonline['log_line'] = this_log_list
 
 			#wf.write(json.dumps(jsonline, ensure_ascii=False))
-			wf.write(json.dumps(jsonline) + "\n")
+			wf.write(json.dumps(jsonline))
 
-		wf.write("}" + "\n")
+			if postno != num_query_posts:
+				wf.write(", ")
+
+			wf.write("\n")
+
+		wf.write(" ]" + "\n")
 
 #################################
 #################################

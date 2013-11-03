@@ -14,6 +14,7 @@ console.log(datafile_json);
 d3.json(datafile_json, function(error, json) {
 	if (error) return console.warn(error);
 	data = json;
+	console.log(data)
 });
 
 // read the datafile.START
