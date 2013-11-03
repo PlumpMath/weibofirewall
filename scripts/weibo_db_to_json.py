@@ -96,19 +96,23 @@ def csvize_repost_timeline(csv_filename, type="deleted", error_code=-1, exclude_
 			this_post_all_logs =  weibo_module.get_all_posts(this_post_id)
 
 			# and then we amass a logline 
-			this_log_dict = {}
+			this_log_list = []
 			for this_log in this_post_all_logs:
 				if 'post_repost_count' in this_log and this_log["post_repost_count"] <> None and this_log["checked_at"] <> None:
-					this_log_dict[str(this_log["checked_at"])] = int(this_log["post_repost_count"])
+					this_pair_dict = {}
+					this_pair_dict["checked_at"] = str(this_log["checked_at"])
+					this_pair_dict["post_repost_count"] = int(this_log["post_repost_count"])
+
+					this_log_list.append(this_pair_dict)
 
 			#get jsonline array
 			jsonline = weibo_module.make_jsonlist_from_post(this_post)
 
 			#merge logline into 
-			jsonline['log_line'] = this_log_dict
+			jsonline['log_line'] = this_log_list
 
 			#wf.write(json.dumps(jsonline, ensure_ascii=False))
-			wf.write(json.dumps(jsonline))
+			wf.write(json.dumps(jsonline) + "\n")
 
 #################################
 #################################
