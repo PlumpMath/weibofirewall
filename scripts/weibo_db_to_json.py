@@ -78,6 +78,8 @@ def csvize_repost_timeline(csv_filename, type="deleted", error_code=-1, exclude_
 	## OPEN A FILE
 	with codecs.open(csv_filename, "wb", "utf-16") as wf:
 
+		wf.write("{" + "\n")
+
 		#iterate through posts
 		postno = 0
 		for this_post_id in query_post_ids:
@@ -109,6 +111,8 @@ def csvize_repost_timeline(csv_filename, type="deleted", error_code=-1, exclude_
 
 			#wf.write(json.dumps(jsonline, ensure_ascii=False))
 			wf.write(json.dumps(jsonline) + "\n")
+
+		wf.write("}" + "\n")
 
 #################################
 #################################
