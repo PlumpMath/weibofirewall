@@ -13,33 +13,6 @@ dbpass = "w3ibofirewall"
 
 checklog_tablename = "checklog"
 
-#accesstokens = ['2.00Ga5TmDFObaNC7aeeff1e5cZR1oTD']
-accesstokens = [
-	'2.00Ga5TmDFObaNC7aeeff1e5cZR1oTD', 
-	'2.00YJl5fDtbWV2B908f7d5e64BIPIwC',
-	'2.00Ga5TmDGX4hRE1447f826bclbRQJC',
-	'2.00Ga5TmD0Ugujs972d9aab4724Dt4D',
-	'2.00X32EqBHyA86B7b7f20b938QdUbLC',
-	'2.00X32EqB2NJFhC94e6fe6b490_6uQ_',
-	'2.00X32EqBnWX2zCa083e0c752msL92D',
-	'2.00X32EqBD_zIbEc7dd5071230n1Xja',
-	'2.00z4C41CF2V28Cef83cba5efoiFpYD',
-	'2.00z4C41C1CN68Ed1f57dff5axMwWTC',
-	'2.00z4C41Co8UM6D63e6869f8cESV6EE',
-	'2.00z4C41CSmOUJC8c9a0a1a14kqcSWD',
-	'2.00z4C41CJnBlGE28d98ab90e0u579F',
-	'2.00z4C41C0NARpO5c5964082fzqj7DB',
-	'2.00z4C41Cc55p9B808aaed88b0k8T1o',
-	'2.00z4C41C0vOLq78a5ddc308bpp3xXE',
-	'2.00z4C41C0eDJLU80a1b73b6ffjPUaB',
-	'2.00z4C41Ci4LUAEce47b71dbe0mY3Bp',
-	'2.00Di62ME0qyitGf0f1be1db0rgiqdC',
-	'2.00Di62MEFOH5hCe4419280ebeNQR_C',
-	'2.00Di62ME0D3TJI2ba7dbb5e8XkLqQD',
-	'2.00Di62ME0V6KnF23fe7b27f9hCpuOB',
-	'2.00Di62MEzdLR7Cb5a9ed458amgmt_C'
-]
-
 
 apiurl_accessfriends = "https://api.weibo.com/2/statuses/friends_timeline.json"
 apiurl_checkstatus = "https://api.weibo.com/2/statuses/show.json"
