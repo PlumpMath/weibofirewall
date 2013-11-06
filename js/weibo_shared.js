@@ -1,4 +1,4 @@
-var datafile_json = "data/deleted_weibo_log_test.json";
+var datafile_json = "data/deleted_weibo_log.json";
 var datafile = "data/deleted_weibo_log.csv";
 //var datafile = "data/deleted_weibo_log_old.csv";
 //var datafile = "data/all_weibo_log_temp.csv";
@@ -11,7 +11,7 @@ var datastartindex = 15;
 var imgdir = "weibo_images/";
 
 
-var chartwidth = 2000;
+var chartwidth = 4000;
 //var chartheight = 960;
 var yHorizon = screen.height / 2;
 
@@ -222,43 +222,59 @@ function dsvaccessor(d, i) {
 	//console.log(d);
 	return {
 		post_id: +d.post_id,
-		user_id: parseFloat(d.user_id),
+		user_id: parsefloat(d.user_id),
 		user_name: d.user_name,
 		user_follower_count_initial: +d.user_follower_count_initial,
 		user_follower_count: +d.user_follower_count,
 		post_original_pic: d.post_original_pic,
-		post_created_at : epochToDate(d.post_created_at_epoch),
+		post_created_at : epochtodate(d.post_created_at_epoch),
 		post_repost_count_initial: +d.post_repost_count_initial,
 		post_repost_count: +d.post_repost_count,
 		post_text: d.post_text,
-		started_tracking_at: epochToDate(+d.started_tracking_at_epoch),
+		started_tracking_at: epochtodate(+d.started_tracking_at_epoch),
 		is_deleted: d.is_deleted,
 		is_retired: d.is_retired,
 		error_message: d.error_message,
 		error_code: +d.error_code,
-		last_checked_at: epochToDate(+d.last_checked_at_epoch),
+		last_checked_at: epochtodate(+d.last_checked_at_epoch),
 		post_lifespan: +d.post_lifespan,
 		post_repostlog: d.post_repostlog
 	};
 }
 
-function cleanjson(d) {
-	// this is the format of what we need, adopted from weibo_module's make_csvline_from_post 
-	
-	console.log("jsoncleaner");
-	console.log(d);
-	d["user_follower_count_initial"] = parseInt(d["user_follower_count_initial"]);
-	d["user_follower_count"] = parseInt(d["user_follower_count"]);
-	d["post_repost_count_initial"] = parseInt(d["post_repost_count_initial"]);
-	d["post_repost_count"] = parseInt(d["post_repost_count"]);
-	d["error_code"] = parseInt(d["error_code"]);
-	d["post_lifespan"] = parseInt(d["post_lifespan"]);
-	d["post_created_at"] = epochToDate(parseInt(d["post_created_at_epoch"]));
-	d["started_tracking_at"] = epochToDate(parseInt(d["started_tracking_at_epoch"]));
-	d["last_created_at_epoch"] = parseInt(d["last_created_at_epoch"]);
-	d["last_checked_at"] = epochToDate(parseInt(d["last_checked_at_epoch"]));
-	console.log(d);
-	return d;
+function cleanjson(json) {
+
+	var data = jQuery.map(json,function (d) {
+		// this is the format of what we need, adopted from weibo_module's make_csvline_from_post 
+
+		d.post_repost_log.map(function(d) {
+			var checked_at_parse = d3.time.format("%Y-%m-%d %H:%M:%S %Z").parse //all our times are china!
+			d.checked_at = checked_at_parse(d.checked_at + " +0800");
+		}); 
+
+		return {
+			post_id: +d.post_id,
+			user_id: parseFloat(d.user_id),
+			user_name: d.user_name,
+			user_follower_count_initial: +d.user_follower_count_initial,
+			user_follower_count: +d.user_follower_count,
+			post_original_pic: d.post_original_pic,
+			post_created_at : epochToDate(d.post_created_at_epoch),
+			post_repost_count_initial: +d.post_repost_count_initial,
+			post_repost_count: +d.post_repost_count,
+			post_text: d.post_text,
+			started_tracking_at: epochToDate(+d.started_tracking_at_epoch),
+			is_deleted: d.is_deleted,
+			is_retired: d.is_retired,
+			error_message: d.error_message,
+			error_code: +d.error_code,
+			last_checked_at: epochToDate(+d.last_checked_at_epoch),
+			post_lifespan: +d.post_lifespan,
+			post_repost_log: d.post_repost_log
+		}
+	});
+
+	return data;
 }
 
 function yFunction(d, i) { 
@@ -280,17 +296,12 @@ function wedgesparkline(iswedge, d, i, scaleTime) {
 
 	var checked_at_format = d3.time.format("%Y-%m-%d %H:%M:%S %Z")
 
-	console.log("inside wedgesparkline");
-	console.log(d);
+//	console.log("inside wedgesparkline");
+//	console.log(d);
 
 	// GET X Y COORDINATES
 	var x = scaleTime(d["post_created_at"]); 
 	var y = yFunction(d, i);
-	console.log(d["post_created_at"]) ;
-	console.log(checked_at_format.parse(d["post_created_at"] + " +0800"));
-	var thistime = checked_at_format.parse(d["post_created_at"] + " +0800");
-	console.log(scaleTime(thistime));
-	console.log("x = " + x);
 
 	// WIDTH = TIME, SCALED
 	var width = scaleTime(d["last_checked_at"]) - scaleTime(d["post_created_at"]); 
@@ -314,7 +325,7 @@ function wedgesparkline(iswedge, d, i, scaleTime) {
 	// ---TRANSLATE to x, y
 	wedgestring =  'M ' + x + ' 0 l ' + width + ' ' + (height / 2) + ' l 0 -' + height + ' z';
 
-	if (d["post_repostlog"] == "") {
+	if (d["post_repost_log"] == "") {
 		return wedgestring;
 	}
 
@@ -333,24 +344,19 @@ function wedgesparkline(iswedge, d, i, scaleTime) {
 
 
 	//sparklinestring = 'M ' + x + ' ' + y + ' ';
-	sparklinestring = 'M ' + x + ' ' + 0 + ' ';
+//	sparklinestring = 'M ' + x + ' ' + 0 + ' ';
 	//string goes up
 	for (var j = 0; j < repostlog.length; j++) {
-		console.log(repostlog[j]["checked_at"]);
-		console.log(checked_at_format.parse(repostlog[j]["checked_at"] + " +0800"));
-		console.log(scaleTime(checked_at_format.parse(repostlog[j]["checked_at"])));
-		var thisX = scaleTime(checked_at_format.parse(repostlog[j]["checked_at"])) + wedgeMinimumX;
+		var thisX = scaleTime(repostlog[j]["checked_at"]) + wedgeMinimumX;
 		var thisY = y - (repostlog[j]["post_repost_count"] / heightscale / 2);
 		thisY -= wedgeMinimumY; //minimum so that unshared posts are still visible
 		sparklinestring += 'L ' + (thisX ) + ' ' + (thisY - y) + ' ';
-//		sparklinestring += 'L ' + thisX + ' ' + thisY + ' ';
 	}
-	console.log(thisX, "::::", thisY);
 
 	if(iswedge == "wedge") {
 		//mirror this; string goes back to origin
 		for (var j = repostlog.length - 1; j >= 0; j--) {
-			var thisX = scaleTime(checked_at_format.parse(repostlog[j]["checked_at"])) + wedgeMinimumX;
+			var thisX = scaleTime(repostlog[j]["checked_at"]) + wedgeMinimumX;
 			var thisY = y - (repostlog[j]["post_repost_count"] / heightscale / 2);
 			thisY += wedgeMinimumY; //minimum
 			sparklinestring += 'L ' + (thisX ) + ' ' + (thisY - y) + ' ';
@@ -359,7 +365,7 @@ function wedgesparkline(iswedge, d, i, scaleTime) {
 		sparklinestring += ' z';
 	}
 
-	//console.log(sparklinestring);
+	console.log("sparklinestring = " + sparklinestring);
 	return sparklinestring;
 	//return wedgestring;
 }

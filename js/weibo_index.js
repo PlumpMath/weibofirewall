@@ -10,6 +10,8 @@ var wedges;
 var scattertoggle = true;
 var clickeduserid = null;
 
+var data;
+
 d3.json(datafile_json, function(error, json) {
 	if (error) return console.warn(error);
 
@@ -17,7 +19,9 @@ d3.json(datafile_json, function(error, json) {
 	params = cleanparams(params);
 
 	// now let's clean and massage that data
-	var data = json.map(cleanjson);
+	data = cleanjson(json)
+//	json.map(cleanjson);
+
 
 	// sort data by created
 	data.sort(function(a,b) { return a.post_created_at - b.post_created_at; });
@@ -43,6 +47,7 @@ d3.json(datafile_json, function(error, json) {
 	// get min and max dates
 	var mindate = d3.min(data, function(d) { return d["post_created_at"]; });
 	var maxdate = d3.max(data, function(d) { return d["last_checked_at"]; });
+
 
 	// let's specify the x-axis scale
 	var scaleTime = d3.time.scale()
