@@ -26,7 +26,7 @@ d3.json(datafile_json, function(error, json) {
 	// sort data by created
 	data.sort(function(a,b) { return a.post_created_at - b.post_created_at; });
 
-	console.log(data);
+////	console.log(data);
 
 	// get chart height
 	//var chartheight = ((barheight + bargap) * data.length) + chartheight_padding;
@@ -40,7 +40,6 @@ d3.json(datafile_json, function(error, json) {
 		.attr("class", "chart")
 		.attr("width", chartwidth)
 		.attr("height", chartheight)
-		.append("g");
 
 	d3.select("#chartdiv").on("click", chart_click);
 
@@ -74,7 +73,8 @@ d3.json(datafile_json, function(error, json) {
 		.tickFormat(d3.time.format("%m-%d %H:%m"));
 
 	// add x-axis ticks
-	chart.selectAll("line")
+	chart.append("g").attr("class","ticklines")
+		.selectAll("line")
 		.data(scaleTime.ticks(d3.time.day, tickinterval)).enter()
 		.append("line")
 		.attr("class", "tickline")
@@ -85,7 +85,8 @@ d3.json(datafile_json, function(error, json) {
 		.style("stroke", tickstrokecolor);
 
 	// add horizon line
-	chart.selectAll("line")
+	chart.append("g").attr("class","horizonlines")
+		.selectAll("line")
 		.append("line")
 		.attr("class", "horizonline")
 		.attr("x1", scaleTime.range()[0])
@@ -95,8 +96,7 @@ d3.json(datafile_json, function(error, json) {
 		.style("stroke", "pink");
 
 	// Add the x-axis labels
-	chart.append("g")
-		.attr("class", "x-axis")
+	chart.append("g").attr("class", "xaxislabels")
 		.attr("transform", "translate3d(0px," + (chartheight - 1) + ", 0)")
 		.call(axisTime)
 		//rotate the text, too
@@ -126,7 +126,8 @@ d3.json(datafile_json, function(error, json) {
 	/*
 //BARS
 	// let's select the chart and add our bars to it	
-	chart.selectAll("bar")
+	chart.append("g").attr("class", "bars")
+		.selectAll("bar")
 		// plug in our data
 		.data(data).enter()
 		//and now:
@@ -144,7 +145,8 @@ d3.json(datafile_json, function(error, json) {
 
 ///WEDGES
 // let's select the chart and add our wedges to it	
-	wedges = chart.selectAll("wedge")
+	wedges = chart.append("g").attr("class", "wedges")
+		.selectAll("wedge")
 		// plug in our data
 		.data(data)
 		.enter()
@@ -185,9 +187,10 @@ d3.json(datafile_json, function(error, json) {
 	.on("mouseout", barselect_mouseout) 
 	.on("click", barselect_click);
 */
-/*
-	// add labels
-	chart.selectAll("textlabel")
+
+	// add text labels
+	chart.append("g").attr("class", "textlabels")
+		.selectAll("textlabel")
 		.data(data).enter()
 		.append("text")
 //		.attr("x", "0")
@@ -208,7 +211,7 @@ d3.json(datafile_json, function(error, json) {
 	  .on("mouseover", barselect_mouseover)
 	  .on("mouseout", barselect_mouseout)
 	  .on("click", barselect_click);
-*/
+
 /*
 postsdiv.selectAll("div").
 		data(data).enter()
