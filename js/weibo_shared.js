@@ -349,7 +349,7 @@ function wedgesparkline(iswedge, d, i, scaleTime) {
 	// RELATIVE LINE TO (0, -height), 
 	// CLOSE LINE
 	// ---TRANSLATE to x, y
-	wedgestring =  'M ' + x + ' 0 l ' + width + ' ' + (height / 2) + ' l 0 -' + height + ' z';
+	wedgestring =  'M 0 0 l ' + width + ' ' + (height / 2) + ' l 0 -' + height + ' z';
 
 	if (d["post_repost_log"] == "") {
 		return wedgestring;
@@ -370,13 +370,13 @@ function wedgesparkline(iswedge, d, i, scaleTime) {
 
 
 	//sparklinestring = 'M ' + x + ' ' + y + ' ';
-	sparklinestring = 'M ' + x + ' ' + 0 + ' ';
+	sparklinestring = 'M 0 0 ';
 	//string goes up
 	for (var j = 0; j < repostlog.length; j++) {
 		var thisX = scaleTime(repostlog[j]["checked_at"]) + wedgeMinimumX;
 		var thisY = y - (repostlog[j]["post_repost_count"] / heightscale / 2);
 		thisY -= wedgeMinimumY; //minimum so that unshared posts are still visible
-		sparklinestring += 'L ' + (thisX ).toFixed(2) + ' ' + (thisY - y).toFixed(2) + ' ';
+		sparklinestring += 'L ' + (thisX - x).toFixed(2) + ' ' + (thisY - y).toFixed(2) + ' ';
 	}
 
 	if(iswedge == "wedge") {
@@ -385,7 +385,7 @@ function wedgesparkline(iswedge, d, i, scaleTime) {
 			var thisX = scaleTime(repostlog[j]["checked_at"]) + wedgeMinimumX;
 			var thisY = y + (repostlog[j]["post_repost_count"] / heightscale / 2);
 			thisY += wedgeMinimumY; //minimum
-			sparklinestring += 'L ' + (thisX ).toFixed(2) + ' ' + (thisY - y).toFixed(2) + ' ';
+			sparklinestring += 'L ' + (thisX - x).toFixed(2) + ' ' + (thisY - y).toFixed(2) + ' ';
 		}
 
 		sparklinestring += ' z';
