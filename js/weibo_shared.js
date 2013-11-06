@@ -242,6 +242,25 @@ function dsvaccessor(d, i) {
 	};
 }
 
+function cleanjson(d) {
+	// this is the format of what we need, adopted from weibo_module's make_csvline_from_post 
+	
+	console.log("jsoncleaner");
+	console.log(d);
+	d["user_follower_count_initial"] = parseInt(d["user_follower_count_initial"]);
+	d["user_follower_count"] = parseInt(d["user_follower_count"]);
+	d["post_repost_count_initial"] = parseInt(d["post_repost_count_initial"]);
+	d["post_repost_count"] = parseInt(d["post_repost_count"]);
+	d["error_code"] = parseInt(d["error_code"]);
+	d["post_lifespan"] = parseInt(d["post_lifespan"]);
+	d["post_created_at"] = epochToDate(parseInt(d["post_created_at_epoch"]));
+	d["started_tracking_at"] = epochToDate(parseInt(d["started_tracking_at_epoch"]));
+	d["last_created_at_epoch"] = parseInt(d["last_created_at_epoch"]);
+	d["last_checked_at"] = epochToDate(parseInt(d["last_checked_at_epoch"]));
+	console.log(d);
+	return d;
+}
+
 function yFunction(d, i) { 
 //	console.log(d);
 //	return d["user_id"] % 2000 + 300;
@@ -259,12 +278,19 @@ function transformwedgesparkline(d, i, scaleTime) {
 
 function wedgesparkline(iswedge, d, i, scaleTime) {
 
+	var checked_at_format = d3.time.format("%Y-%m-%d %H:%M:%S %Z")
+
 	console.log("inside wedgesparkline");
 	console.log(d);
 
 	// GET X Y COORDINATES
 	var x = scaleTime(d["post_created_at"]); 
 	var y = yFunction(d, i);
+	console.log(d["post_created_at"]) ;
+	console.log(checked_at_format.parse(d["post_created_at"] + " +0800"));
+	var thistime = checked_at_format.parse(d["post_created_at"] + " +0800");
+	console.log(scaleTime(thistime));
+	console.log("x = " + x);
 
 	// WIDTH = TIME, SCALED
 	var width = scaleTime(d["last_checked_at"]) - scaleTime(d["post_created_at"]); 
@@ -305,13 +331,13 @@ function wedgesparkline(iswedge, d, i, scaleTime) {
 		repostlog_checked_at.push(checked_at_format.parse(repostlog[j+1]));
 	} */
 
-	var checked_at_format = d3.time.format("%Y-%m-%d %H:%M:%S");
 
 	//sparklinestring = 'M ' + x + ' ' + y + ' ';
 	sparklinestring = 'M ' + x + ' ' + 0 + ' ';
 	//string goes up
 	for (var j = 0; j < repostlog.length; j++) {
-		console.log(repostlog[j]["checked_at"]));
+		console.log(repostlog[j]["checked_at"]);
+		console.log(checked_at_format.parse(repostlog[j]["checked_at"] + " +0800"));
 		console.log(scaleTime(checked_at_format.parse(repostlog[j]["checked_at"])));
 		var thisX = scaleTime(checked_at_format.parse(repostlog[j]["checked_at"])) + wedgeMinimumX;
 		var thisY = y - (repostlog[j]["post_repost_count"] / heightscale / 2);

@@ -16,8 +16,8 @@ d3.json(datafile_json, function(error, json) {
 	params = purl().param();
 	params = cleanparams(params);
 
-	// now let's massage that data
-	var data = json;
+	// now let's clean and massage that data
+	var data = json.map(cleanjson);
 
 	// sort data by created
 	data.sort(function(a,b) { return a.post_created_at - b.post_created_at; });
