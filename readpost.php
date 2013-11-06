@@ -16,7 +16,7 @@
 <script src="js/jquery.ae.image.resize.min.js"></script>
 
 <?php
-$datafile = "data/deleted_weibo_log.csv";
+$datafile = "data/deleted_weibo_log.json";
 $imgdir = "weibo_images/";
 $ocrimgdir = "weibo_ocr_images/";
 $post_id = $_GET["post_id"];
@@ -78,17 +78,13 @@ function csv_get_post($post_id, $filename='', $delimiter=',')
     if (($handle = fopen_utf8($filename, 'r')) !== FALSE)
     {
 		while (($row = fgets($handle, 4096)) !== FALSE) {
-//			$row_csv = mb_split("\|\|\|", $row);
 			$row_csv = mb_split($delimiter, $row);
 			print $delimiter;
-//			print_r($row_csv);
 
             if(!$header) {
 				$header = $row_csv;
-//				array_push($data, $header);
 			}
 			else
-//				print_r($row_csv[0]);
 				if($row_csv[0] == $post_id) {
 					$headerlen = count($header);
 					// okay we got it. let's split data into post info and log info
@@ -106,6 +102,28 @@ function csv_get_post($post_id, $filename='', $delimiter=',')
 }
 
 
+function json_get_post($post_id, $filename='', $delimiter=',')
+{
+	// given filename and post id, get post
+
+	if(!$post_id)
+		return FALSE;
+
+
+    if(!file_exists($filename) || !is_readable($filename))
+        return FALSE;
+
+	$context = stream_context_create(array('http' => array('header'=>'Connection: close\r\n')));
+	$jsondata = json_Decode(file_get_contents($filename, false, $context), true);
+
+	foreach($jsondata as $thisjson) {
+		if($thisjson['post_id'] == $post_id) 
+			return $thisjson;
+	}
+	
+}
+
+
 function get_ocr_image($imgname) {
 	global $tesseractpath, $imgdir, $ocrimgdir;
 	if(file_exists("$ocrimgdir$imgname.txt") == false && file_exists("$ocrimgdir$imgname.txt.txt") == false) {
@@ -120,13 +138,13 @@ function get_ocr_image($imgname) {
 
 
 <?php
-	$data = csv_get_post($post_id, $datafile, chr(31));
-$thistext = $data["postinfo"]["post_text"]; 
+	$data = json_get_post($post_id, $datafile, chr(31));
+	$thistext = $data["post_text"]; 
 	print "<h2>Post info</h2>";
 	print "<a href=http://translate.google.com/#zh-CN/en/" . $thistext . ">" . $thistext . "</a>";
 	print "<br>";
 
-	$ext = pathinfo($data["postinfo"]["post_original_pic"], PATHINFO_EXTENSION);
+	$ext = pathinfo($data["post_original_pic"], PATHINFO_EXTENSION);
 	$imgname = $post_id . "." . $ext;
 
 	if($do_tesseract == "true") { get_ocr_image($imgname); }
