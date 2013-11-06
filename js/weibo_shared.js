@@ -15,7 +15,7 @@ var datastartindex = 0;
 var imgdir = "weibo_images/";
 
 
-var chartwidth = 4000;
+var chartwidth = 2000;
 //var chartheight = 960;
 var yHorizon = screen.height / 2;
 
@@ -314,7 +314,8 @@ function transformwedgesparkline(d, i, scaleTime) {
 	var y = yFunction(d, i);
 	//console.log(crossplatformtransform("translate(0px," + y + "px)"));
 	//return crossplatformtransform("translate(0px," + y + "px)");
-	return crossplatformtransform("translate3d(" + x + "px," + y + "px, 0px)");
+	//return crossplatformtransform("translate3d(" + x + "px," + y + "px, 0px)");
+	return crossplatformtransform("translate3d(0px," + y + "px, 0px)");
 }
 
 function wedgesparkline(iswedge, d, i, scaleTime) {
@@ -459,3 +460,20 @@ function scatterrandom(min, max, userid, yHorizon) {
 	return thisy;
 
 }
+
+function getuseridfromclasses(hoverclasses) {
+	// this is messy - but get userid from classes
+	var usermatch = hoverclasses.match(/user-(\d*)/);
+	//var thisuserid = usermatch[1];
+	return usermatch[1];
+}
+
+function getpostidfromclasses(hoverclasses) {
+	// this is messy - but get postid from classes
+	var postmatch = hoverclasses.match(/post-(\d*)/);
+	//var thispostid = postmatch[1];
+	return postmatch[1];
+}
+
+
+

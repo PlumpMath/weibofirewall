@@ -97,7 +97,7 @@ d3.json(datafile_json, function(error, json) {
 	// Add the x-axis labels
 	chart.append("g")
 		.attr("class", "x-axis")
-		.attr("transform", "translate3d(0," + (chartheight - 1) + ", 0)")
+		.attr("transform", "translate3d(0px," + (chartheight - 1) + ", 0)")
 		.call(axisTime)
 		//rotate the text, too
 		.selectAll("text")  
@@ -275,19 +275,20 @@ durdiv.selectAll("div")
 		if ($(".hover").length ) {
 
 			// WE CLICKED ON A WEDGE - SO SPLIT
-			
 			// this is messy - but get userid from classes
-			var hoverclasses = $(".hover").attr("class");
-			var usermatch = hoverclasses.match(/user-(\d*)/);
-			var thisuserid = usermatch[1];
-
+			var thisuserid = getuseridfromclasses($(".hover").attr("class"));
 
 			if(thisuserid == clickeduserid) {
+
 				//we clicked on OLD wedge
-				var postmatch = hoverclasses.match(/post-(\d*)/);
-				var thispostid = postmatch[1];
+				//
+				//so grab post id
+				var thispostid = getpostidfromclasses($(".hover").attr("class"));
+
+				// and send us there
 				console.log('window.location = "readpost.php?post_id="' + thispostid);
 				window.location = "readpost.php?post_id=" + thispostid;
+
 			} else {
 
 				//we clicked on NEW wedge
@@ -298,6 +299,8 @@ durdiv.selectAll("div")
 				d3.selectAll("path.wedge").transition().duration(1000)
 					.attr("style", function(d, i) {
 						if(d["user_id"] == thisuserid) { 
+							console.log("before:");
+							console.log(this);
 							return wedgeopacity() + crossplatformtransform("translate3d(0px, " + yHorizon + "px, 0px)");
 						} else { 
 							return wedgeopacity() + crossplatformtransform("translate3d(0px, " + scatterrandom(0, 1000, d["user_id"], yHorizon) + "px, 0px)"); 
