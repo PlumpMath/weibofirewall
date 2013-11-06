@@ -6,8 +6,12 @@ var datafile = "data/deleted_weibo_log.csv";
 var datadelim = String.fromCharCode(31);
 var datadelim = "|||";
 
+// this, in seconds, is how many seconds the created time of a post can be before it was tracked.
+// set to a week or so. 604800 = 1 week.
+var threshold_for_created_vs_tracking = 604800;
 
-var datastartindex = 15;
+// how many posts to skip. default: 0. 
+var datastartindex = 0;
 var imgdir = "weibo_images/";
 
 
@@ -244,8 +248,29 @@ function dsvaccessor(d, i) {
 
 function cleanjson(json) {
 
-	var data = jQuery.map(json,function (d) {
+	var first_started_tracking_at_epoch = d3.min(json, function(d) { return +d.started_tracking_at_epoch });
+	console.log("min_started_tracking_at = " + first_started_tracking_at_epoch);
+
+
+	// filter for old posts that are going to throw off our time scale
+	json = json.filter(function (d) { 
+		// if the created time is way less (by a threshold) than initial track time, return false
+		if(+d.post_created_at_epoch + threshold_for_created_vs_tracking < first_started_tracking_at_epoch) {
+			console.info("we discarded post " + d.post_id);
+			return false;
+		} else {
+			return true;
+		}
+	});
+
+
+	var data = jQuery.map(json,function (d, i) {
 		// this is the format of what we need, adopted from weibo_module's make_csvline_from_post 
+
+		// for some reason. skip the first datastartindex posts.
+		if(i < datastartindex) {
+			return null;
+		} 
 
 		d.post_repost_log.map(function(d) {
 			var checked_at_parse = d3.time.format("%Y-%m-%d %H:%M:%S %Z").parse //all our times are china!
@@ -344,7 +369,7 @@ function wedgesparkline(iswedge, d, i, scaleTime) {
 
 
 	//sparklinestring = 'M ' + x + ' ' + y + ' ';
-//	sparklinestring = 'M ' + x + ' ' + 0 + ' ';
+	sparklinestring = 'M ' + x + ' ' + 0 + ' ';
 	//string goes up
 	for (var j = 0; j < repostlog.length; j++) {
 		var thisX = scaleTime(repostlog[j]["checked_at"]) + wedgeMinimumX;
@@ -365,7 +390,7 @@ function wedgesparkline(iswedge, d, i, scaleTime) {
 		sparklinestring += ' z';
 	}
 
-	console.log("sparklinestring = " + sparklinestring);
+//	console.log("sparklinestring = " + sparklinestring);
 	return sparklinestring;
 	//return wedgestring;
 }
