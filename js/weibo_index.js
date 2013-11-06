@@ -185,7 +185,7 @@ d3.json(datafile_json, function(error, json) {
 	.on("mouseout", barselect_mouseout) 
 	.on("click", barselect_click);
 */
-
+/*
 	// add labels
 	chart.selectAll("textlabel")
 		.data(data).enter()
@@ -208,7 +208,7 @@ d3.json(datafile_json, function(error, json) {
 	  .on("mouseover", barselect_mouseover)
 	  .on("mouseout", barselect_mouseout)
 	  .on("click", barselect_click);
-
+*/
 /*
 postsdiv.selectAll("div").
 		data(data).enter()

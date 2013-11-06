@@ -375,22 +375,21 @@ function wedgesparkline(iswedge, d, i, scaleTime) {
 		var thisX = scaleTime(repostlog[j]["checked_at"]) + wedgeMinimumX;
 		var thisY = y - (repostlog[j]["post_repost_count"] / heightscale / 2);
 		thisY -= wedgeMinimumY; //minimum so that unshared posts are still visible
-		sparklinestring += 'L ' + (thisX ) + ' ' + (thisY - y) + ' ';
+		sparklinestring += 'L ' + (thisX ).toFixed(2) + ' ' + (thisY - y).toFixed(2) + ' ';
 	}
 
 	if(iswedge == "wedge") {
 		//mirror this; string goes back to origin
 		for (var j = repostlog.length - 1; j >= 0; j--) {
 			var thisX = scaleTime(repostlog[j]["checked_at"]) + wedgeMinimumX;
-			var thisY = y - (repostlog[j]["post_repost_count"] / heightscale / 2);
+			var thisY = y + (repostlog[j]["post_repost_count"] / heightscale / 2);
 			thisY += wedgeMinimumY; //minimum
-			sparklinestring += 'L ' + (thisX ) + ' ' + (thisY - y) + ' ';
+			sparklinestring += 'L ' + (thisX ).toFixed(2) + ' ' + (thisY - y).toFixed(2) + ' ';
 		}
 
 		sparklinestring += ' z';
 	}
 
-//	console.log("sparklinestring = " + sparklinestring);
 	return sparklinestring;
 	//return wedgestring;
 }
