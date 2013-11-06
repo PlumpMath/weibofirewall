@@ -194,16 +194,16 @@ d3.json(datafile_json, function(error, json) {
 
 	// add text labels
 	chart.append("g").attr("class", "textlabels")
-		.selectAll("textlabel")
+		.selectAll("text")
 		.data(data).enter()
 		.append("text")
 //		.attr("x", "0")
 //		.attr("y", "0")
 //		.attr("x", function(d, i) { return scaleTime(d["post_created_at"]); })
 		.attr('style', function(d, i) { return transformwedgesparkline(d, i, scaleTime); })
-		.attr("dx", -3) // padding-right
-		.attr("dy", ".35em") // vertical-align: middle
-		.attr("text-anchor", "end") // text-align: right
+//		.attr("dx", -3) // padding-right
+//		.attr("dy", ".35em") // vertical-align: middle
+//		.attr("text-anchor", "end") // text-align: right
 		.attr("name", function(d, i) { return d["post_id"]; })
 		.attr("class", function(d, i) { return "username post-" + d["post_id"] + " user-" + d["user_id"]; })
 		.text(function(d,i) { 
@@ -308,8 +308,6 @@ durdiv.selectAll("div")
 						//get x, since wedges are all oriented at 0, 0
 						var thisx = d["post_created_at_scaled"]; 
 						if(d["user_id"] == thisuserid) { 
-							console.log("before:");
-							console.log(this);
 							return wedgeopacity() + crossplatformtransform("translate3d(" + thisx + "px, " + yHorizon + "px, 0px)");
 						} else { 
 							return wedgeopacity() + crossplatformtransform("translate3d(" + thisx + "px, " + scatterrandom(0, 1000, d["user_id"], yHorizon) + "px, 0px)"); 
@@ -317,14 +315,18 @@ durdiv.selectAll("div")
 					}) 
 
 				//TRANSITION USERNAMES
-				d3.selectAll("text").transition().duration(1000)
+				d3.selectAll("usernames.text").transition().duration(1000)
+					.attr("transform", "translate3d(" + thisx + "px, 20px, 0px)")
 					.attr("style", function(d, i) {
 						var thisx = d["post_created_at_scaled"]; 
 						if(d["user_id"] == thisuserid) { 
 							return crossplatformtransform("translate3d(" + thisx + "px, " + yHorizon + "px, 0px)");
 							//return yHorizon;
 						} else { 
+							console.log("yo transition");
 							return crossplatformtransform("translate3d(" + thisx + "px, " + scatterrandom(0, 1000, d["user_id"], yHorizon) + "px, 0px)"); 
+							return "fill: #F00FFF;";
+							return crossplatformtransform("translate3d(0px, 0px, 0px)");
 							//return scatterrandom(0, 1000, d["user_id"], yHorizon);
 						}
 					}) 
@@ -338,10 +340,18 @@ durdiv.selectAll("div")
 			clickeduserid = null;
 	
 			console.log("clicked outside");
-			d3.selectAll("path").transition().duration(1000)
+			d3.selectAll("path.wedge").transition().duration(1000)
 				.attr("style", function(d, i) {
 						return wedgeopacity() + crossplatformtransform("translate3d(" + d["post_created_at_scaled"] + "px, " + yHorizon + "px, 0px)");
 				}) 
+	
+			d3.selectAll("text.username").transition().duration(1000)
+				.attr("style", function(d, i) {
+						return "fill: #FF00FF;";
+						return wedgeopacity() + crossplatformtransform("translate3d(" + d["post_created_at_scaled"] + "px, " + yHorizon + "px, 0px)");
+				}) 
+
+
 		}
 	}
 

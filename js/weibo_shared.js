@@ -436,8 +436,8 @@ $(document).ready(function() {
 
 function crossplatformtransform (transformcommand) {
 	var transformstring = 
-	//	'transform: ' + transformcommand + '; ' + 
-//		'-ms-transform: ' + transformcommand + ';' + 
+		'transform: ' + transformcommand + '; ' + 
+		'-ms-transform: ' + transformcommand + ';' + 
 		'-webkit-transform: ' + transformcommand + ';';
 	return transformstring;
 }
