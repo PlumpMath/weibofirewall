@@ -6,6 +6,25 @@
 <link href='http://fonts.googleapis.com/css?family=Alef' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="css/firewall.less" type="text/css" />
+<style type ="text/css">
+#container {
+	width: 800px;
+	margin: auto;
+	padding: 30px 50px;
+	background-color: white;
+}
+body {
+	background-color: #666;
+	font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+}
+a {
+	color: #888;
+}
+a:hover {
+	color: #BBB;
+}
+
+</style>
 </head>
 <body>
 <script src="js/d3.v3.min.js"></script>
@@ -116,11 +135,41 @@ function json_get_post($post_id, $filename='', $delimiter=',')
 	$context = stream_context_create(array('http' => array('header'=>'Connection: close\r\n')));
 	$jsondata = json_Decode(file_get_contents($filename, false, $context), true);
 
+	$mintimestamp = PHP_INT_MAX;
+	$maxtimestamp= -1;
+
+	//grab the post
 	foreach($jsondata as $thisjson) {
+		if($thisjson['started_tracking_at_epoch'] < $mintimestamp)
+			$mintimestamp = $thisjson['started_tracking_at_epoch'];
+		if($thisjson['last_checked_at_epoch'] > $maxtimestamp)
+			$maxtimestamp = $thisjson['last_checked_at_epoch'];
+
 		if($thisjson['post_id'] == $post_id) 
-			return $thisjson;
+			$returndata["post"] = $thisjson;
 	}
-	
+
+	// exit upon failure
+	if(!$returndata["post"]) return -1;
+
+
+	$sameuserposts = array();
+	// grab other posts by same user
+	foreach($jsondata as $thisjson) {
+		if($thisjson['user_id'] == $returndata["post"]["user_id"]) {
+			array_push($sameuserposts,$thisjson);
+		}
+	}
+
+	$totallifespan = array_reduce($sameuserposts, function ($a, $thispost) { return $a += $thispost["post_lifespan"]; });
+
+	$returndata["lifespan_tot"] =  $totallifespan;
+	$returndata["num_other_posts"] = count($sameuserposts);
+	$returndata["lifespan_avg"] =  $totallifespan  * 1.0 / count($sameuserposts);
+	$returndata["mintimestamp"] = $mintimestamp;
+	$returndata["maxtimestamp"] = $maxtimestamp;
+
+	return $returndata;
 }
 
 
@@ -138,21 +187,38 @@ function get_ocr_image($imgname) {
 
 
 <?php
-	$data = json_get_post($post_id, $datafile, chr(31));
-	$thistext = $data["post_text"]; 
-	print "<h2>Post info</h2>";
-	print "<a href=http://translate.google.com/#zh-CN/en/" . $thistext . ">" . $thistext . "</a>";
-	print "<br>";
+	$returndata = json_get_post($post_id, $datafile, chr(31));
 
-	$ext = pathinfo($data["post_original_pic"], PATHINFO_EXTENSION);
-	$imgname = $post_id . "." . $ext;
+	if($returndata == -1) {
+		print '<h1>POST #' . $post_id .' NOT FOUND</h1>';
+	} else {
 
-	if($do_tesseract == "true") { get_ocr_image($imgname); }
+		$data = $returndata["post"];
 
-	print "<img src=" . $imgdir . $imgname .  ">";
-	print '<pre>';
-	print_r($data);
-	print '</pre>';
+		$thistext = $data["post_text"]; 
+		print '
+			<h1>Post #' . $post_id . ' info</h1>
+			<h5>Tracking data from between ' . date('Y-m-d H:i:s', $returndata["mintimestamp"]) . " and " . date('Y-m-d H:i:s', $returndata["maxtimestamp"]) . ' -- ' . date('z \d\a\y\s H:i:s', $returndata["maxtimestamp"] - $returndata["mintimestamp"]) . '</h5>
+			<h3>Post Text by user &lt;' . $data["user_name"] . '&gt;</h3>';
+		print "<a href=http://translate.google.com/#zh-CN/en/" . $thistext . ">" . $thistext . "</a>";
+		print "<h3>Lifespan: " .  gmdate("H:i:s", $data["post_lifespan"]) . "</h3>";
+		print "<h3>Number of other deleted posts: " .  $returndata["num_other_posts"] . "</h3>";
+		print "<h3>Average lifespan of other posts: " .  gmdate("H:i:s", $returndata["lifespan_avg"]) . "</h3>";
+		print "<h4>Post created at " . $data["post_created_at"] . " Beijing time</h4>";
+		print "<h4>Post last seen at " . $data["last_checked_at"] . " Beijing time</h4>";
+		print	'<h3>Post Image</h3>';
+
+		$ext = pathinfo($data["post_original_pic"], PATHINFO_EXTENSION);
+		$imgname = $post_id . "." . $ext;
+
+		if($do_tesseract == "true") { get_ocr_image($imgname); }
+
+			print "<img src=" . $imgdir . $imgname .  ">";
+		print "<h1>Raw Post Info</h1>";
+		print '<pre>';
+		print_r($data);
+		print '</pre>';
+	}
 ?>
 
 </div>
