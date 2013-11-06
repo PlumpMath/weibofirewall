@@ -6,6 +6,8 @@ from datetime import datetime
 from dateutil import tz
 from dateutil import parser
 import weibo_settings
+import weibo_accesstokens
+# accesstokens are at  weibo_accesstokens.accesstokens
 
 #"SCHEMA"
 """
@@ -77,12 +79,12 @@ def num_posts_to_track():
 	if (weibo_settings.track_posts_override != -1):
 		return weibo_settings.track_posts_override
 
-	numtokens = len(weibo_settings.accesstokens)
+	numtokens = len(weibo_accesstokens.accesstokens)
 	return int(numtokens * weibo_settings.tracking_period * weibo_settings.queries_per_token)
 
 # if we're on manual, this alerts everyone if w'ere tracking too many to count
 def post_alert():
-	numtokens = len(weibo_settings.accesstokens)
+	numtokens = len(weibo_accesstokens.accesstokens)
 	num_can_track =  numtokens * weibo_settings.tracking_period * weibo_settings.queries_per_token
 
 	if (weibo_settings.track_posts_override >= num_can_track):
@@ -93,7 +95,7 @@ def post_alert():
 #get a new token- starting from the first token and working its way to the end
 def getnewtoken():
 	global thistoken
-	numtokens = len(weibo_settings.accesstokens)
+	numtokens = len(weibo_accesstokens.accesstokens)
 
 	thistokenindex = -1 
 
@@ -103,10 +105,10 @@ def getnewtoken():
 
 	#if token doesn't exist, get the first token
 	if (thistoken == None):	
-		thistoken = weibo_settings.accesstokens[0]
+		thistoken = weibo_accesstokens.accesstokens[0]
 	else:
 		# try to get the next token, making sure that we're not at the end
-		thistokenindex = weibo_settings.accesstokens.index(thistoken)
+		thistokenindex = weibo_accesstokens.accesstokens.index(thistoken)
 		if (thistokenindex + 1 >= numtokens):
 			#error on our hands - we've reached the last token!
 			thistoken = -1
@@ -114,11 +116,11 @@ def getnewtoken():
 			sys.exit()
 		else:
 			#get the next token
-			thistoken = weibo_settings.accesstokens[thistokenindex + 1]
+			thistoken = weibo_accesstokens.accesstokens[thistokenindex + 1]
 #			print "got the next token"
 
 	thistokenindex += 1
-	print "Access Token #" , (thistokenindex + 1) , "/" , len(weibo_settings.accesstokens) , " being used: " + thistoken
+	print "Access Token #" , (thistokenindex + 1) , "/" , len(weibo_accesstokens.accesstokens) , " being used: " + thistoken
 	return thistoken
 
 #checks and gets a working access token.
@@ -135,7 +137,7 @@ def requests_get_wrapper(url, params):
 	thistoken = gettoken()
 
 	# should be a while loop, but just doing this so we don't get caught in an infinite loop
-	for i in xrange(len(weibo_settings.accesstokens)):
+	for i in xrange(len(weibo_accesstokens.accesstokens)):
 
 		#replace param with our token
 		params["access_token"] = thistoken
