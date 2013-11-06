@@ -314,8 +314,8 @@ function transformwedgesparkline(d, i, scaleTime) {
 	var y = yFunction(d, i);
 	//console.log(crossplatformtransform("translate(0px," + y + "px)"));
 	//return crossplatformtransform("translate(0px," + y + "px)");
-	//return crossplatformtransform("translate3d(" + x + "px," + y + "px, 0px)");
-	return crossplatformtransform("translate3d(0px," + y + "px, 0px)");
+	return crossplatformtransform("translate3d(" + x + "px," + y + "px, 0px)");
+	//return crossplatformtransform("translate3d(0px," + y + "px, 0px)");
 }
 
 function wedgesparkline(iswedge, d, i, scaleTime) {

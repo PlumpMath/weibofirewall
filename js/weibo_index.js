@@ -54,6 +54,10 @@ d3.json(datafile_json, function(error, json) {
 		.domain([mindate, maxdate])
 		.range([chartpadding, chartwidth - chartpadding])
 
+	// store the scaled X values in data - this is convenient	
+	for (var i = 0; i < data.length; i++) {
+		data[i]['post_created_at_scaled'] = scaleTime(data[i]['post_created_at']); 
+	}
 
 	// get min and max elapsed time
 	var mindateelapsed = d3.min(data, function(d) { return d["last_checked_at"] - d["post_created_at"]; });
@@ -301,23 +305,26 @@ durdiv.selectAll("div")
 				//TRANSITION WEDGES
 				d3.selectAll("path.wedge").transition().duration(1000)
 					.attr("style", function(d, i) {
+						//get x, since wedges are all oriented at 0, 0
+						var thisx = d["post_created_at_scaled"]; 
 						if(d["user_id"] == thisuserid) { 
 							console.log("before:");
 							console.log(this);
-							return wedgeopacity() + crossplatformtransform("translate3d(0px, " + yHorizon + "px, 0px)");
+							return wedgeopacity() + crossplatformtransform("translate3d(" + thisx + "px, " + yHorizon + "px, 0px)");
 						} else { 
-							return wedgeopacity() + crossplatformtransform("translate3d(0px, " + scatterrandom(0, 1000, d["user_id"], yHorizon) + "px, 0px)"); 
+							return wedgeopacity() + crossplatformtransform("translate3d(" + thisx + "px, " + scatterrandom(0, 1000, d["user_id"], yHorizon) + "px, 0px)"); 
 						}
 					}) 
 
 				//TRANSITION USERNAMES
 				d3.selectAll("text").transition().duration(1000)
 					.attr("style", function(d, i) {
+						var thisx = d["post_created_at_scaled"]; 
 						if(d["user_id"] == thisuserid) { 
-							return crossplatformtransform("translate3d(0px, " + yHorizon + "px, 0px)");
+							return crossplatformtransform("translate3d(" + thisx + "px, " + yHorizon + "px, 0px)");
 							//return yHorizon;
 						} else { 
-							return crossplatformtransform("translate3d(0px, " + scatterrandom(0, 1000, d["user_id"], yHorizon) + "px, 0px)"); 
+							return crossplatformtransform("translate3d(" + thisx + "px, " + scatterrandom(0, 1000, d["user_id"], yHorizon) + "px, 0px)"); 
 							//return scatterrandom(0, 1000, d["user_id"], yHorizon);
 						}
 					}) 
@@ -333,7 +340,7 @@ durdiv.selectAll("div")
 			console.log("clicked outside");
 			d3.selectAll("path").transition().duration(1000)
 				.attr("style", function(d, i) {
-						return wedgeopacity() + crossplatformtransform("translate3d(0px, " + yHorizon + "px, 0px)");
+						return wedgeopacity() + crossplatformtransform("translate3d(" + d["post_created_at_scaled"] + "px, " + yHorizon + "px, 0px)");
 				}) 
 		}
 	}
