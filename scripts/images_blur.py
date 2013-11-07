@@ -12,6 +12,6 @@ json_data.close()
 
 postids = []
 for thispost in data:
-	postids.append(thispost["post_id"])
+	postids.append(int(thispost["post_id"]))
 
 print postids
