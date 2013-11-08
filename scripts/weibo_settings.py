@@ -18,6 +18,7 @@ apiurl_accessfriends = "https://api.weibo.com/2/statuses/friends_timeline.json"
 apiurl_checkstatus = "https://api.weibo.com/2/statuses/show.json"
 
 imgdir = "/home/provolot/www/SIDL/firewall_dev/weibo_images/" #with trailing slash
+imgblurdir = "/home/provolot/www/SIDL/firewall_dev/weibo_blurred_images/" #with trailing slash
 
 queries_per_token = 100 #hardcoded - set this to 100 to give us some padding, really is 150
 
