@@ -20,6 +20,13 @@ def getfilename(post_id, fullfilename):
 	thisfilename = post_id + thisextension
 	return thisfilename
 
+def get_image_size(fullfilename):
+	# pick an image file you have in the working directory
+	img = Image.open(fullfilename)
+	# get the image's width and height in pixels
+	width, height = img.size
+	return width, height
+
 
 def run_blur_imagemagick(post_id, filename, imgdir, imgblurdir):
 
@@ -29,6 +36,7 @@ def run_blur_imagemagick(post_id, filename, imgdir, imgblurdir):
 	thisstampheight = stampheight(width)
 
 	print "about to blur the bottom of ", filename , " by ", thisstampheight , " pixels"
+
 	# in imagemagick
 	# first we want to make a mask, where most of the mask is white
 	# and the bottom (height - stampheight) to (height) in the y direction is blurred
@@ -40,27 +48,17 @@ def run_blur_imagemagick(post_id, filename, imgdir, imgblurdir):
 	# composite operation:
 	# convert SOURCEIMAGE BLURIMAGE MASKIMAGE -composite FINALIMAGE
 
-	# chained together:
+	# chained together with MPR memory registers
 	# convert -size WIDTHxHEIGHT xc:none -draw 'rectangle 0, HEIGHT-STAMPHEIGHT WIDTH, HEIGHT' -write mpr:mask +delete convert SOURCEIMAGE -blur 0x6 -write mpr:blur +delete convert SOURCEIMAGE mpr:blur mpr:mask -composite FINALIMAGE
-
 
 	maskblurstring = "/usr/bin/convert -gamma 0 -fill white -size " + str(width) + "x" + str(height) + " xc:none -draw 'rectangle 0, " + str(height - thisstampheight) + " " + str(width) + ", " + str(height) + "' -write mpr:mask +delete " + imgdir + filename + " -blur 0x" + str(math.ceil(thisstampheight / 4)) + " -write mpr:blur +delete " + imgdir + filename + " mpr:blur mpr:mask  -composite " + imgblurdir + filename
 
 	print "EXECUTING :: " + maskblurstring
-#	call(maskstring, shell=True)
-#	call(blurstring, shell=True)
-#	call(compositestring, shell=True)
-	call(maskblurstring, shell=True)
+
+call(maskblurstring, shell=True)
 
 	print "blurred the bottom of ", filename , " by ", thisstampheight , " pixels, storead as " + imgblurdir + filename
 
-
-def get_image_size(fullfilename):
-	# pick an image file you have in the working directory
-	img = Image.open(fullfilename)
-	# get the image's width and height in pixels
-	width, height = img.size
-	return width, height
 
 	
 #### MAIN
@@ -96,8 +94,7 @@ for thispost in posts:
 		print "already exists: " + imgblurdir + thisfilename
 		continue
 
-	# if original file exists and blurred doesn't, let's do this
-
+	# if original file exists and blurred doesn't, let's run this
 	run_blur_imagemagick(thispost["post_id"], thisfilename, imgdir, imgblurdir)
 
 
