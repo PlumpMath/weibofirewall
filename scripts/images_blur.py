@@ -13,7 +13,7 @@ imgdir = weibo_settings.imgdir
 
 def stampheight(imagewidth):
 	# figured this out by plotting image width and stamp height and doing a linear regression
-	return math.ceil((imagewidth * 0.056) + 13)
+	return math.ceil((imagewidth * 0.056) + 15)
 
 def getfilename(post_id, fullfilename):
 	thisextension = os.path.splitext(fullfilename)[1]
@@ -28,6 +28,7 @@ def run_blur_imagemagick(post_id, filename, imgdir, imgblurdir):
 	# does the blurring
 	thisstampheight = stampheight(width)
 
+	print "about to blur the bottom of ", filename , " by ", thisstampheight , " pixels"
 	# in imagemagick
 	# first we want to make a mask, where most of the mask is white
 	# and the bottom (height - stampheight) to (height) in the y direction is blurred
@@ -45,6 +46,7 @@ def run_blur_imagemagick(post_id, filename, imgdir, imgblurdir):
 
 	maskblurstring = "/usr/bin/convert -gamma 0 -fill white -size " + str(width) + "x" + str(height) + " xc:none -draw 'rectangle 0, " + str(height - thisstampheight) + " " + str(width) + ", " + str(height) + "' -write mpr:mask +delete " + imgdir + filename + " -blur 0x" + str(math.ceil(thisstampheight / 4)) + " -write mpr:blur +delete " + imgdir + filename + " mpr:blur mpr:mask  -composite " + imgblurdir + filename
 
+	print "EXECUTING :: " + maskblurstring
 #	call(maskstring, shell=True)
 #	call(blurstring, shell=True)
 #	call(compositestring, shell=True)
