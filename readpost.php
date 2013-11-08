@@ -36,7 +36,7 @@ a:hover {
 
 <?php
 $datafile = "data/deleted_weibo_log.json";
-$imgdir = "weibo_images/";
+$imgdir = "weibo_blurred_images/";
 $ocrimgdir = "weibo_ocr_images/";
 $post_id = $_GET["post_id"];
 $do_tesseract = $_GET["tesseract"];

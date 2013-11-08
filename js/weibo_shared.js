@@ -12,7 +12,7 @@ var threshold_for_created_vs_tracking = 604800;
 
 // how many posts to skip. default: 0. 
 var datastartindex = 0;
-var imgdir = "weibo_images/";
+var imgdir = "weibo_blurred_images/";
 
 
 var chartwidth = 2000;
