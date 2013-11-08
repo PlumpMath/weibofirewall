@@ -42,11 +42,8 @@ def run_blur_imagemagick(post_id, filename, imgdir, imgblurdir):
 	# chained together:
 	# convert -size WIDTHxHEIGHT xc:none -draw 'rectangle 0, HEIGHT-STAMPHEIGHT WIDTH, HEIGHT' -write mpr:mask +delete convert SOURCEIMAGE -blur 0x6 -write mpr:blur +delete convert SOURCEIMAGE mpr:blur mpr:mask -composite FINALIMAGE
 
-	maskstring = "/usr/bin/convert -gamma 0 -fill white -size " + str(width) + "x" + str(height) + " xc:none -draw 'rectangle 0, " + str(height - thisstampheight) + " " + str(width) + ", " + str(height) + "' maskimage.jpg"
-	blurstring = "/usr/bin/convert " + imgdir + filename + " -blur 0x6 blurimage.png"
-	compositestring = "/usr/bin/convert " + imgdir + filename + " blurimage.png maskimage.jpg  -composite finalimage.png"
 
-	maskblurstring = "/usr/bin/convert -gamma 0 -fill white -size " + str(width) + "x" + str(height) + " xc:none -draw 'rectangle 0, " + str(height - thisstampheight) + " " + str(width) + ", " + str(height) + "' -write mpr:mask +delete " + imgdir + filename + " -blur 0x6 -write mpr:blur +delete " + imgdir + filename + " mpr:blur mpr:mask  -composite " + imgblurdir + filename
+	maskblurstring = "/usr/bin/convert -gamma 0 -fill white -size " + str(width) + "x" + str(height) + " xc:none -draw 'rectangle 0, " + str(height - thisstampheight) + " " + str(width) + ", " + str(height) + "' -write mpr:mask +delete " + imgdir + filename + " -blur 0x" + math.ceil(thisstampheight / 4) + " -write mpr:blur +delete " + imgdir + filename + " mpr:blur mpr:mask  -composite " + imgblurdir + filename
 
 #	call(maskstring, shell=True)
 #	call(blurstring, shell=True)
