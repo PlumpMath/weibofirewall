@@ -5,15 +5,20 @@ from dateutil.parser import parse
 import sys
 import weibo_settings
 import weibo_module
+import weibo_accesstokens
 import hashlib
 
 
 
-def json_obfuscate(orgfilename, newfilename):
-	newf = codecs.open(newfilename, "wb")
+def json_obfuscate(oldfilename, newfilename):
 
-	oldf = codecs.open(newfilename, "r")
-	oldjson = json.load(oldf)
+	oldjson = []
+	with codecs.open(oldfilename, "rt") as f:
+		oldjson = json.load(f)
+			
+
+	newf = codecs.open(newfilename, "wb")
+	print oldjson
 
 	newf.write("[ " + "\n")
 
@@ -22,20 +27,24 @@ def json_obfuscate(orgfilename, newfilename):
 	for thisjson in oldjson:
 
 		postno += 1
-		print "\n==PROCESSING (", postno, " / ", len(odljson), ") POST "
+		print "\n==PROCESSING (", postno, " / ", len(oldjson), ") POST "
 
-		thisjson['user_id'] = weibo_module.hashmod(thisjson['user_id'], weibo_settings.salt, weibo_settings.user_id_mod)
-		thisjson['post_id'] = weibo_module.hashmod(thisjson['post_id'], weibo_settings.salt, weibo_settings.post_id_mod)
+		thisjson['user_id'] = weibo_module.hashmod(thisjson['user_id'], weibo_accesstokens.salt, weibo_accesstokens.user_id_mod)
+		thisjson['post_id'] = weibo_module.hashmod(thisjson['post_id'], weibo_accesstokens.salt, weibo_accesstokens.post_id_mod)
 
 		#wf.write(json.dumps(thisjson, ensure_ascii=False))
 		newf.write(json.dumps(thisjson))
 
-		if postno != num_query_posts:
+		if postno != len(oldjson):
 			newf.write(", ")
 
 		newf.write("\n")
 
 	newf.write(" ]" + "\n")
+	
+	newf.close()
 
-json_obfuscate(weibo_settings.deleted_log_json_filename, weibo_settings.deleted_log_json_obfuscated_filename)
+
+#json_obfuscate(weibo_settings.deleted_log_json_filename, weibo_settings.deleted_log_json_obfuscated_filename)
+json_obfuscate("../data/deleted_weibo_log_short_v1.json", weibo_settings.deleted_log_json_obfuscated_filename)
 

@@ -40,6 +40,8 @@ var wedgeMinimumY = 1;
 var tickinterval = 1; //interval between ticks, in days
 var params = "";
 
+var usernameOffsetX = 200;
+var usernameOffsetY = 20;
 
 
 
@@ -310,14 +312,26 @@ function yFunction(d, i) {
 	return yHorizon;
 }
 
-function transformwedgesparkline(d, i, scaleTime) {
-	var x = scaleTime(d["post_created_at"]); 
-	var y = yFunction(d, i);
+function transformwedgesparkline(d, datatype, mode) {
+	var thisx = d["post_created_at_scaled"]; 
+	var thisy = yHorizon;
+	var returnstring = "";
 	//console.log(crossplatformtransform("translate(0px," + y + "px)"));
 	//return crossplatformtransform("translate(0px," + y + "px)");
-	return crossplatformtransform("translate3d(" + x + "px," + y + "px, 0px)");
+	if(mode === "scatter") { thisy = scatterrandom(0, 1000, d["user_id"], yHorizon); }
+	if(datatype === "username") {
+		thisx += usernameOffsetX;
+		thisy += usernameOffsetY;
+	} 
+	else {
+		returnstring += wedgeopacity() ;
+		returnstring += " ";
+	}
+	returnstring += crossplatformtransform("translate3d(" + thisx + "px," + thisy + "px, 0px)");
+	return returnstring;
 	//return crossplatformtransform("translate3d(0px," + y + "px, 0px)");
 }
+
 
 function wedgesparkline(iswedge, d, i, scaleTime) {
 

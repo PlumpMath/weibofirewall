@@ -156,7 +156,7 @@ d3.json(datafile_json, function(error, json) {
 		//and now:
 		.append("path")
 		.attr('d', function(d, i) { return wedgesparkline("wedge", d, i, scaleTime); })
-		.attr('style', function(d, i) { return wedgeopacity() + transformwedgesparkline(d, i, scaleTime); })
+		.attr('style', function(d, i) { return transformwedgesparkline(d, "wedge", "horizon"); })
 		.attr("class", function(d, i) { return "wedge post-" + d["post_id"] + " user-" + d["user_id"]; })
 		.attr("name", function(d, i) { return d["post_id"]; })
 	.attr("stroke-width", 0.75)
@@ -195,13 +195,13 @@ d3.json(datafile_json, function(error, json) {
 		.selectAll("text")
 		.data(data).enter()
 		.append("text")
-//		.attr("x", "0")
+//		.attr("x", "300")
 //		.attr("y", "0")
 //		.attr("x", function(d, i) { return scaleTime(d["post_created_at"]); })
-		.attr('style', function(d, i) { return transformwedgesparkline(d, i, scaleTime); })
+		.attr('style', function(d, i) { return transformwedgesparkline(d, "username", "horizon"); })
 //		.attr("dx", -3) // padding-right
 //		.attr("dy", ".35em") // vertical-align: middle
-//		.attr("text-anchor", "end") // text-align: right
+		.attr("text-anchor", "end") // text-align: right
 		.attr("name", function(d, i) { return d["post_id"]; })
 		.attr("class", function(d, i) { return "username post-" + d["post_id"] + " user-" + d["user_id"]; })
 		.text(function(d,i) { 
@@ -303,9 +303,10 @@ durdiv.selectAll("div")
 						//get x, since wedges are all oriented at 0, 0
 						var thisx = d["post_created_at_scaled"]; 
 						if(d["user_id"] == thisuserid) { 
-							return wedgeopacity() + crossplatformtransform("translate3d(" + thisx + "px, " + yHorizon + "px, 0px)");
+							//return wedgeopacity() + crossplatformtransform("translate3d(" + thisx + "px, " + yHorizon + "px, 0px)");
+							return transformwedgesparkline(d, "wedge", "horizon");
 						} else { 
-							return wedgeopacity() + crossplatformtransform("translate3d(" + thisx + "px, " + scatterrandom(0, 1000, d["user_id"], yHorizon) + "px, 0px)"); 
+							return transformwedgesparkline(d, "wedge", "scatter");
 						}
 					}) 
 
@@ -314,12 +315,14 @@ durdiv.selectAll("div")
 					.attr("style", function(d, i) {
 						var thisx = d["post_created_at_scaled"]; 
 						if(d["user_id"] == thisuserid) { 
-							return crossplatformtransform("translate3d(" + thisx + "px, " + yHorizon + "px, 0px)");
+							return transformwedgesparkline(d, "username", "horizon");
+							//return crossplatformtransform("translate3d(" + (thisx + usernameOffsetX) + "px, " + yHorizon + "px, 0px)");
 							//return yHorizon;
 						} else { 
-							return crossplatformtransform("translate3d(" + thisx + "px, " + scatterrandom(0, 1000, d["user_id"], yHorizon) + "px, 0px)"); 
-							return "fill: #F00FFF;";
-							return crossplatformtransform("translate3d(0px, 0px, 0px)");
+							return transformwedgesparkline(d, "username", "scatter");
+							//return crossplatformtransform("translate3d(" + (thisx + usernameOffsetX) + "px, " + scatterrandom(0, 1000, d["user_id"], yHorizon) + "px, 0px)"); 
+							//return "fill: #F00FFF;";
+							//return crossplatformtransform("translate3d(0px, 0px, 0px)");
 							//return scatterrandom(0, 1000, d["user_id"], yHorizon);
 						}
 					}) 
@@ -335,12 +338,14 @@ durdiv.selectAll("div")
 			console.log("clicked outside");
 			d3.selectAll("path.wedge").transition().duration(1000)
 				.attr("style", function(d, i) {
-						return wedgeopacity() + crossplatformtransform("translate3d(" + d["post_created_at_scaled"] + "px, " + yHorizon + "px, 0px)");
+						//return wedgeopacity() + crossplatformtransform("translate3d(" + d["post_created_at_scaled"] + "px, " + yHorizon + "px, 0px)");
+						return transformwedgesparkline(d, "wedge", "horizon");
 				}) 
 	
 			d3.selectAll("text.username").transition().duration(1000)
 				.attr("style", function(d, i) {
-						return crossplatformtransform("translate3d(" + d["post_created_at_scaled"] + "px, " + yHorizon + "px, 0px)");
+						return transformwedgesparkline(d, "username", "horizon");
+						//return crossplatformtransform("translate3d(" + (d["post_created_at_scaled"] + usernameOffsetX) + "px, " + yHorizon + "px, 0px)");
 				}) 
 
 
