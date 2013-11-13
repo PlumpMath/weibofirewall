@@ -1,4 +1,4 @@
-var datafile_json = "data/deleted_weibo_log_launch_v1.json";
+var datafile_json = "data/deleted_weibo_log_obfuscated.json";
 
 //var datafile = "data/deleted_weibo_log.csv";
 //var datafile = "data/deleted_weibo_log_old.csv";
