@@ -11,7 +11,11 @@ import os
 import weibo_settings
 import weibo_module
 import sys
+import hashlib
 
+## HASHES user_id and post_id
+def hashmod(data, salt, modnum=10000):
+	return str(int(hashlib.sha512(data + salt).hexdigest(), 16) % modnum)
 
 
 ###
@@ -19,7 +23,7 @@ import sys
 # post_id, user id, etc....... and then , unixepoch, repost count, unixepoch, repost count.... 
 
 #if exclude_error_code = false, use error_code as filter
-def csvize_repost_timeline(csv_filename, type="deleted", error_code=-1, exclude_error_code=False):
+def csvize_repost_timeline(csv_filename, type="deleted", error_code=-1, exclude_error_code=False, do_obfuscate=False):
 
 	nowdatetime = weibo_module.get_current_chinatime()
 
@@ -27,7 +31,8 @@ def csvize_repost_timeline(csv_filename, type="deleted", error_code=-1, exclude_
 		query_post_ids = weibo_module.get_deleted_postids(error_code, exclude_error_code)
 	else:
 		query_post_ids = weibo_module.get_all_postids()
-#		query_post_ids = query_post_ids[:10]
+#		query_post_ids = query_post_ids[:10] # limit to the first 10 ids - for debugging
+
 		print query_post_ids
 
 	num_query_posts = len(query_post_ids)
@@ -94,7 +99,8 @@ if(len(sys.argv) > 1 and sys.argv[1] == "-all"):#
 	csvize_repost_timeline(weibo_settings.all_log_csv_filename, "all")
 else:
 #	csvize_repost_timeline(weibo_settings.deleted_log_csv_filename, "deleted", 10023, True)
-	csvize_repost_timeline(weibo_settings.deleted_log_json_filename, "deleted", 10023, True)
+	csvize_repost_timeline(weibo_settings.deleted_log_json_filename, "deleted", 10023, True, True)
+	#csvize_repost_timeline(weibo_settings.deleted_log_json_filename, "deleted", 10023, True, False)
 
 #deleted_in_sample()
 
