@@ -67,6 +67,10 @@ def csvize_repost_timeline(csv_filename, type="deleted", error_code=-1, exclude_
 			#get jsonline array
 			jsonline = weibo_module.make_jsonlist_from_post(this_post)
 
+			#merge 
+			jsonline['post_repost_log'] = this_log_list
+
+			"""
 			new_jsonline = {}
 
 			#amass logline
@@ -79,11 +83,17 @@ def csvize_repost_timeline(csv_filename, type="deleted", error_code=-1, exclude_
 			new_jsonline['last_checked_at'] = jsonline['last_checked_at']
 			new_jsonline['user_id'] = weibo_module.hashmod(jsonline['user_id'], weibo_settings.salt, weibo_settings.user_id_mod)
 			new_jsonline['post_id'] = jsonline['post_id']
+			new_jsonline['user_name'] = jsonline['user_name']
+			new_jsonline['user_follower_count'] = jsonline['user_follower_count']
+			new_jsonline['post_text'] = jsonline['post_text']
+			new_jsonline['xxx'] = jsonline['xxx']
+			new_jsonline['xxx'] = jsonline['xxx']
+			new_jsonline['xxx'] = jsonline['xxx']
 			#new_jsonline['post_id'] = weibo_module.hashmod(jsonline['post_id'], weibo_settings.salt, weibo_settings.post_id_mod)
-
+			"""
 			#wf.write(json.dumps(jsonline, ensure_ascii=False))
-			#wf.write(json.dumps(jsonline))
-			wf.write(json.dumps(new_jsonline))
+			wf.write(json.dumps(jsonline))
+			#wf.write(json.dumps(new_jsonline))
 
 			if postno != num_query_posts:
 				wf.write(", ")

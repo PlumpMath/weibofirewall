@@ -241,8 +241,6 @@ durdiv.selectAll("div")
 
 
 
-
-
 }).on("progress", function(event){
         //update progress bar
 		if (d3.event.lengthComputable) {
@@ -319,7 +317,6 @@ durdiv.selectAll("div")
 							return crossplatformtransform("translate3d(" + thisx + "px, " + yHorizon + "px, 0px)");
 							//return yHorizon;
 						} else { 
-						//	console.log(crossplatformtransform("translate3d(" + thisx + "px, " + scatterrandom(0, 1000, d["user_id"], yHorizon) + "px, 0px)")); 
 							return crossplatformtransform("translate3d(" + thisx + "px, " + scatterrandom(0, 1000, d["user_id"], yHorizon) + "px, 0px)"); 
 							return "fill: #F00FFF;";
 							return crossplatformtransform("translate3d(0px, 0px, 0px)");
@@ -343,7 +340,7 @@ durdiv.selectAll("div")
 	
 			d3.selectAll("text.username").transition().duration(1000)
 				.attr("style", function(d, i) {
-						return wedgeopacity() + crossplatformtransform("translate3d(" + d["post_created_at_scaled"] + "px, " + yHorizon + "px, 0px)");
+						return crossplatformtransform("translate3d(" + d["post_created_at_scaled"] + "px, " + yHorizon + "px, 0px)");
 				}) 
 
 

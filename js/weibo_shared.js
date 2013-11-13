@@ -1,4 +1,4 @@
-var datafile_json = "data/deleted_weibo_log_short_useridonly.json";
+var datafile_json = "data/deleted_weibo_log_short_v1.json";
 
 //var datafile = "data/deleted_weibo_log.csv";
 //var datafile = "data/deleted_weibo_log_old.csv";
@@ -437,9 +437,9 @@ $(document).ready(function() {
 
 function crossplatformtransform (transformcommand) {
 	var transformstring = 
-		'transform: ' + transformcommand + '; ' + 
-		'-ms-transform: ' + transformcommand + ';' + 
-		'-webkit-transform: ' + transformcommand + ';';
+		'transform: ' + transformcommand + ' !important; ' + 
+		'-ms-transform: ' + transformcommand + ' !important;' + 
+		'-webkit-transform: ' + transformcommand + ' !important;';
 	return transformstring;
 }
 
