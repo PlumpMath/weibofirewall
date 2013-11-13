@@ -18,7 +18,7 @@ def json_obfuscate(oldfilename, newfilename):
 			
 
 	newf = codecs.open(newfilename, "wb")
-	print oldjson
+#	print oldjson
 
 	newf.write("[ " + "\n")
 
@@ -27,11 +27,13 @@ def json_obfuscate(oldfilename, newfilename):
 	for thisjson in oldjson:
 
 		postno += 1
-		print "\n==PROCESSING (", postno, " / ", len(oldjson), ") POST "
+
+		prevpostid = thisjson['post_id']
 
 		thisjson['user_id'] = weibo_module.hashmod(thisjson['user_id'], weibo_accesstokens.salt, weibo_accesstokens.user_id_mod)
 		thisjson['post_id'] = weibo_module.hashmod(thisjson['post_id'], weibo_accesstokens.salt, weibo_accesstokens.post_id_mod)
 
+		print prevpostid + "," + thisjson['post_id']
 		#wf.write(json.dumps(thisjson, ensure_ascii=False))
 		newf.write(json.dumps(thisjson))
 
@@ -46,5 +48,5 @@ def json_obfuscate(oldfilename, newfilename):
 
 
 #json_obfuscate(weibo_settings.deleted_log_json_filename, weibo_settings.deleted_log_json_obfuscated_filename)
-json_obfuscate("../data/deleted_weibo_log_short_v1.json", weibo_settings.deleted_log_json_obfuscated_filename)
+json_obfuscate("data/deleted_weibo_log_launch_v1.json", weibo_settings.deleted_log_json_obfuscated_filename)
 
