@@ -7,6 +7,7 @@ from dateutil import tz
 from dateutil import parser
 import weibo_settings
 import weibo_accesstokens
+import hashlib
 # accesstokens are at  weibo_accesstokens.accesstokens
 
 #"SCHEMA"
@@ -588,4 +589,10 @@ def make_jsonlist_from_post(this_post):
 		"last_checked_at_epoch": this_post["last_checked_at_epoch"],
 		"post_lifespan": this_post["post_lifespan"] }
 	return thislist
+
+
+## HASHES user_id and post_id
+def hashmod(data, salt, modnum=10000):
+	return str(int(hashlib.sha512(data + salt).hexdigest(), 16) % modnum)
+
 

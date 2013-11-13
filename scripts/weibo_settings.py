@@ -61,3 +61,6 @@ delim = chr(31)
 delim_log = u','
 
 salt = 'w3ibow3ibo'
+
+user_id_mod = 100000
+post_id_mod = 10000000

@@ -11,11 +11,6 @@ import os
 import weibo_settings
 import weibo_module
 import sys
-import hashlib
-
-## HASHES user_id and post_id
-def hashmod(data, salt, modnum=10000):
-	return str(int(hashlib.sha512(data + salt).hexdigest(), 16) % modnum)
 
 
 ###
@@ -31,7 +26,7 @@ def csvize_repost_timeline(csv_filename, type="deleted", error_code=-1, exclude_
 		query_post_ids = weibo_module.get_deleted_postids(error_code, exclude_error_code)
 	else:
 		query_post_ids = weibo_module.get_all_postids()
-#		query_post_ids = query_post_ids[:10] # limit to the first 10 ids - for debugging
+		query_post_ids = query_post_ids[:10] # limit to the first 10 ids - for debugging
 
 		print query_post_ids
 
@@ -72,7 +67,7 @@ def csvize_repost_timeline(csv_filename, type="deleted", error_code=-1, exclude_
 			#get jsonline array
 			jsonline = weibo_module.make_jsonlist_from_post(this_post)
 
-			new_jsonline = []
+			new_jsonline = {}
 
 			#amass logline
 			new_jsonline['post_repost_log'] = this_log_list
@@ -82,8 +77,9 @@ def csvize_repost_timeline(csv_filename, type="deleted", error_code=-1, exclude_
 			new_jsonline['post_created_at_epoch'] = jsonline['post_created_at_epoch']
 			new_jsonline['post_lifespan'] = jsonline['post_lifespan']
 			new_jsonline['last_checked_at'] = jsonline['last_checked_at']
-			new_jsonline['user_id'] = hashmod(jsonline['user_id'], weibo_settings.salt, modnum=10000000)
-			new_jsonline['post_id'] = hashmod(jsonline['post_id'], weibo_settings.salt, modnum=100000)
+			new_jsonline['user_id'] = weibo_module.hashmod(jsonline['user_id'], weibo_settings.salt, weibo_settings.user_id_mod)
+			new_jsonline['post_id'] = jsonline['post_id']
+			#new_jsonline['post_id'] = weibo_module.hashmod(jsonline['post_id'], weibo_settings.salt, weibo_settings.post_id_mod)
 
 			#wf.write(json.dumps(jsonline, ensure_ascii=False))
 			#wf.write(json.dumps(jsonline))
