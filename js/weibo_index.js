@@ -124,8 +124,8 @@ d3.json(datafile_json, function(error, json) {
 		.attr("class", "userinfo")
 		.html(function(d) {
 				returntext = "";
-				returntext += "<div>Deleted within " + lifespanFormat(d["post_lifespan"]) + "</span>";
-				returntext += "<div>On average, this users posts live for " + lifespanFormat(d["user_info"]["lifespan_avg"]) + "</span>";
+				returntext += "<div>Deleted within <span>" + lifespanFormat(d["post_lifespan"]) + "</span>.</div>";
+				returntext += "<div>On average, this user's posts live for <span>" + lifespanFormat(d["user_info"]["lifespan_avg"]) + "</span>.</div>";
 				return returntext;
 			})
 

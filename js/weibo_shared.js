@@ -51,13 +51,21 @@ function pad (str, max) {
 }
 
 function lifespanFormat(seconds) {
+	//format xample:
+	// 4 hours, 30 minutes
+	// 30 minutes, 2 seconds
+	//
 	// cast, just to make sure
 	seconds = parseInt(seconds);
 	var minutes = Math.floor(seconds / 60);
 	var hours = Math.floor(seconds / 3600);
 	minutes = minutes % 60;
 	seconds = seconds % 60;
-	return pad(hours,2) + ":" + pad(minutes,2) + ":" + pad(seconds,2);
+	if(hours > 0)
+		return hours + " hours, " + minutes + " minutes";
+	else 
+		//return pad(minutes,2) + " minutes" + pad(seconds,2) + " seconds";
+		return minutes + " minutes, " + seconds + " seconds";
 }
 
 function dec2hex(i) {
