@@ -18,7 +18,7 @@ import sys
 # post_id, user id, etc....... and then , unixepoch, repost count, unixepoch, repost count.... 
 
 #if exclude_error_code = false, use error_code as filter
-def csvize_repost_timeline(csv_filename, type="deleted", error_code=-1, exclude_error_code=False, do_obfuscate=False):
+def jsonize_repost_timeline(json_filename, type="deleted", error_code=-1, exclude_error_code=False, do_obfuscate=False):
 
 	nowdatetime = weibo_module.get_current_chinatime()
 
@@ -37,7 +37,7 @@ def csvize_repost_timeline(csv_filename, type="deleted", error_code=-1, exclude_
 		return
 
 	## OPEN A FILE
-	with codecs.open(csv_filename, "wb") as wf:
+	with codecs.open(json_filename, "wb") as wf:
 
 		wf.write("[ " + "\n")
 
@@ -111,13 +111,13 @@ def csvize_repost_timeline(csv_filename, type="deleted", error_code=-1, exclude_
 #our process
 #grab all the deleted posts
 #massage to CSV!
-#csvize_deleted_repost_timeline(weibo_settings.all_log_csv_filename, 10023, True)
+#jsonize_deleted_repost_timeline(weibo_settings.all_log_csv_filename, 10023, True)
 if(len(sys.argv) > 1 and sys.argv[1] == "-all"):#
-	csvize_repost_timeline(weibo_settings.all_log_csv_filename, "all")
+	jsonize_repost_timeline(weibo_settings.all_log_csv_filename, "all")
 else:
-#	csvize_repost_timeline(weibo_settings.deleted_log_csv_filename, "deleted", 10023, True)
-	csvize_repost_timeline(weibo_settings.deleted_log_json_filename, "deleted", 10023, True, True)
-	#csvize_repost_timeline(weibo_settings.deleted_log_json_filename, "deleted", 10023, True, False)
+#	jsonize_repost_timeline(weibo_settings.deleted_log_csv_filename, "deleted", 10023, True)
+	jsonize_repost_timeline(weibo_settings.deleted_log_json_filename, "deleted", 10023, True, True)
+	#jsonize_repost_timeline(weibo_settings.deleted_log_json_filename, "deleted", 10023, True, False)
 
 #deleted_in_sample()
 
