@@ -14,45 +14,6 @@ import sys
 
 
 
-
-#if exclude_error_code = false, use error_code as filter
-def csvize_deleted_unique(csv_filename, error_code=-1, exclude_error_code=False):
-
-	nowdatetime = weibo_module.get_current_chinatime()
-
-	deleted_post_ids = weibo_module.get_deleted_postids(error_code, exclude_error_code)
-	num_dead_posts = len(deleted_post_ids)
-
-	#if we're not tracking any posts, get out of there
-	if (num_dead_posts <= 0):
-		return
-
-	## OPEN A FILE
-	with codecs.open(csv_filename, "wb", "utf-16") as wf:
-
-		#write csv header
-		csv_header = weibo_module.get_csv_header()
-		wf.write(csv_header + "\n")
-		#print csv_header
-
-		#iterate through posts
-		for this_post_id in deleted_post_ids:
-
-			this_post = weibo_module.merge_deleted_from_new_old(this_post_id)
-
-			csvline = weibo_module.make_csvline_from_post(this_post)
-
-		
-			csvline = map((lambda x: unicode(x)), csvline)
-
-			#not csv, this is our delimiter now
-			csvline = weibo_settings.delim.join(csvline)
-
-#			#print csvline
-			wf.write(csvline + "\n")
-
-
-
 ###
 #let's #print a log of all deleted posts, with the repost count/checked time following as pairs. so:
 # post_id, user id, etc....... and then , unixepoch, repost count, unixepoch, repost count.... 

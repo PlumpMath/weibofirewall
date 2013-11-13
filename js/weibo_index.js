@@ -191,9 +191,8 @@ d3.json(datafile_json, function(error, json) {
 	.on("mouseout", barselect_mouseout) 
 	.on("click", barselect_click);
 */
-/*
 	// add text labels
-	chart.append("g").attr("class", "textlabels")
+	d3.select("#chartdiv").append("g").attr("class", "textlabels")
 		.selectAll("text")
 		.data(data).enter()
 		.append("text")
@@ -215,7 +214,6 @@ d3.json(datafile_json, function(error, json) {
 	  .on("mouseover", barselect_mouseover)
 	  .on("mouseout", barselect_mouseout)
 	  .on("click", barselect_click);
-*/
 /*
 postsdiv.selectAll("div").
 		data(data).enter()
@@ -315,15 +313,14 @@ durdiv.selectAll("div")
 					}) 
 
 				//TRANSITION USERNAMES
-				d3.selectAll("usernames.text").transition().duration(1000)
-					.attr("transform", "translate3d(" + thisx + "px, 20px, 0px)")
+				d3.selectAll(".username").transition().duration(1000)
 					.attr("style", function(d, i) {
 						var thisx = d["post_created_at_scaled"]; 
 						if(d["user_id"] == thisuserid) { 
 							return crossplatformtransform("translate3d(" + thisx + "px, " + yHorizon + "px, 0px)");
 							//return yHorizon;
 						} else { 
-							console.log("yo transition");
+						//	console.log(crossplatformtransform("translate3d(" + thisx + "px, " + scatterrandom(0, 1000, d["user_id"], yHorizon) + "px, 0px)")); 
 							return crossplatformtransform("translate3d(" + thisx + "px, " + scatterrandom(0, 1000, d["user_id"], yHorizon) + "px, 0px)"); 
 							return "fill: #F00FFF;";
 							return crossplatformtransform("translate3d(0px, 0px, 0px)");
@@ -347,7 +344,6 @@ durdiv.selectAll("div")
 	
 			d3.selectAll("text.username").transition().duration(1000)
 				.attr("style", function(d, i) {
-						return "fill: #FF00FF;";
 						return wedgeopacity() + crossplatformtransform("translate3d(" + d["post_created_at_scaled"] + "px, " + yHorizon + "px, 0px)");
 				}) 
 
