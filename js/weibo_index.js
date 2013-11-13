@@ -30,9 +30,10 @@ d3.json(datafile_json, function(error, json) {
 
 	// get chart height
 	//var chartheight = ((barheight + bargap) * data.length) + chartheight_padding;
-	var chartheight = screen.height; //((barheight + bargap) * data.length) + chartheight_padding;
+	var chartheight = $(window).height();
+	//screen.height; //((barheight + bargap) * data.length) + chartheight_padding;
 
-	var chartlegend = d3.select("#chartlegend");
+//	var chartlegend = d3.select("#chartlegend");
 
 	// create chart, set dimensions based on # of deleted posts
 	var chart = d3.select("#chartdiv")
@@ -121,11 +122,24 @@ d3.json(datafile_json, function(error, json) {
 			.attr("class", function(d, i) { return "postdiv post-" + d["post_id"] + " user-" + d["user_id"]; })
 	
 	thispostdiv.append("div")
+		.attr("class", "postinfo")
+		.html(function(d) {
+				returntext = "";
+				returntext += "<div class='user_name'>";
+				returntext += d["user_name"];
+				returntext += "</div>";
+				returntext += "<div class='post_text'>";
+				returntext += d["post_text"];
+				returntext += "</div>";
+				return returntext;
+			})
+
+	thispostdiv.append("div")
 		.attr("class", "userinfo")
 		.html(function(d) {
 				returntext = "";
-				returntext += "<div>Deleted within <span>" + lifespanFormat(d["post_lifespan"]) + "</span>.</div>";
-				returntext += "<div>On average, this user's posts live for <span>" + lifespanFormat(d["user_info"]["lifespan_avg"]) + "</span>.</div>";
+				returntext += "<div>Deleted within <span class='post_lifespan'>" + lifespanFormat(d["post_lifespan"]) + "</span></div>";
+				returntext += "<div>Average deletion time of this user's posts:<span class='lifespan_avg'>" + lifespanFormat(d["user_info"]["lifespan_avg"]) + "</span></div>";
 				return returntext;
 			})
 

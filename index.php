@@ -2,9 +2,10 @@
 <html>
 <head>
 <title>Jumping The Great Firewall v9.999</title>
-<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Crete+Round' rel='stylesheet' type='text/css'>
+<!-- <link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Alef' rel='stylesheet' type='text/css'>
-<link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'> -->
 <link href="js/iCheck/skins/flat/flat.css" rel="stylesheet">
 <!-- <link rel="stylesheet" href="css/firewall.css" type="text/css" /> -->
 <link rel="stylesheet/less" href="css/firewall.less" type="text/css" />
@@ -63,7 +64,7 @@ $(document).ready(function() {
 
 <div id="container">
 	<div id="chartdiv"></div>
-	<div id="chartlegend"></div>
+	<!--<div id="chartlegend"></div> -->
 	<div id="durdiv"></div>
 	<div id="postsdiv">
 	</div>

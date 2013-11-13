@@ -66,7 +66,8 @@ def json_process(oldfilename, newfilename):
 		### do before obfuscation
 		thisjson['user_info'] = sameuserposts[thisjson['user_id']]["info"]
 		#### obfuscate
-		thisjson['user_id'] = weibo_module.hashmod(thisjson['user_id'], weibo_accesstokens.salt, weibo_accesstokens.user_id_mod)
+		thisjson['user_id'] = weibo_module.obfuscate_hashmod(thisjson['user_id'], weibo_accesstokens.salt, weibo_accesstokens.user_id_mod)
+		thisjson['user_name'] = weibo_module.obfuscate_username(thisjson['user_name'], weibo_accesstokens.salt)
 		#thisjson['post_id'] = weibo_module.hashmod(thisjson['post_id'], weibo_accesstokens.salt, weibo_accesstokens.post_id_mod)
 
 

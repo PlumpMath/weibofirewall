@@ -592,7 +592,11 @@ def make_jsonlist_from_post(this_post):
 
 
 ## HASHES user_id and post_id
-def hashmod(data, salt, modnum=10000):
+def obfuscate_hashmod(data, salt, modnum=10000):
 	return str(int(hashlib.sha512(data + salt).hexdigest(), 16) % modnum)
+
+## obfuscates username
+def obfuscate_username(data, salt):
+	return "ANON"
 
 
