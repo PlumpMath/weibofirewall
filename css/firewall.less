@@ -69,9 +69,18 @@ rect {
 	fill: @pp-red !important; 
 }
 
+.postdiv .postinfo, .postdiv .user_info {
+	float: left;
+}
+
 .postdiv .postinfo {
 	font-size: 0.8em;
 	max-width: 300px;
+}
+
+
+.postdiv .postinfo .user_name {
+	float: left;
 }
 
 .postdiv .postinfo .user_name:before {
@@ -81,6 +90,12 @@ rect {
 	content: ":";
 	display: inline;
 	}
+
+.postdiv .postinfo .post_created_at {
+	text-align: right;
+	font-size: 0.7em;
+	padding-top: 0.35em;
+}
 
 .postdiv .postinfo .post_text:before,
 .postdiv .postinfo .post_text:after {
@@ -94,7 +109,7 @@ rect {
 
 
 .postdiv .postinfo .post_text {
-	margin: 5px;
+	margin: 10px 5px;
 	padding-left: 5px;
 	border-left: 1px dotted @pp-red;
 	}
@@ -106,9 +121,6 @@ rect {
 }
 
 .postdiv .userinfo div {
-//	margin-left: 5px; 
-//	padding-left: 5px;
-//	border-left: 1px dotted @pp-red;
 	}
 
 .postdiv .userinfo div:first-child {
@@ -126,6 +138,10 @@ rect {
 	color: @pp-red;
 }
 
+.postdiv .post_image {
+	border: 1px dotted @pp-red;
+}
+	
 
 .axis path,
 .axis line {

@@ -120,21 +120,31 @@ d3.json(datafile_json, function(error, json) {
 		// wrap everything in a div
 		.append("div")
 			.attr("class", function(d, i) { return "postdiv post-" + d["post_id"] + " user-" + d["user_id"]; })
+
+	var thispostdiv_info = thispostdiv.append("div").attr("class", "info");
+	var thispostdiv_image = thispostdiv.append("div").attr("class", "image");
 	
-	thispostdiv.append("div")
+	var created_at_format = d3.time.format("%Y-%m-%d %H:%M CST");
+
+	thispostdiv_info.append("div")
 		.attr("class", "postinfo")
 		.html(function(d) {
 				returntext = "";
 				returntext += "<div class='user_name'>";
 				returntext += d["user_name"];
 				returntext += "</div>";
+
+				returntext += "<div class='post_created_at'>";
+				returntext += created_at_format(d["post_created_at"]);
+				returntext += "</div>";
+
 				returntext += "<div class='post_text'>";
 				returntext += d["post_text"];
 				returntext += "</div>";
 				return returntext;
 			})
 
-	thispostdiv.append("div")
+	thispostdiv_info.append("div")
 		.attr("class", "userinfo")
 		.html(function(d) {
 				returntext = "";
@@ -144,7 +154,8 @@ d3.json(datafile_json, function(error, json) {
 			})
 
 	//let's add an img tag with all this stuff
-	thispostdiv.append("img")
+	thispostdiv_image.append("img")
+			.attr("class", "post_image")
 			.attr("src", function(d) { 
 					var thisimage = imgdir + d["post_id"] + "." + d["post_original_pic"].split(/[\.]+/).pop(); 
 					return resizeimage(thisimage);
