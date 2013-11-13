@@ -58,9 +58,6 @@ rect {
 //	display: none; 
 	opacity: 0;
 	position: absolute;
-	border-top: 5px solid @pp-red;
-	padding: 5px;
-	background-color: white;
 	pointer-events: none;
 }
 
@@ -69,27 +66,37 @@ rect {
 	fill: @pp-red !important; 
 }
 
-.postdiv .postinfo, .postdiv .user_info {
-	float: left;
+.postdiv .section_info, .postdiv .section_image {
+}
+
+.postdiv .section_image_wrapper { 
+	position: relative;
+}
+
+.postdiv .section_info { 
+	background-color: white;
+	padding: 5px;
+	border-top: 5px solid @pp-red;
+	
+}
+
+.postdiv .section_image {
+	position: absolute;
+	bottom: 100%;
+	margin-bottom: 2px;
 }
 
 .postdiv .postinfo {
 	font-size: 0.8em;
-	max-width: 300px;
+	width: 300px;
 }
 
 
 .postdiv .postinfo .user_name {
 	float: left;
+	color: @pp-red;
 }
 
-.postdiv .postinfo .user_name:before {
-	}
-
-.postdiv .postinfo .user_name:after {
-	content: ":";
-	display: inline;
-	}
 
 .postdiv .postinfo .post_created_at {
 	text-align: right;
@@ -97,10 +104,8 @@ rect {
 	padding-top: 0.35em;
 }
 
-.postdiv .postinfo .post_text:before,
-.postdiv .postinfo .post_text:after {
+.postdiv .text_quote {
   color: @pp-red;
-  content: '"';
   font-size: 1.6em;
   line-height: 0.1em;
   margin-right: 0.1em;
@@ -123,12 +128,12 @@ rect {
 .postdiv .userinfo div {
 	}
 
-.postdiv .userinfo div:first-child {
+.postdiv .userinfo div.post_lifespan {
 	width: calc(50% - 10px);
 	float: left;
 	}
 
-.postdiv .userinfo div:last-child {
+.postdiv .userinfo div.lifespan_avg {
 	margin-left: calc(50% - 5px);
 	}
 

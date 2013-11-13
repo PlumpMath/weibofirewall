@@ -156,7 +156,7 @@ function barselect_mouseover(d, i) {
 
 // define mouseout
 function barselect_mouseout( d, i) {
-	d3.selectAll(".postdiv.post-" + d["post_id"]).transition().duration(100).style('opacity', 0).style('z-index', 0);
+	d3.selectAll(".postdiv.post-" + d["post_id"]).style('opacity', 0).style('z-index', 0);
 //	d3.selectAll(".postdiv.post-" + d["post_id"]).style('opacity', 0); //.style('z-index', 0);
 	d3.selectAll(".post-" + d["post_id"]).classed("hover", false); 
 	//highlight same users

@@ -121,37 +121,12 @@ d3.json(datafile_json, function(error, json) {
 		.append("div")
 			.attr("class", function(d, i) { return "postdiv post-" + d["post_id"] + " user-" + d["user_id"]; })
 
-	var thispostdiv_info = thispostdiv.append("div").attr("class", "info");
-	var thispostdiv_image = thispostdiv.append("div").attr("class", "image");
+	var thispostdiv_image = thispostdiv.append("div").attr("class", "section_image_wrapper")
+		.append("div").attr("class", "section_image");
+	var thispostdiv_info = thispostdiv.append("div").attr("class", "section_info_wrapper")
+		.append("div").attr("class", "section_info");
 	
 	var created_at_format = d3.time.format("%Y-%m-%d %H:%M CST");
-
-	thispostdiv_info.append("div")
-		.attr("class", "postinfo")
-		.html(function(d) {
-				returntext = "";
-				returntext += "<div class='user_name'>";
-				returntext += d["user_name"];
-				returntext += "</div>";
-
-				returntext += "<div class='post_created_at'>";
-				returntext += created_at_format(d["post_created_at"]);
-				returntext += "</div>";
-
-				returntext += "<div class='post_text'>";
-				returntext += d["post_text"];
-				returntext += "</div>";
-				return returntext;
-			})
-
-	thispostdiv_info.append("div")
-		.attr("class", "userinfo")
-		.html(function(d) {
-				returntext = "";
-				returntext += "<div>Deleted within <span class='post_lifespan'>" + lifespanFormat(d["post_lifespan"]) + "</span></div>";
-				returntext += "<div>Average deletion time of this user's posts:<span class='lifespan_avg'>" + lifespanFormat(d["user_info"]["lifespan_avg"]) + "</span></div>";
-				return returntext;
-			})
 
 	//let's add an img tag with all this stuff
 	thispostdiv_image.append("img")
@@ -160,6 +135,34 @@ d3.json(datafile_json, function(error, json) {
 					var thisimage = imgdir + d["post_id"] + "." + d["post_original_pic"].split(/[\.]+/).pop(); 
 					return resizeimage(thisimage);
 			})
+
+	thispostdiv_info.append("div")
+		.attr("class", "postinfo")
+		.html(function(d) {
+				returntext = "";
+				returntext += "<div class='user_name'>";
+				returntext += d["user_name"];
+				returntext += ":</div>";
+
+				returntext += "<div class='post_created_at'>";
+				returntext += created_at_format(d["post_created_at"]);
+				returntext += "</div>";
+
+				returntext += "<div class='post_text'><span class='text_quote'>\"</span>";
+				returntext += d["post_text"];
+				returntext += "<span class='text_quote'>\"</span></div>";
+				return returntext;
+			})
+
+	thispostdiv_info.append("div")
+		.attr("class", "userinfo")
+		.html(function(d) {
+				returntext = "";
+				returntext += "<div class='post_lifespan'>Deleted within <span class='post_lifespan'>" + lifespanFormat(d["post_lifespan"]) + "</span></div>";
+				returntext += "<div class='lifespan_avg'>Average deletion time of this user's posts:<span class='lifespan_avg'>" + lifespanFormat(d["user_info"]["lifespan_avg"]) + "</span></div>";
+				return returntext;
+			})
+
 
 	/*
 //BARS
@@ -270,7 +273,7 @@ durdiv.selectAll("div")
 	d3update(0);
 
 	$("body").mousemove(function(e){
-		  $('.postdiv.hover').css({'top': e.pageY + 10, 'left': e.pageX + 10});
+		  $('.postdiv.hover').css({'top': e.pageY+ 0, 'left': e.pageX + 10});
 	});
 
 
@@ -323,8 +326,8 @@ durdiv.selectAll("div")
 				var thispostid = getpostidfromclasses($(".hover").attr("class"));
 
 				// and send us there
-				console.log('window.location = "readpost.php?post_id="' + thispostid);
-				window.location = "readpost.php?post_id=" + thispostid;
+//				console.log('window.location = "readpost.php?post_id="' + thispostid);
+//				window.location = "readpost.php?post_id=" + thispostid;
 
 			} else {
 
