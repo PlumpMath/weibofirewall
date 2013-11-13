@@ -3,7 +3,8 @@
 @light-text: @gray-light;
 @bar-text: @gray-dark;
 @bar-text-sameuser: #FF0;
-@hover-fill: #FF2F2F ;
+@pp-red: #FF2F2F;
+@hover-fill: @pp-red;
 
 body {
 	background-color: #222;
@@ -57,7 +58,7 @@ rect {
 //	display: none; 
 	opacity: 0;
 	position: absolute;
-	border-top: 5px solid @hover-fill;
+	border-top: 5px solid @pp-red;
 	padding: 5px;
 	background-color: white;
 	pointer-events: none;
@@ -65,7 +66,7 @@ rect {
 
 .postdiv.hover {
 	display: block !important;
-	fill: @hover-fill !important; 
+	fill: @pp-red !important; 
 }
 
 .postdiv .postinfo {
@@ -73,24 +74,56 @@ rect {
 	max-width: 300px;
 }
 
+.postdiv .postinfo .user_name:before {
+	}
+
+.postdiv .postinfo .user_name:after {
+	content: ":";
+	display: inline;
+	}
+
+.postdiv .postinfo .post_text:before,
+.postdiv .postinfo .post_text:after {
+  color: @pp-red;
+  content: '"';
+  font-size: 1.6em;
+  line-height: 0.1em;
+  margin-right: 0.1em;
+  vertical-align: -0.1em;
+}
+
+
+.postdiv .postinfo .post_text {
+	margin: 5px;
+	padding-left: 5px;
+	border-left: 1px dotted @pp-red;
+	}
+
 .postdiv .userinfo {
 	font-size: 0.6em;
 	margin-bottom: 5px;
 	overflow: hidden;
 }
 
+.postdiv .userinfo div {
+//	margin-left: 5px; 
+//	padding-left: 5px;
+//	border-left: 1px dotted @pp-red;
+	}
+
 .postdiv .userinfo div:first-child {
-	width: 50%;
+	width: calc(50% - 10px);
 	float: left;
 	}
 
 .postdiv .userinfo div:last-child {
-	margin-left: 50%;
+	margin-left: calc(50% - 5px);
 	}
 
 .postdiv .userinfo span {
 	display: block;
 	font-weight: bold;
+	color: @pp-red;
 }
 
 
