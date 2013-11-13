@@ -113,14 +113,23 @@ d3.json(datafile_json, function(error, json) {
 
 	// let's select the postsdiv, and add our images to it that will hover
 	var postsdiv = d3.select("#postsdiv");
-	postsdiv.selectAll("div")
+	var thispostdiv = postsdiv.selectAll("div")
 		// plug in our data
 		.data(data).enter()
 		// wrap everything in a div
 		.append("div")
 			.attr("class", function(d, i) { return "postdiv post-" + d["post_id"] + " user-" + d["user_id"]; })
-		//let's add an img tag with all this stuff
-		.append("img")
+	
+	thispostdiv.append("div")
+		.attr("class", "userinfo")
+		.text(function(d) {
+				console.log(d);
+			console.log(d["user_info"]);
+			return d["user_info"]["lifespan_avg"];
+			})
+
+	//let's add an img tag with all this stuff
+	thispostdiv.append("img")
 			.attr("src", function(d) { 
 					var thisimage = imgdir + d["post_id"] + "." + d["post_original_pic"].split(/[\.]+/).pop(); 
 					return resizeimage(thisimage);
