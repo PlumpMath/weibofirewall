@@ -1,5 +1,6 @@
-var datafile_json = "data/deleted_weibo_log.json";
-var datafile = "data/deleted_weibo_log.csv";
+var datafile_json = "data/deleted_weibo_log_short_useridonly.json";
+
+//var datafile = "data/deleted_weibo_log.csv";
 //var datafile = "data/deleted_weibo_log_old.csv";
 //var datafile = "data/all_weibo_log_temp.csv";
 
@@ -228,7 +229,7 @@ function dsvaccessor(d, i) {
 		post_id: +d.post_id,
 		user_id: parsefloat(d.user_id),
 		user_name: d.user_name,
-		user_follower_count_initial: +d.user_follower_count_initial,
+//		user_follower_count_initial: +d.user_follower_count_initial,
 		user_follower_count: +d.user_follower_count,
 		post_original_pic: d.post_original_pic,
 		post_created_at : epochtodate(d.post_created_at_epoch),
@@ -281,7 +282,7 @@ function cleanjson(json) {
 			post_id: +d.post_id,
 			user_id: parseFloat(d.user_id),
 			user_name: d.user_name,
-			user_follower_count_initial: +d.user_follower_count_initial,
+//			user_follower_count_initial: +d.user_follower_count_initial,
 			user_follower_count: +d.user_follower_count,
 			post_original_pic: d.post_original_pic,
 			post_created_at : epochToDate(d.post_created_at_epoch),
@@ -332,7 +333,7 @@ function wedgesparkline(iswedge, d, i, scaleTime) {
 	// WIDTH = TIME, SCALED
 	var width = scaleTime(d["last_checked_at"]) - scaleTime(d["post_created_at"]); 
 	width += 5;
-	var height = (d["post_repost_count"] - d["post_repost_count_initial"]);
+	var height = (d["post_repost_count"] - d["post_repost_log"][0]["post_repost_count"]);
 	height /= heightscale;
 	height += (barheight / 2); // have a minimum height
 

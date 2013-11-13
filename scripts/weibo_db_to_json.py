@@ -26,7 +26,7 @@ def csvize_repost_timeline(csv_filename, type="deleted", error_code=-1, exclude_
 		query_post_ids = weibo_module.get_deleted_postids(error_code, exclude_error_code)
 	else:
 		query_post_ids = weibo_module.get_all_postids()
-		query_post_ids = query_post_ids[:10] # limit to the first 10 ids - for debugging
+#		query_post_ids = query_post_ids[:10] # limit to the first 10 ids - for debugging
 
 		print query_post_ids
 

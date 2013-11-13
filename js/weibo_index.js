@@ -47,7 +47,6 @@ d3.json(datafile_json, function(error, json) {
 	var mindate = d3.min(data, function(d) { return d["post_created_at"]; });
 	var maxdate = d3.max(data, function(d) { return d["last_checked_at"]; });
 
-
 	// let's specify the x-axis scale
 	var scaleTime = d3.time.scale()
 		// domain is min max of time

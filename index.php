@@ -1,4 +1,3 @@
-<?php header('Content-Type: text/html; charset=utf-8'); ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,24 +5,24 @@
 <link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Alef' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'>
+<link href="js/iCheck/skins/flat/flat.css" rel="stylesheet">
 <!-- <link rel="stylesheet" href="css/firewall.css" type="text/css" /> -->
 <link rel="stylesheet/less" href="css/firewall.less" type="text/css" />
-<link href="js/iCheck/skins/flat/flat.css" rel="stylesheet">
-
 </head>
+
 <body>
 <script src="js/jquery-latest.min.js"></script>
 <script src="js/less-1.4.1.min.js"></script>
-<script src="js/iCheck/jquery.icheck.min.js"></script>
 <script src="js/moment.min.js"></script>
 <script src="js/purl.min.js"></script>
+<script src="js/iCheck/jquery.icheck.min.js"></script>
 <!-- <script src="js/jquery.hoverIntent.minified.js"></script>
 <script src="js/lodash.min.js"></script>
 <script src="js/jquery.transit.min.js"></script>
 <script src="js/jquery.ae.image.resize.min.js"></script> -->
-<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-<script src="js/weibo_shared.js" charset="utf-8"></script>
-<script src="js/weibo_index.js" charset="utf-8"></script>
+<script src="js/d3.v3.min.js"></script>
+<script src="js/weibo_shared.js"></script>
+<script src="js/weibo_index.js"></script>
 <script type="text/javascript">
 // Destroys the localStorage copy of CSS that less.js creates
  
@@ -43,7 +42,7 @@ function destroyLessCache(pathToCss) { // e.g. '/css/' or '/stylesheets/'
   }
 }
 $(document).ready(function() {
-	destroyLessCache();
+	//	destroyLessCache();
 
 	$('input').on('ifChecked', function(event){
 		if(event.target.name == "graphstyle") {
@@ -57,7 +56,7 @@ $(document).ready(function() {
 	$('input').iCheck({
 		checkboxClass: 'icheckbox_flat',
 		radioClass: 'iradio_flat'
-	});
+});
 
 });
 </script>
