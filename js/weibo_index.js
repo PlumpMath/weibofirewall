@@ -122,10 +122,11 @@ d3.json(datafile_json, function(error, json) {
 	
 	thispostdiv.append("div")
 		.attr("class", "userinfo")
-		.text(function(d) {
-				console.log(d);
-			console.log(d["user_info"]);
-			return d["user_info"]["lifespan_avg"];
+		.html(function(d) {
+				returntext = "";
+				returntext += "<div>Deleted within " + lifespanFormat(d["post_lifespan"]) + "</span>";
+				returntext += "<div>On average, this users posts live for " + lifespanFormat(d["user_info"]["lifespan_avg"]) + "</span>";
+				return returntext;
 			})
 
 	//let's add an img tag with all this stuff

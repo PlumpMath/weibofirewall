@@ -51,6 +51,8 @@ function pad (str, max) {
 }
 
 function lifespanFormat(seconds) {
+	// cast, just to make sure
+	seconds = parseInt(seconds);
 	var minutes = Math.floor(seconds / 60);
 	var hours = Math.floor(seconds / 3600);
 	minutes = minutes % 60;
@@ -270,7 +272,8 @@ function cleanjson(json) {
 			error_code: +d.error_code,
 			last_checked_at: epochToDate(+d.last_checked_at_epoch),
 			post_lifespan: +d.post_lifespan,
-			post_repost_log: d.post_repost_log
+			post_repost_log: d.post_repost_log,
+			user_info: d.user_info
 		}
 	});
 
