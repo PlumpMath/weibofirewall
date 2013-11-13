@@ -72,11 +72,22 @@ def csvize_repost_timeline(csv_filename, type="deleted", error_code=-1, exclude_
 			#get jsonline array
 			jsonline = weibo_module.make_jsonlist_from_post(this_post)
 
-			#merge logline into 
-			jsonline['post_repost_log'] = this_log_list
+			new_jsonline = []
+
+			#amass logline
+			new_jsonline['post_repost_log'] = this_log_list
+
+			#add other items
+			new_jsonline['post_created_at'] = jsonline['post_created_at']
+			new_jsonline['post_created_at_epoch'] = jsonline['post_created_at_epoch']
+			new_jsonline['post_lifespan'] = jsonline['post_lifespan']
+			new_jsonline['last_checked_at'] = jsonline['last_checked_at']
+			new_jsonline['user_id'] = hashmod(jsonline['user_id'], weibo_settings.salt, modnum=10000000)
+			new_jsonline['post_id'] = hashmod(jsonline['post_id'], weibo_settings.salt, modnum=100000)
 
 			#wf.write(json.dumps(jsonline, ensure_ascii=False))
-			wf.write(json.dumps(jsonline))
+			#wf.write(json.dumps(jsonline))
+			wf.write(json.dumps(new_jsonline))
 
 			if postno != num_query_posts:
 				wf.write(", ")

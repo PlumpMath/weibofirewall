@@ -59,3 +59,5 @@ tracking_period_seconds = tracking_period * 3600
 #delim = u'|||'
 delim = chr(31)
 delim_log = u','
+
+salt = 'w3ibow3ibo'
