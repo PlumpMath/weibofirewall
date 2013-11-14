@@ -41,8 +41,9 @@ d3.json(datafile_json, function(error, json) {
 		.attr("class", "chart")
 		.attr("width", chartwidth)
 		.attr("height", chartheight)
-
 	d3.select("#chartdiv").on("click", chart_click);
+
+
 
 	// get min and max dates
 	var mindate = d3.min(data, function(d) { return d["post_created_at"]; });
@@ -171,8 +172,6 @@ d3.json(datafile_json, function(error, json) {
 				return returntext;
 			})
 
-	chart.append("g").attr("id", "cursordate")
-		.append("text").text("yo ho yey");
 	/*
 //BARS
 	// let's select the chart and add our bars to it	
@@ -208,7 +207,8 @@ d3.json(datafile_json, function(error, json) {
 		.attr("name", function(d, i) { return d["post_id"]; })
 	.attr("stroke-width", 0.75)
 		.attr("stroke", function(d, i) { return theme_color; })
-	//	.attr("fill", function(d, i) { return getthiscolor(d, i, scaleTimeForColor); })
+		//.attr("fill", function(d, i) { return getthiscolor(d, i, scaleTimeForColor); })
+		//.attr("fill", "#666")
 		//.attr("fill", "none")
 	.on("mouseover", barselect_mouseover)
 	.on("mouseout", barselect_mouseout) 
@@ -216,11 +216,11 @@ d3.json(datafile_json, function(error, json) {
 
 	// add text labels - usernames
 /*
-	d3.select("#chartdiv").append("g").attr("class", "textlabels")
+	d3.select("#chartdiv").append("g").attr("class", "usernames").attr("style", "opacity: 0.6")
 		.selectAll("text")
 		.data(data).enter()
 		.append("text")
-		.attr('style', function(d, i) { return wedgeopacity(0) + transformwedgesparkline(d, "username", "scatter"); })
+		.attr('style', function(d, i) { return transformwedgesparkline(d, "username", "scatter"); })
 		.attr("text-anchor", "end") // text-align: right
 		.attr("name", function(d, i) { return d["post_id"]; })
 		.attr("class", function(d, i) { return "username post-" + d["post_id"] + " user-" + d["user_id"]; })
@@ -235,10 +235,11 @@ d3.json(datafile_json, function(error, json) {
 
 	d3update(0);
 
+	chart.append("g").attr("id", "cursordate").append("text");
 
 // scroll tracking
 	$(document).mousemove(function(e){
-		console.log(e);
+//		console.log(e);
 		d3.select('#cursordate text')
 			.attr("x", e.offsetX - 15)
 			.attr("y", e.offsetY + 4)

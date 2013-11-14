@@ -16,7 +16,7 @@ var datastartindex = 0;
 var imgdir = "images/weibo_hashed_images/";
 
 
-var chartwidth = 3000;
+var chartwidth = 5000;
 var chartheight; // = 960;
 var yHorizon; // = screen.height / 2; //defined when chartheight is
 
@@ -149,7 +149,7 @@ function handleMouse(e) {
 }
 
 function wedgeopacity(opacity) {
-	opacity = (typeof opacity === "undefined") ? "0.3" : opacity;
+	opacity = (typeof opacity == "undefined") ? "0.3" : opacity;
 	return "opacity:" + opacity + ";";
 }
 //define mouseover functions
@@ -191,7 +191,7 @@ function makeparamstring(params) {
 }
 
 function getthiscolor(d, i, scaleTimeForColor) {
-	if(params["colorby"] === "bytime") {
+	if(params["colorby"] == "bytime") {
 		// generate colors by time
 		var thiscolor_bytime = getcolor_bytime(d, i, scaleTimeForColor);
 		return thiscolor_bytime;
@@ -240,14 +240,14 @@ function refreshoptions() {
 function cleanjson(json) {
 
 	var first_started_tracking_at_epoch = d3.min(json, function(d) { return +d.started_tracking_at_epoch });
-	console.log("min_started_tracking_at = " + first_started_tracking_at_epoch);
+//	console.log("min_started_tracking_at = " + first_started_tracking_at_epoch);
 
 
 	// filter for old posts that are going to throw off our time scale
 	json = json.filter(function (d) { 
 		// if the created time is way less (by a threshold) than initial track time, return false
 		if(+d.post_created_at_epoch + threshold_for_created_vs_tracking < first_started_tracking_at_epoch) {
-			console.info("we discarded post " + d.post_id);
+//			console.info("we discarded post " + d.post_id);
 			return false;
 		} else {
 			return true;
@@ -307,8 +307,8 @@ function transformwedgesparkline(d, datatype, mode) {
 	var returnstring = "";
 	//console.log(crossplatformtransform("translate(0px," + y + "px)"));
 	//return crossplatformtransform("translate(0px," + y + "px)");
-	if(mode === "scatter") { thisy = d["scatter_height"]; }
-	if(datatype === "username") {
+	if(mode == "scatter") { thisy = d["scatter_height"]; }
+	if(datatype == "username") {
 		thisx += usernameOffsetX;
 		thisy += usernameOffsetY;
 	} 
@@ -355,7 +355,7 @@ function wedgesparkline(iswedge, d, i, scaleTime) {
 	// ---TRANSLATE to x, y
 	wedgestring =  'M 0 0 l ' + width + ' ' + (height / 2) + ' l 0 -' + height + ' z';
 
-	if (d["post_repost_log"] === "") {
+	if (d["post_repost_log"] == "") {
 		return wedgestring;
 	}
 
@@ -383,7 +383,7 @@ function wedgesparkline(iswedge, d, i, scaleTime) {
 		sparklinestring += 'L ' + (thisX - x).toFixed(2) + ' ' + (thisY - y).toFixed(2) + ' ';
 	}
 
-	if(iswedge === "wedge") {
+	if(iswedge == "wedge") {
 		//mirror this; string goes back to origin
 		for (var j = repostlog.length - 1; j >= 0; j--) {
 			var thisX = scaleTime(repostlog[j]["checked_at"]) + wedgeMinimumX;
@@ -458,7 +458,7 @@ function scatterrandom(min, max, userid, yHorizon) {
 	var horizonavoidance = 200;
 
 	thisy = userid % (yHorizon - horizonavoidance);
-	if(thisy % 2 === 0)
+	if(thisy % 2 == 0)
 		thisy += yHorizon + horizonavoidance;
 
 	return thisy;
@@ -539,27 +539,30 @@ function chart_click(d, i) {
 						return transformwedgesparkline(d, "wedge", "scatter");
 					}
 				}) 
+			d3.selectAll("g.usernames").transition().duration(1000).attr("style", "opacity: 0.6");
 
+/*
 			//TRANSITION USERNAMES
 			d3.selectAll(".username").transition().duration(1000)
 				.attr("style", function(d, i) {
 					var thisx = d["post_created_at_scaled"]; 
 					if(d["user_id"] == thisuserid) { 
-						return wedgeopacity(0) + transformwedgesparkline(d, "username", "horizon");
+						return transformwedgesparkline(d, "username", "horizon");
 						//return crossplatformtransform("translate3d(" + (thisx + usernameOffsetX) + "px, " + yHorizon + "px, 0px)");
 						//return yHorizon;
 					} else { 
-						return wedgeopacity(1.0) + transformwedgesparkline(d, "username", "scatter");
+						return transformwedgesparkline(d, "username", "scatter");
 						//return crossplatformtransform("translate3d(" + (thisx + usernameOffsetX) + "px, " + scatterrandom(0, 1000, d["user_id"], yHorizon) + "px, 0px)"); 
 						//return "fill: #F00FFF;";
 						//return crossplatformtransform("translate3d(0px, 0px, 0px)");
 						//return scatterrandom(0, 1000, d["user_id"], yHorizon);
 					}
 				}) 
-
+*/
 		}
 
 	} else {
+		d3.selectAll("g.usernames").transition().duration(1000).attr("style", "opacity: 0.0");
 
 		// WE CLICKED OUTSIDE - SO COLLAPSE
 		//void global
@@ -573,13 +576,14 @@ function chart_click(d, i) {
 					//return wedgeopacity() + crossplatformtransform("translate3d(" + d["post_created_at_scaled"] + "px, " + yHorizon + "px, 0px)");
 					return transformwedgesparkline(d, "wedge", "horizon");
 			}) 
-
+/*
 		d3.selectAll(".username").transition().duration(1000)
 			.attr("style", function(d, i) {
-					return wedgeopacity(0.0) + transformwedgesparkline(d, "username", "horizon");
+					return transformwedgesparkline(d, "username", "scatter");
+					//return wedgeopacity(0.0) + transformwedgesparkline(d, "username", "horizon");
 					//return crossplatformtransform("translate3d(" + (d["post_created_at_scaled"] + usernameOffsetX) + "px, " + yHorizon + "px, 0px)");
 			}) 
-
+*/
 
 	}
 }

@@ -102,7 +102,6 @@ Some of the research for this investigation was conducted in collaboration with 
 	</div>
 
 	<div class="shadow"></div>
-	<div id="mouseinfo">23pm</div>
 
 </div> <!-- container -->
 
