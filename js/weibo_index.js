@@ -245,6 +245,13 @@ d3.json(datafile_json, function(error, json) {
 	window.onload = window_resize();
 	window.onresize = window_resize;
 
+	$("#infooverlay_inner .info").flowtype({
+		minimum: 200,
+		maximum: 1000,
+		minFont: 2,
+		maxFont: 16,
+		fontRatio : 30
+	});
 
 
 
