@@ -234,32 +234,17 @@ d3.json(datafile_json, function(error, json) {
 		.selectAll("text")
 		.data(data).enter()
 		.append("text")
-//		.attr("x", "300")
-//		.attr("y", "0")
-//		.attr("x", function(d, i) { return scaleTime(d["post_created_at"]); })
 		.attr('style', function(d, i) { return transformwedgesparkline(d, "username", "horizon"); })
-//		.attr("dx", -3) // padding-right
-//		.attr("dy", ".35em") // vertical-align: middle
 		.attr("text-anchor", "end") // text-align: right
 		.attr("name", function(d, i) { return d["post_id"]; })
 		.attr("class", function(d, i) { return "username post-" + d["post_id"] + " user-" + d["user_id"]; })
 		.text(function(d,i) { 
 			elapsedtimeseconds = (d["last_checked_at"].getTime() - d["post_created_at"].getTime()) / 1000; 
-//			return d["user_name"] + ":" + "lifespan: " + lifespanFormat(elapsedtimeseconds);
 			return d["user_name"];
-//			return d["user_name"] + ": " + bar_dateformat(d["post_created_at"]) + "-- lifespan: " + lifespanFormat(elapsedtimeseconds);
 		})
 	  .on("mouseover", barselect_mouseover)
 	  .on("mouseout", barselect_mouseout)
 	  .on("click", barselect_click);
-/*
-postsdiv.selectAll("div").
-		data(data).enter()
-		.append("img")
-		.attr("src", function(d) { return imgdir + d["post_id"] + "." + d["post_original_pic"].split(/[\.]+/).pop(); })
-		.attr("class", "hoverpost resizeme")
-		.attr("id", function(d,i) { return "hoverpost-" + d["post_id"]; });
-*/
 
 var durdiv = d3.select("#durdiv");
 durdiv.selectAll("div")
