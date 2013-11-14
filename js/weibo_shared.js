@@ -143,8 +143,9 @@ function handleMouse(e) {
 
 }
 
-function wedgeopacity() {
-	return "opacity:0.3;"
+function wedgeopacity(opacity) {
+	opacity = (typeof opacity === "undefined") ? "0.3" : opacity;
+	return "opacity:" + opacity + ";";
 }
 //define mouseover functions
 function barselect_mouseover(d, i) {
@@ -185,7 +186,7 @@ function makeparamstring(params) {
 }
 
 function getthiscolor(d, i, scaleTimeForColor) {
-	if(params["colorby"] == "bytime") {
+	if(params["colorby"] === "bytime") {
 		// generate colors by time
 		var thiscolor_bytime = getcolor_bytime(d, i, scaleTimeForColor);
 		return thiscolor_bytime;
@@ -349,7 +350,7 @@ function wedgesparkline(iswedge, d, i, scaleTime) {
 	// ---TRANSLATE to x, y
 	wedgestring =  'M 0 0 l ' + width + ' ' + (height / 2) + ' l 0 -' + height + ' z';
 
-	if (d["post_repost_log"] == "") {
+	if (d["post_repost_log"] === "") {
 		return wedgestring;
 	}
 
@@ -377,7 +378,7 @@ function wedgesparkline(iswedge, d, i, scaleTime) {
 		sparklinestring += 'L ' + (thisX - x).toFixed(2) + ' ' + (thisY - y).toFixed(2) + ' ';
 	}
 
-	if(iswedge == "wedge") {
+	if(iswedge === "wedge") {
 		//mirror this; string goes back to origin
 		for (var j = repostlog.length - 1; j >= 0; j--) {
 			var thisX = scaleTime(repostlog[j]["checked_at"]) + wedgeMinimumX;
@@ -452,7 +453,7 @@ function scatterrandom(min, max, userid, yHorizon) {
 	var horizonavoidance = 200;
 
 	thisy = userid % (yHorizon - horizonavoidance);
-	if(thisy % 2 == 0)
+	if(thisy % 2 === 0)
 		thisy += yHorizon + horizonavoidance;
 
 	return thisy;

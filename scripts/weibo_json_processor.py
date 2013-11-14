@@ -8,7 +8,7 @@ import weibo_module
 import weibo_accesstokens
 import hashlib
 import pprint
-
+import gibberish
 
 def json_process(oldfilename, newfilename):
 

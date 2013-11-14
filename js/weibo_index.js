@@ -145,13 +145,17 @@ d3.json(datafile_json, function(error, json) {
 				returntext += d["user_name"];
 				returntext += ":</div>";
 
+				returntext += "<div class='last_checked_at'>Deleted at ";
+				returntext += "<span>" + created_at_format(d["last_checked_at"]) + "</span>";
+				returntext += "</div>";
+
 				returntext += "<div class='post_created_at'>";
 				returntext += created_at_format(d["post_created_at"]);
 				returntext += "</div>";
 
-				returntext += "<div class='post_text'><span class='text_quote'>\"</span>";
+				returntext += "<div class='post_text'><span class='text_quote'>&ldquo;</span>";
 				returntext += d["post_text"];
-				returntext += "<span class='text_quote'>\"</span></div>";
+				returntext += "<span class='text_quote'>&rdquo;</span></div>";
 				return returntext;
 			})
 
@@ -229,12 +233,13 @@ d3.json(datafile_json, function(error, json) {
 	.on("mouseout", barselect_mouseout) 
 	.on("click", barselect_click);
 */
-	// add text labels
+	// add text labels - usernames
+/*
 	d3.select("#chartdiv").append("g").attr("class", "textlabels")
 		.selectAll("text")
 		.data(data).enter()
 		.append("text")
-		.attr('style', function(d, i) { return transformwedgesparkline(d, "username", "horizon"); })
+		.attr('style', function(d, i) { return wedgeopacity(0) + transformwedgesparkline(d, "username", "scatter"); })
 		.attr("text-anchor", "end") // text-align: right
 		.attr("name", function(d, i) { return d["post_id"]; })
 		.attr("class", function(d, i) { return "username post-" + d["post_id"] + " user-" + d["user_id"]; })
@@ -245,8 +250,8 @@ d3.json(datafile_json, function(error, json) {
 	  .on("mouseover", barselect_mouseover)
 	  .on("mouseout", barselect_mouseout)
 	  .on("click", barselect_click);
-
-var durdiv = d3.select("#durdiv");
+*/
+/*var durdiv = d3.select("#durdiv");
 durdiv.selectAll("div")
 		.data(data)
 		.enter()
@@ -255,7 +260,7 @@ durdiv.selectAll("div")
 		 .attr("class", "duration")
 		 .attr("name", function(d, i) { return i; })
 
-
+*/
 	d3update(0);
 
 	$("body").mousemove(function(e){
@@ -297,7 +302,7 @@ durdiv.selectAll("div")
 	}
 
 	function chart_click(d, i) { 
-		console.log("chart_click");
+//		console.log("chart_click");
 		if ($(".hover").length ) {
 
 			// WE CLICKED ON A WEDGE - SO SPLIT
@@ -339,11 +344,11 @@ durdiv.selectAll("div")
 					.attr("style", function(d, i) {
 						var thisx = d["post_created_at_scaled"]; 
 						if(d["user_id"] == thisuserid) { 
-							return transformwedgesparkline(d, "username", "horizon");
+							return wedgeopacity(0) + transformwedgesparkline(d, "username", "horizon");
 							//return crossplatformtransform("translate3d(" + (thisx + usernameOffsetX) + "px, " + yHorizon + "px, 0px)");
 							//return yHorizon;
 						} else { 
-							return transformwedgesparkline(d, "username", "scatter");
+							return wedgeopacity(1.0) + transformwedgesparkline(d, "username", "scatter");
 							//return crossplatformtransform("translate3d(" + (thisx + usernameOffsetX) + "px, " + scatterrandom(0, 1000, d["user_id"], yHorizon) + "px, 0px)"); 
 							//return "fill: #F00FFF;";
 							//return crossplatformtransform("translate3d(0px, 0px, 0px)");
@@ -359,16 +364,16 @@ durdiv.selectAll("div")
 			//void global
 			clickeduserid = null;
 	
-			console.log("clicked outside");
+//			console.log("clicked outside");
 			d3.selectAll("path.wedge").transition().duration(1000)
 				.attr("style", function(d, i) {
 						//return wedgeopacity() + crossplatformtransform("translate3d(" + d["post_created_at_scaled"] + "px, " + yHorizon + "px, 0px)");
 						return transformwedgesparkline(d, "wedge", "horizon");
 				}) 
 	
-			d3.selectAll("text.username").transition().duration(1000)
+			d3.selectAll(".username").transition().duration(1000)
 				.attr("style", function(d, i) {
-						return transformwedgesparkline(d, "username", "horizon");
+						return wedgeopacity(0.0) + transformwedgesparkline(d, "username", "horizon");
 						//return crossplatformtransform("translate3d(" + (d["post_created_at_scaled"] + usernameOffsetX) + "px, " + yHorizon + "px, 0px)");
 				}) 
 

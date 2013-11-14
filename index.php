@@ -3,6 +3,7 @@
 <head>
 <title>Jumping The Great Firewall v9.999</title>
 <link href='http://fonts.googleapis.com/css?family=Crete+Round' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
 <!-- <link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Alef' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'> -->
@@ -44,74 +45,59 @@ function destroyLessCache(pathToCss) { // e.g. '/css/' or '/stylesheets/'
 }
 $(document).ready(function() {
 	//	destroyLessCache();
+	$("#infobox").click(function() {
+		$("#infooverlay, .shadow").fadeToggle(300);
+	});
+	$("#infooverlay, .shadow").click(function() {
+		$("#infooverlay, .shadow").fadeToggle(300);
+	});
 
-	$('input').on('ifChecked', function(event){
-		if(event.target.name == "graphstyle") {
-			if(event.target.id == "wedge") params["graphstyle"] = "wedge"; 
-			else if(event.target.id == "bar") params["graphstyle"] = "bar"; 
-			else params["graphstyle"] = "sparkline"; 
-			history.pushState(null, null, "?" + makeparamstring(params));
-		}
-		d3update(1000);
-	}); 
-	$('input').iCheck({
-		checkboxClass: 'icheckbox_flat',
-		radioClass: 'iradio_flat'
-});
-
+	less.watch();
 });
 </script>
 
 <div id="container">
-	<div id="chartdiv"></div>
-	<!--<div id="chartlegend"></div> -->
-	<div id="durdiv"></div>
-	<div id="postsdiv">
-	</div>
-
 	<div id="loadingsplash">
 		<img src="images/loading.gif">
 	</div>
 
+	<div id="chartdiv"></div>
+	<div id="postsdiv"></div>
+
+
 	<div id="infobox">
 		<div id="infobox-inner">
 			<div class="logo">
-			   Jumping The Great Firewall (alpha)
-			</div><br>
-			
-			<div class="options">
-				<div class="one_option">
-					<input type="radio" name="graphstyle" id="bar" checked>
-					<label for="bar">Bar</label>
-				</div>
-				<div class="one_option">
-					<input type="radio" name="graphstyle" id="wedge" checked>
-					<label for="wedge">Wedge</label>
-				</div>
-				<div class="one_option">
-					<input type="radio" name="graphstyle" id="sparkline" checked>
-					<label for="sparkline">Sparkline</label>
-				</div>
+			   Jumping The Great Firewall
 			</div>
-			<div class="info">
-<i>In collaboration with Penn Voices, and Mark Hansen, Brown Institute, School of Journalism</i>
-<br><br>
-<b>Project Director</b><br>
-Laura Kurgan<br>
-<b>Research Associate and Data Visualization<br></b>
-Dan Taeyoung Lee<br>
-<b>Research Associate, School of Journalism<br></b>
-Yi Du
-<br><br>
-This project is an attempt at the visualization of new phenomenon, which can be called free expression in China. The title, .Jumping the Great Firewall. derives from something that already is happening in China by the users of Weibo a Chinese, Twitter-like microblog. 
-<br><br>
-As we have all read on media around the world, The Internet in China is policed by something known as the Great Firewall. It is a name for a human and technological program that keeps unacceptable or .sensitive. content (words and articles about the Tiananmen Square massacre, for example), off the Chinese Internet and from the computers of those who could, potentially, create a movement inside the country. It is a system of control. Twitter and Facebook are therefore, blocked, as are many western news outlets and human rights web sites; web searches are seriously curtailed; sensitive words are blocked; and content is often removed. Those in China who wish to access blocked web sites, must do so via a Virtual Private Network, (VPN). This is known as jumping the Great Firewall.
-<br><br>
-There is a significant difference between Weibo, and Twitter: you can insert images directly into your post, without links. Images are a lot less searchable than text, which implies that content can spread more widely before it is detected. Those who know this, now take screenshots of controversial posts before they.re removed and re-post them. 
+			<div class="teaser">
+				More
 			</div>
 		</div>
 	</div>
+
+	<div id="infooverlay">
+		<div id="infooverlay_inner">
+			<div class="info">
+
+<div class="title">Jumping the Great Firewall</div>
+<div class="description">
+<p>This project is an attempt at the visualization of a relatively new phenomenon: online free expression in China. It examines some innovative strategies employed by users of Weibo, an extremely popular Twitter-like micro-blogging platform.</p>
+
+<p>Use of the Internet in China is policed -- watched over, censored, and punished -- by a human and technological program that has been nicknamed 'The Great Firewall'. The aim is to keep politically unacceptable or "sensitive" content (words and articles about the Tiananmen Square massacre, for example) invisible to Chinese Internet users. Twitter and Facebook are largely blocked, as are many news outlets and human rights web sites; web searches are seriously curtailed; sensitive words are blocked; and online postings and other content is routinely removed, blog posting removed. For many Chinese users who wish to access blocked web sites, the only option is a Virtual Private Network (VPN), a virtual leap over the Great Firewall.</p>
+
+<p>We examined a different strategy that has emerged in Weibo blogging, where users can insert images directly into their postings, without links. Images are much more difficult for automated search programs to analyze, which allows image-based content to spread more widely before it is detected and removed. Taking advantage of this, some users now turning writing into images, taking screenshots of their own and others' controversial posts before they're removed, then posting and re-posting them. Visualized here are many such deleted posts from September 8th to November 13th, in 2013.</p>
 </div>
+<div class="credits">
+Some of the research for this investigation was conducted in collaboration with a team at the <a href="http://www.spatialinformationdesignlab.org/">Spatial Information Design Lab</a> and the <a href="http://brown.stanford.edu/">Brown Institute for Media Innovation</a>, at Columbia University. The Columbia project, called "Jumping the Great Firewall", uses a similar methodology and was pursued in partnership with the <a href="http://www.pen.org/">Pen American Center</a> and <a href="http://thomsonreuters.com/">Thomson Reuters</a>.
+</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="shadow"></div>
+
+</div> <!-- container -->
 
 
 <!-- Start of StatCounter Code for Default Guide -->

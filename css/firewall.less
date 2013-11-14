@@ -1,14 +1,19 @@
-@gray-light: #333; 
+@gray-more-light: #DDD; 
+@gray-light: #AAA; 
 @gray-dark: #777;
-@light-text: @gray-light;
+@gray-more-dark: #333;
+@light-text: @gray-more-light;
 @bar-text: @gray-dark;
 @bar-text-sameuser: #FF0;
 @pp-red: #FF2F2F;
-@hover-fill: @pp-red;
+@theme-color: @pp-red;
+@hover-fill: @theme-color;
+@off-white: #EEE;
 
 body {
 	background-color: #222;
 	color: @light-text;
+	font-family: 'Crete Round', sans-serif;
 }
 
 
@@ -21,6 +26,9 @@ a:hover{
 	color: #FFF;
 }
 
+path.wedge {
+	cursor:pointer;
+}
 #container {
 /*	width: 1024px; */
 }
@@ -59,11 +67,12 @@ rect {
 	opacity: 0;
 	position: absolute;
 	pointer-events: none;
+	color: @gray-more-dark;
 }
 
 .postdiv.hover {
 	display: block !important;
-	fill: @pp-red !important; 
+	fill: @theme-color !important; 
 }
 
 .postdiv .section_info, .postdiv .section_image {
@@ -74,9 +83,9 @@ rect {
 }
 
 .postdiv .section_info { 
-	background-color: white;
-	padding: 5px;
-	border-top: 5px solid @pp-red;
+	background-color: @off-white;
+	padding: 8px;
+	border-top: 5px solid @theme-color;
 	
 }
 
@@ -94,18 +103,29 @@ rect {
 
 .postdiv .postinfo .user_name {
 	float: left;
-	color: @pp-red;
+	color: @theme-color;
 }
 
 
+.postdiv .postinfo .last_checked_at {
+	text-align: right;
+	font-size: 0.7em;
+	padding-top: 0.35em;
+}
+
+.postdiv .postinfo .last_checked_at span {
+	color: @theme-color;
+}
+
 .postdiv .postinfo .post_created_at {
+	display: none;
 	text-align: right;
 	font-size: 0.7em;
 	padding-top: 0.35em;
 }
 
 .postdiv .text_quote {
-  color: @pp-red;
+  color: @theme-color;
   font-size: 1.6em;
   line-height: 0.1em;
   margin-right: 0.1em;
@@ -116,7 +136,7 @@ rect {
 .postdiv .postinfo .post_text {
 	margin: 10px 5px;
 	padding-left: 5px;
-	border-left: 1px dotted @pp-red;
+	border-left: 1px dotted @theme-color;
 	}
 
 .postdiv .userinfo {
@@ -140,11 +160,11 @@ rect {
 .postdiv .userinfo span {
 	display: block;
 	font-weight: bold;
-	color: @pp-red;
+	color: @theme-color;
 }
 
 .postdiv .post_image {
-	border: 1px dotted @pp-red;
+	border: 1px dotted @theme-color;
 }
 	
 
@@ -181,7 +201,7 @@ rect {
 	background-color: transparent;
 	padding: 10px;
 
-	font-family: 'PT Sans', sans-serif;
+	font-family: 'Crete Round', sans-serif;
 	text-align: center;
 	font-size: 3em;
 	color: #333;
@@ -190,84 +210,105 @@ rect {
 /* infobox */
 
 #infobox {
-	display: none !important;
-	opacity: 0.5;
-	font-family: 'PT Sans', sans-serif;
+	font-family: 'Crete Round', sans-serif;
 	position: fixed;
 	left: 20px;
 	top: 20px;
-	z-index: 10;
-	width: 250px;
-	background-color: #EEE;
-	text-align: left;
-	padding: 5px;
-	font-size: 0.6em;
-	color: #333;
+	z-index: 20;
 }
 #infobox-inner {
 	padding: 10px;
-	border: 1px dotted #888;
+	position: relative;
 }
 #infobox .logo {
+	cursor:pointer;
+	background-color: @theme-color;
+	width: 110px;
+	height: 110px;
 	font-weight: bold;
-	font-size: 1.4em;
-}
-#infobox .parameters {
-	margin-bottom: 20px;
-}
-#infobox .parameters div {
-}
-#infobox .info {
-	margin-top: 10px;
-	margin-bottom: 20px;
-}
-#infobox .locinfo {
-	font-size: 0.65em;
-}
-
-.options {
-	padding: 20px;
-	overflow: hidden;
-}
-
-.one_option {
-	overflow: hidden;
-	margin-bottom: 5px;
-	width: 90px;
+	padding: 5px;
+	font-size: 1.25em;
+	color: @gray-more-dark;
 	float: left;
+	text-align: right;
+}
+#infobox .teaser {
+	display: none;
+	cursor: pointer;
+	padding: 5px;
+	background-color: @gray-more-dark;
+	color: @light-text;
+	height: 110px;
+	width: 220px;
+	margin-left: 130px;
 }
 
-.one_option label {
-	float: left;
-	padding-top: 4px;
-	display: block;
-}
-
-.one_option .iradio_flat {
-	float: left;
-	margin-right: 5px;
-}
-
-
-h1, h2, h3, .title {
-	font-family: 'PT Sans', sans-serif;
-}
-
-
-
-
-
-
-
-.sparkline.hover {
-//	opacity: 1 !important;
-	}
-/*
-.textlabels {
-	position: absolute;
+#infooverlay {
+	position: fixed;
 	top: 0px;
 	left: 0px;
-} */
+	z-index: 10;
+	width: 100%;
+	height: 100%;
+}
+
+#infooverlay #infooverlay_inner {
+	position: relative;
+	z-index: 10;
+	overflow: auto;
+	padding: 100px; 
+	margin-top: 100px;
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 1000px;
+	color: white;
+	font-family: 'Open Sans', Helvetica, arial, sans-serif;
+	font-weight: 300;
+}
+
+#infooverlay_inner .title {
+	border-top: 5px solid @theme-color;
+	padding-top: 10px;
+	font-size: 1.5em;
+	font-family: 'Crete Round', sans-serif;
+}
+
+#infooverlay_inner .description {
+	font-size: 1em;
+	line-height: 1.5em;
+}
+
+#infooverlay_inner .credits {
+	border-top: 2px dotted @theme-color;
+	padding-top: 20px;
+	font-size: 1em;
+	line-height: 1.5em;
+}
+
+
+.shadow {
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	opacity: 0.7;
+	background-color: black;
+	z-index: 5;
+}
+
+#infooverlay .info {
+}
+
+h1, h2, h3, .title {
+}
+
+
+
+
+
+
+
 .username {
 	position: absolute;
 	top: 0px;
