@@ -37,14 +37,9 @@ $(document).ready(function() {
 </script>
 
 <div id="container">
-	<div id="chartdiv"></div>
-	<div id="postsdiv"></div>
 
 	<div id="infobox">
 		<div id="infobox-inner">
-			<div class="mobilewarning">
-			   Jumping The Great Firewall
-			</div>
 			<div class="logo">
 			   Jumping The Great Firewall
 			</div>
@@ -56,6 +51,9 @@ $(document).ready(function() {
 
 	<div id="infooverlay">
 		<div id="infooverlay_inner">
+			<div class="mobilewarning">
+			   The full visualization is not viewable on mobile devices. Please visit this page on a desktop browser.
+			</div>
 			<div class="info">
 
 <div class="title">Jumping the Great Firewall</div>
