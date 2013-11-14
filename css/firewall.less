@@ -9,11 +9,19 @@
 @theme-color: @pp-red;
 @hover-fill: @theme-color;
 @off-white: #EEE;
+@sameuser-hover-opacity: 0.8;
+@background-gray: #111;
+
+html {
+	cursor: crosshair;
+}
 
 body {
-	background-color: #222;
+	background-color: @background-gray;
 	color: @light-text;
 	font-family: 'Crete Round', sans-serif;
+	margin: 0px;
+	padding: 0px;
 }
 
 
@@ -29,15 +37,20 @@ a:hover{
 path.wedge {
 	cursor:pointer;
 }
+
+path.wedge.sameuser-hover {
+	fill: @theme-color !important;
+	opacity: @sameuser-hover-opacity !important;
+}
+
 #container {
-/*	width: 1024px; */
+	width: 100%;
+	height: 100%;
 }
 
 #chartdiv {
-//	margin-top: 30px;
-//	margin-left: 250px;
-	width: 960px;
-	height: 960px;
+	position: absolute;
+	top: 400px;
 }
 
 #chartdiv text {
@@ -60,6 +73,11 @@ rect {
 }
 	
 
+#postsdiv {
+	position: absolute;
+	top: 0px;
+	left:0px;
+}
 
 .postdiv {
     font-family: Helvetica, Arial, sans-serif;
@@ -68,6 +86,8 @@ rect {
 	position: absolute;
 	pointer-events: none;
 	color: @gray-more-dark;
+	top: 0px;
+	left:0px;
 }
 
 .postdiv.hover {
@@ -104,6 +124,10 @@ rect {
 .postdiv .postinfo .user_name {
 	float: left;
 	color: @theme-color;
+}
+
+.postdiv .postinfo .user_name .pseudonym {
+	font-size: 0.8em;
 }
 
 
@@ -297,6 +321,20 @@ rect {
 	z-index: 5;
 }
 
+#mouseinfo {
+	pointer-events: none;
+	position: absolute;
+	width: 80px;
+	margin-left: -105px;
+	
+	height: 20px;
+	text-align: right;
+	font-family: 'Open Sans', Helvetica, arial, sans-serif;
+	font-size: 0.7em;
+	color: @gray-light;
+
+}
+
 #infooverlay .info {
 }
 
@@ -314,8 +352,9 @@ h1, h2, h3, .title {
 	top: 0px;
 	left: 0px;
 }
+
 .same-user-hover {
-	fill: @bar-text-sameuser !important; 
+	fill: @theme-color !important; 
 }
 
 #morelink {

@@ -30,10 +30,10 @@ d3.json(datafile_json, function(error, json) {
 
 	// get chart height
 	//var chartheight = ((barheight + bargap) * data.length) + chartheight_padding;
-	var chartheight = $(window).height();
+	chartheight = $(document).height() - 300;
+	yHorizon = chartheight / 2;
 	//screen.height; //((barheight + bargap) * data.length) + chartheight_padding;
 
-//	var chartlegend = d3.select("#chartlegend");
 
 	// create chart, set dimensions based on # of deleted posts
 	var chart = d3.select("#chartdiv")
@@ -52,7 +52,7 @@ d3.json(datafile_json, function(error, json) {
 	var scaleTime = d3.time.scale()
 		// domain is min max of time
 		.domain([mindate, maxdate])
-		.range([chartpadding, chartwidth - chartpadding])
+		.range([chartxpadding, chartwidth - chartxpadding])
 
 	// store the scaled X values in data - this is convenient	
 	for (var i = 0; i < data.length; i++) {
@@ -70,14 +70,14 @@ d3.json(datafile_json, function(error, json) {
 		.domain([mindate, maxdate])
 		.range([colorMin, colorMax])
 
-	// let's specify x-axis ticks
+	// let's specify x-axis ticks - not drawing yet
 	var axisTime = d3.svg.axis()
 		.scale(scaleTime)
 		.orient("top")
-		.ticks(d3.time.hour, 12)
+		.ticks(d3.time.day, 1)
 		.tickFormat(d3.time.format("%m-%d %H:%m"));
 
-	// add x-axis ticks
+	// add x-axis time lines
 	chart.append("g").attr("class","ticklines")
 		.selectAll("line")
 		.data(scaleTime.ticks(d3.time.day, tickinterval)).enter()
@@ -91,27 +91,30 @@ d3.json(datafile_json, function(error, json) {
 
 	// add horizon line
 	chart.append("g").attr("class","horizonlines")
-		.selectAll("line")
+		//.selectAll("line")
 		.append("line")
 		.attr("class", "horizonline")
 		.attr("x1", scaleTime.range()[0])
 		.attr("x2", scaleTime.range()[1])
 		.attr("y1", yHorizon)
 		.attr("y2", yHorizon)
-		.style("stroke", "pink");
+		.style("stroke", tickstrokecolor);
 
-	// Add the x-axis labels
+/*
+	// Add the x-axis time labels
 	chart.append("g").attr("class", "xaxislabels")
-		.attr("transform", "translate3d(0px," + (chartheight - 1) + ", 0)")
-		.call(axisTime)
+      .attr("transform", "translate(0," + chartheight + ")")
+
+//		.attr("transform", "translate3d(0px," + (chartheight - 1) + ", 0)")
+		.call(axisTime) */
 		//rotate the text, too
-		.selectAll("text")  
+/*		.selectAll("text")  
             .style("text-anchor", "start")
             .attr("dx", "5em")
             .attr("dy", "4em")
             .attr("transform", function(d) {
                 return "rotate(-45)" 
-                });
+                });*/
 
 	// let's select the postsdiv, and add our images to it that will hover
 	var postsdiv = d3.select("#postsdiv");
@@ -143,7 +146,7 @@ d3.json(datafile_json, function(error, json) {
 				returntext = "";
 				returntext += "<div class='user_name'>";
 				returntext += d["user_name"];
-				returntext += ":</div>";
+				returntext += " <span class='pseudonym'>(pseudonym)</span>:</div>";
 
 				returntext += "<div class='last_checked_at'>Deleted at ";
 				returntext += "<span>" + created_at_format(d["last_checked_at"]) + "</span>";
@@ -203,36 +206,13 @@ d3.json(datafile_json, function(error, json) {
 		.attr("class", function(d, i) { return "wedge post-" + d["post_id"] + " user-" + d["user_id"]; })
 		.attr("name", function(d, i) { return d["post_id"]; })
 	.attr("stroke-width", 0.75)
-//		.attr("fill", "none")
-//		.attr("stroke", function(d, i) { return getthiscolor(d, i, scaleTimeForColor); })
-		.attr("fill", function(d, i) { return getthiscolor(d, i, scaleTimeForColor); })
+		.attr("stroke", function(d, i) { return theme_color; })
+	//	.attr("fill", function(d, i) { return getthiscolor(d, i, scaleTimeForColor); })
+		//.attr("fill", "none")
 	.on("mouseover", barselect_mouseover)
 	.on("mouseout", barselect_mouseout) 
 	.on("click", barselect_click);
 
-	/*
-///SPARKLINES
-// let's select the chart and add our sparklines to it	
-	chart.selectAll(".sparkline")
-		// plug in our data
-		.data(data).enter()
-		//and now:
-		.append("path")
-		.attr('d', function(d, i) { return wedgesparkline("sparkline", d, i, scaleTime); })
-		.attr('transform', function(d, i) { return transformwedgesparkline(d, i, scaleTime); })
-		.style('opacity', .5)
-		.attr("class", function(d, i) { return "sparkline post-" + d["post_id"] + " user-" + d["user_id"]; })
-		.attr("name", function(d, i) { return d["post_id"]; })
-		.attr("stroke-width", 0.75)
-		.attr("fill", "none")
-		.attr("stroke", function(d, i) { return "#FF00FF"; return getthiscolor(d, i, scaleTimeForColor); })
-		.attr("style", function () {
-			return "-webkit-transform: perspective(800) scale(1) scale3d(1, 1, 1) rotate3d(1, 0, 0, 0deg) translate3d(0, 0, 0);";
-		})
-	.on("mouseover", barselect_mouseover)
-	.on("mouseout", barselect_mouseout) 
-	.on("click", barselect_click);
-*/
 	// add text labels - usernames
 /*
 	d3.select("#chartdiv").append("g").attr("class", "textlabels")
@@ -263,7 +243,12 @@ durdiv.selectAll("div")
 */
 	d3update(0);
 
-	$("body").mousemove(function(e){
+
+// scroll tracking
+	//$("body").mousemove(function(e){
+	$(document).mousemove(function(e){
+		  $('#mouseinfo').css({'top': e.pageY+ 0, 'left': e.pageX + 0})
+			.html(created_at_format(scaleTime.invert(e.pageX)));
 		  $('.postdiv.hover').css({'top': e.pageY+ 0, 'left': e.pageX + 10});
 	});
 
@@ -281,108 +266,4 @@ durdiv.selectAll("div")
 //END
 
 
-// used to switch between view modes with the menu
-	function d3update(delay) {
-		/*
-		if(params["graphstyle"] == "bar") {
-			d3.selectAll("path.sparkline").transition().duration(delay).style('opacity', 0);
-			d3.selectAll("path.wedge").transition().duration(delay).style('opacity', 0);
-			d3.selectAll("rect.bar").transition().duration(delay).style('opacity', 1);
-		} else {
-			if(params["graphstyle"] == "wedge") {
-				d3.selectAll("path.sparkline").transition().duration(delay).style('opacity', 0);
-				d3.selectAll("path.wedge").transition().duration(delay).style('opacity', 1);
-				d3.selectAll("rect.bar").transition().duration(delay).style('opacity', 0);
-			} else {
-				d3.selectAll("path.sparkline").transition().duration(delay).style('opacity', 1);
-				d3.selectAll("path.wedge").transition().duration(delay).style('opacity', 0);
-				d3.selectAll("rect.bar").transition().duration(delay).style('opacity', 0);
-			}
-		} */
-	}
-
-	function chart_click(d, i) { 
-//		console.log("chart_click");
-		if ($(".hover").length ) {
-
-			// WE CLICKED ON A WEDGE - SO SPLIT
-			// this is messy - but get userid from classes
-			var thisuserid = getuseridfromclasses($(".hover").attr("class"));
-
-			if(thisuserid == clickeduserid) {
-
-				//we clicked on OLD wedge
-				//
-				//so grab post id
-				var thispostid = getpostidfromclasses($(".hover").attr("class"));
-
-				// and send us there
-//				console.log('window.location = "readpost.php?post_id="' + thispostid);
-//				window.location = "readpost.php?post_id=" + thispostid;
-
-			} else {
-
-				//we clicked on NEW wedge
-				//store global so we know when we clicked on existing
-				clickeduserid = thisuserid;
-
-				//TRANSITION WEDGES
-				d3.selectAll("path.wedge").transition().duration(1000)
-					.attr("style", function(d, i) {
-						//get x, since wedges are all oriented at 0, 0
-						var thisx = d["post_created_at_scaled"]; 
-						if(d["user_id"] == thisuserid) { 
-							//return wedgeopacity() + crossplatformtransform("translate3d(" + thisx + "px, " + yHorizon + "px, 0px)");
-							return transformwedgesparkline(d, "wedge", "horizon");
-						} else { 
-							return transformwedgesparkline(d, "wedge", "scatter");
-						}
-					}) 
-
-				//TRANSITION USERNAMES
-				d3.selectAll(".username").transition().duration(1000)
-					.attr("style", function(d, i) {
-						var thisx = d["post_created_at_scaled"]; 
-						if(d["user_id"] == thisuserid) { 
-							return wedgeopacity(0) + transformwedgesparkline(d, "username", "horizon");
-							//return crossplatformtransform("translate3d(" + (thisx + usernameOffsetX) + "px, " + yHorizon + "px, 0px)");
-							//return yHorizon;
-						} else { 
-							return wedgeopacity(1.0) + transformwedgesparkline(d, "username", "scatter");
-							//return crossplatformtransform("translate3d(" + (thisx + usernameOffsetX) + "px, " + scatterrandom(0, 1000, d["user_id"], yHorizon) + "px, 0px)"); 
-							//return "fill: #F00FFF;";
-							//return crossplatformtransform("translate3d(0px, 0px, 0px)");
-							//return scatterrandom(0, 1000, d["user_id"], yHorizon);
-						}
-					}) 
-
-			}
-
-		} else {
-
-			// WE CLICKED OUTSIDE - SO COLLAPSE
-			//void global
-			clickeduserid = null;
-	
-//			console.log("clicked outside");
-			d3.selectAll("path.wedge").transition().duration(1000)
-				.attr("style", function(d, i) {
-						//return wedgeopacity() + crossplatformtransform("translate3d(" + d["post_created_at_scaled"] + "px, " + yHorizon + "px, 0px)");
-						return transformwedgesparkline(d, "wedge", "horizon");
-				}) 
-	
-			d3.selectAll(".username").transition().duration(1000)
-				.attr("style", function(d, i) {
-						return wedgeopacity(0.0) + transformwedgesparkline(d, "username", "horizon");
-						//return crossplatformtransform("translate3d(" + (d["post_created_at_scaled"] + usernameOffsetX) + "px, " + yHorizon + "px, 0px)");
-				}) 
-
-
-		}
-	}
-
-// define click function
-function barselect_click(d, i) {
-	return;
-}
 

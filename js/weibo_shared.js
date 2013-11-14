@@ -16,12 +16,12 @@ var datastartindex = 0;
 var imgdir = "images/weibo_hashed_images/";
 
 
-var chartwidth = 2000;
-//var chartheight = 960;
-var yHorizon = screen.height / 2;
+var chartwidth = 3000;
+var chartheight; // = 960;
+var yHorizon; // = screen.height / 2; //defined when chartheight is
 
 var chartheight_padding = 80;
-var chartpadding=100;
+var chartxpadding=100;
 var barheight = 10;
 var heightscale = 10; // reposts per pixel
 var bargap = 1;
@@ -30,7 +30,7 @@ var timepadding = 3600; //one hour
 var colorMin = 50;
 var colorMax = 220;
 var randomTimeRange= 20;
-var tickstrokecolor = "#444";
+var tickstrokecolor = "#222";
 var thisurl = document.URL;
 var baseurl=thisurl.substring(0,thisurl.lastIndexOf("/"));
 
@@ -43,7 +43,12 @@ var params = "";
 var usernameOffsetX = 200;
 var usernameOffsetY = 20;
 
+var theme_color= "#FF2F2F";
 
+
+/**************/
+/**************/
+/**************/
 
 function pad (str, max) {
   str = str.toString();
@@ -211,7 +216,7 @@ function setoptions(params) {
 }
 
 function cleanparams(params) {
-
+/*
 	if(!("labels" in params)) {
 		params["labels"] = "true";
 	} else if(params["labels"] != "true") params["labels"] = "false";
@@ -225,7 +230,7 @@ function cleanparams(params) {
 	} 
 
 	history.replaceState(null, null, "?" + makeparamstring(params));
-	setoptions(params);
+	setoptions(params);*/
 	return params;
 }
 
@@ -475,4 +480,112 @@ function getpostidfromclasses(hoverclasses) {
 }
 
 
+// used to switch between view modes with the menu
+function d3update(delay) {
+	/*
+	if(params["graphstyle"] == "bar") {
+		d3.selectAll("path.sparkline").transition().duration(delay).style('opacity', 0);
+		d3.selectAll("path.wedge").transition().duration(delay).style('opacity', 0);
+		d3.selectAll("rect.bar").transition().duration(delay).style('opacity', 1);
+	} else {
+		if(params["graphstyle"] == "wedge") {
+			d3.selectAll("path.sparkline").transition().duration(delay).style('opacity', 0);
+			d3.selectAll("path.wedge").transition().duration(delay).style('opacity', 1);
+			d3.selectAll("rect.bar").transition().duration(delay).style('opacity', 0);
+		} else {
+			d3.selectAll("path.sparkline").transition().duration(delay).style('opacity', 1);
+			d3.selectAll("path.wedge").transition().duration(delay).style('opacity', 0);
+			d3.selectAll("rect.bar").transition().duration(delay).style('opacity', 0);
+		}
+	} */
+}
+
+function chart_click(d, i) { 
+//		console.log("chart_click");
+	if ($(".hover").length ) {
+
+		// WE CLICKED ON A WEDGE - SO SPLIT
+		// this is messy - but get userid from classes
+		var thisuserid = getuseridfromclasses($(".hover").attr("class"));
+
+		if(thisuserid == clickeduserid) {
+
+			//we clicked on OLD wedge
+			//
+			//so grab post id
+			var thispostid = getpostidfromclasses($(".hover").attr("class"));
+
+			// and send us there
+//				console.log('window.location = "readpost.php?post_id="' + thispostid);
+//				window.location = "readpost.php?post_id=" + thispostid;
+
+		} else {
+
+			//we clicked on NEW wedge
+			//store global so we know when we clicked on existing
+			clickeduserid = thisuserid;
+
+			//TRANSITION WEDGES
+			d3.selectAll("path.wedge")
+				.classed("sameuser-hover", function(d, i) { return(d["user_id"] == thisuserid); })
+				.transition().duration(1000)
+				.attr("style", function(d, i) {
+					//get x, since wedges are all oriented at 0, 0
+					var thisx = d["post_created_at_scaled"]; 
+					if(d["user_id"] == thisuserid) { 
+						//return wedgeopacity() + crossplatformtransform("translate3d(" + thisx + "px, " + yHorizon + "px, 0px)");
+						return transformwedgesparkline(d, "wedge", "horizon");
+					} else { 
+						return transformwedgesparkline(d, "wedge", "scatter");
+					}
+				}) 
+
+			//TRANSITION USERNAMES
+			d3.selectAll(".username").transition().duration(1000)
+				.attr("style", function(d, i) {
+					var thisx = d["post_created_at_scaled"]; 
+					if(d["user_id"] == thisuserid) { 
+						return wedgeopacity(0) + transformwedgesparkline(d, "username", "horizon");
+						//return crossplatformtransform("translate3d(" + (thisx + usernameOffsetX) + "px, " + yHorizon + "px, 0px)");
+						//return yHorizon;
+					} else { 
+						return wedgeopacity(1.0) + transformwedgesparkline(d, "username", "scatter");
+						//return crossplatformtransform("translate3d(" + (thisx + usernameOffsetX) + "px, " + scatterrandom(0, 1000, d["user_id"], yHorizon) + "px, 0px)"); 
+						//return "fill: #F00FFF;";
+						//return crossplatformtransform("translate3d(0px, 0px, 0px)");
+						//return scatterrandom(0, 1000, d["user_id"], yHorizon);
+					}
+				}) 
+
+		}
+
+	} else {
+
+		// WE CLICKED OUTSIDE - SO COLLAPSE
+		//void global
+		clickeduserid = null;
+
+//			console.log("clicked outside");
+		d3.selectAll("path.wedge")
+			.classed("sameuser-hover", function(d, i) { return(d["user_id"] == thisuserid); })
+			.transition().duration(1000)
+			.attr("style", function(d, i) {
+					//return wedgeopacity() + crossplatformtransform("translate3d(" + d["post_created_at_scaled"] + "px, " + yHorizon + "px, 0px)");
+					return transformwedgesparkline(d, "wedge", "horizon");
+			}) 
+
+		d3.selectAll(".username").transition().duration(1000)
+			.attr("style", function(d, i) {
+					return wedgeopacity(0.0) + transformwedgesparkline(d, "username", "horizon");
+					//return crossplatformtransform("translate3d(" + (d["post_created_at_scaled"] + usernameOffsetX) + "px, " + yHorizon + "px, 0px)");
+			}) 
+
+
+	}
+}
+
+// define click function
+function barselect_click(d, i) {
+	return;
+}
 
