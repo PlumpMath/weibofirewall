@@ -30,7 +30,7 @@ d3.json(datafile_json, function(error, json) {
 
 	// get chart height
 	//var chartheight = ((barheight + bargap) * data.length) + chartheight_padding;
-	chartheight = $(document).height() - 300;
+	chartheight = $(document).height() + 300;
 	yHorizon = chartheight / 2;
 	//screen.height; //((barheight + bargap) * data.length) + chartheight_padding;
 
@@ -231,26 +231,19 @@ d3.json(datafile_json, function(error, json) {
 	  .on("mouseout", barselect_mouseout)
 	  .on("click", barselect_click);
 */
-/*var durdiv = d3.select("#durdiv");
-durdiv.selectAll("div")
-		.data(data)
-		.enter()
-		.append("div")
-		.text(function(d) { return rehumanize(moment.duration(maxdate - d["post_created_at"], 'seconds')); })
-		 .attr("class", "duration")
-		 .attr("name", function(d, i) { return i; })
 
-*/
 	d3update(0);
 
 
 // scroll tracking
-	//$("body").mousemove(function(e){
 	$(document).mousemove(function(e){
 		  $('#mouseinfo').css({'top': e.pageY+ 0, 'left': e.pageX + 0})
 			.html(created_at_format(scaleTime.invert(e.pageX)));
 		  $('.postdiv.hover').css({'top': e.pageY+ 0, 'left': e.pageX + 10});
 	});
+	// this is to vertically center chartdiv
+	window.onload = window_resize();
+	window.onresize = window_resize;
 
 
 

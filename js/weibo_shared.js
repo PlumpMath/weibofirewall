@@ -589,3 +589,8 @@ function barselect_click(d, i) {
 	return;
 }
 
+function window_resize() {
+	windowheight = $(window).height();
+	// this is to vertically center chartdiv
+	$("#chartdiv").css("top", ((windowheight / 2) - (chartheight / 2)) + "px");
+}
