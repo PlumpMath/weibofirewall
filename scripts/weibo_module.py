@@ -597,6 +597,7 @@ def obfuscate_hashmod(data, salt, modnum=10000):
 
 ## obfuscates username
 def obfuscate_username(data, salt):
+#	thishash = obfuscate_hashmod(data, salt, 10000)
 	return "ANON"
 
 

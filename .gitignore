@@ -1,3 +1,6 @@
 *.pyc
 weibo_images
 *.swp
+weibo_settings.py
+weibo_accesstokens.py
+*gitignore*

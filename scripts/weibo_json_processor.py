@@ -9,6 +9,7 @@ import weibo_accesstokens
 import hashlib
 import pprint
 import gibberish
+import chinese_name_generator
 import os
 
 def json_process(oldfilename, newfilename):
@@ -27,7 +28,10 @@ def json_process(oldfilename, newfilename):
 	#get list of users
 	alluserids = [x["user_id"] for x in oldjson]
 
-	#sort json psots by user
+	#generate gibberish words, key = userid, value = dict
+	gibberishdict = dict(zip(alluserids, gibberishlist))
+
+
 	sameuserposts = {}
 	for thisjson in oldjson:
 		thisuserid = str(thisjson["user_id"])
@@ -67,12 +71,14 @@ def json_process(oldfilename, newfilename):
 		### do before obfuscation
 		thisjson['user_info'] = sameuserposts[thisjson['user_id']]["info"]
 		#### obfuscate
+		thisjson['user_name'] = gibberishdict[thisjson['user_id']]
 		thisjson['user_id'] = weibo_module.obfuscate_hashmod(thisjson['user_id'], weibo_accesstokens.salt, weibo_accesstokens.user_id_mod)
-		thisjson['user_name'] = weibo_module.obfuscate_username(thisjson['user_name'], weibo_accesstokens.salt)
+#		thisjson['user_name'] = weibo_module.obfuscate_username(thisjson['user_id'], weibo_accesstokens.salt)
 		thisjson['post_id'] = weibo_module.obfuscate_hashmod(thisjson['post_id'], weibo_accesstokens.salt, weibo_accesstokens.post_id_mod)
 
+		print thisjson['user_name']
 		thisext = os.path.splitext(thisjson['post_original_pic'])[1]
-		print "cp " + weibo_settings.imgblurdir + prevpostid + thisext + " " + weibo_settings.imghashdir + thisjson['post_id'] + thisext
+#		print "cp " + weibo_settings.imgblurdir + prevpostid + thisext + " " + weibo_settings.imghashdir + thisjson['post_id'] + thisext
 		#wf.write(json.dumps(thisjson, ensure_ascii=False))
 		newf.write(json.dumps(thisjson))
 
@@ -87,5 +93,5 @@ def json_process(oldfilename, newfilename):
 
 
 #json_process(weibo_settings.deleted_log_json_filename, weibo_settings.deleted_log_json_obfuscated_filename)
-json_process("data/deleted_weibo_log_launch_v1.json", weibo_settings.deleted_log_json_obfuscated_filename)
+json_process(weibo_settings.scriptroot + "data/deleted_weibo_log_launch_v1.json", weibo_settings.deleted_log_json_obfuscated_filename)
 
