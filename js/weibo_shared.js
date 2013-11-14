@@ -301,7 +301,7 @@ function transformwedgesparkline(d, datatype, mode) {
 	var returnstring = "";
 	//console.log(crossplatformtransform("translate(0px," + y + "px)"));
 	//return crossplatformtransform("translate(0px," + y + "px)");
-	if(mode === "scatter") { thisy = scatterrandom(0, 1000, d["user_id"], yHorizon); }
+	if(mode === "scatter") { thisy = d["scatter_height"]; }
 	if(datatype === "username") {
 		thisx += usernameOffsetX;
 		thisy += usernameOffsetY;

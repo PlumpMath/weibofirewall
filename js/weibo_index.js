@@ -57,6 +57,7 @@ d3.json(datafile_json, function(error, json) {
 	// store the scaled X values in data - this is convenient	
 	for (var i = 0; i < data.length; i++) {
 		data[i]['post_created_at_scaled'] = scaleTime(data[i]['post_created_at']); 
+		data[i]['scatter_height'] = scatterrandom(0, 1000, data[i]["user_id"], yHorizon);
 	}
 
 	// get min and max elapsed time
