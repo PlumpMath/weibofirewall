@@ -9,6 +9,7 @@ import weibo_accesstokens
 import hashlib
 import pprint
 import gibberish
+import os
 
 def json_process(oldfilename, newfilename):
 
@@ -68,10 +69,10 @@ def json_process(oldfilename, newfilename):
 		#### obfuscate
 		thisjson['user_id'] = weibo_module.obfuscate_hashmod(thisjson['user_id'], weibo_accesstokens.salt, weibo_accesstokens.user_id_mod)
 		thisjson['user_name'] = weibo_module.obfuscate_username(thisjson['user_name'], weibo_accesstokens.salt)
-		#thisjson['post_id'] = weibo_module.hashmod(thisjson['post_id'], weibo_accesstokens.salt, weibo_accesstokens.post_id_mod)
+		thisjson['post_id'] = weibo_module.obfuscate_hashmod(thisjson['post_id'], weibo_accesstokens.salt, weibo_accesstokens.post_id_mod)
 
-
-		print prevpostid + "," + thisjson['post_id']
+		thisext = os.path.splitext(thisjson['post_original_pic'])[1]
+		print "cp " + weibo_settings.imgblurdir + prevpostid + thisext + " " + weibo_settings.imghashdir + thisjson['post_id'] + thisext
 		#wf.write(json.dumps(thisjson, ensure_ascii=False))
 		newf.write(json.dumps(thisjson))
 
