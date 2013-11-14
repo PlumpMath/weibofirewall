@@ -35,13 +35,13 @@ var thisurl = document.URL;
 var baseurl=thisurl.substring(0,thisurl.lastIndexOf("/"));
 
 var wedgeMinimumX = 5;
-var wedgeMinimumY = 1;
+var wedgeMinimumY = 2;
 
 var tickinterval = 1; //interval between ticks, in days
 var params = "";
 
-var usernameOffsetX = 200;
-var usernameOffsetY = 20;
+var usernameOffsetX = -10;
+var usernameOffsetY = 0;
 
 var theme_color= "#FF2F2F";
 

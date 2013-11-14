@@ -171,7 +171,8 @@ d3.json(datafile_json, function(error, json) {
 				return returntext;
 			})
 
-
+	chart.append("g").attr("id", "cursordate")
+		.append("text").text("yo ho yey");
 	/*
 //BARS
 	// let's select the chart and add our bars to it	
@@ -237,9 +238,15 @@ d3.json(datafile_json, function(error, json) {
 
 // scroll tracking
 	$(document).mousemove(function(e){
-		  $('#mouseinfo').css({'top': e.pageY+ 0, 'left': e.pageX + 0})
-			.html(created_at_format(scaleTime.invert(e.pageX)));
-		  $('.postdiv.hover').css({'top': e.pageY+ 0, 'left': e.pageX + 10});
+		console.log(e);
+		d3.select('#cursordate text')
+			.attr("x", e.offsetX - 15)
+			.attr("y", e.offsetY + 4)
+			.attr("text-anchor", "end")
+			.text(created_at_format(scaleTime.invert(e.offsetX)));
+/*		$('#mouseinfo').css({'top': e.pageY+ 0, 'left': e.pageX + 0})
+			.html(created_at_format(scaleTime.invert(e.pageX)));*/
+		$('.postdiv.hover').css({'top': e.pageY+ 0, 'left': e.pageX + 10});
 	});
 	// this is to vertically center chartdiv
 	window.onload = window_resize();
