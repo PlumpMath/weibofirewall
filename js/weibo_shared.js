@@ -455,7 +455,7 @@ function scatterrandom(min, max, userid, yHorizon) {
 	// if even, add horizonavoidance + yHorizon
 	// so that domain of y value is between
 	// yHorizon + horizonavoidance and yHorizon * 2 
-	var horizonavoidance = 200;
+	var horizonavoidance = 100;
 
 	thisy = userid % (yHorizon - horizonavoidance);
 	if(thisy % 2 == 0)

@@ -74,7 +74,7 @@ $(document).ready(function() {
 	<div id="infobox">
 		<div id="infobox-inner">
 			<div class="logo">
-			   Jumping The Great Firewall
+<!--			   Jumping The Great Firewall -->
 			</div>
 			<div class="teaser">
 				More
