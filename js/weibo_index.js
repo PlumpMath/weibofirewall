@@ -168,7 +168,8 @@ d3.json(datafile_json, function(error, json) {
 		.html(function(d) {
 				returntext = "";
 				returntext += "<div class='post_lifespan'>Deleted within <span class='post_lifespan'>" + lifespanFormat(d["post_lifespan"]) + "</span></div>";
-				returntext += "<div class='lifespan_avg'>Average deletion time of this user's posts:<span class='lifespan_avg'>" + lifespanFormat(d["user_info"]["lifespan_avg"]) + "</span></div>";
+				returntext += "<div class='lifespan_avg'>Average deletion time of this user's posts: <span class='lifespan_avg'>" + lifespanFormat(d["user_info"]["lifespan_avg"]) + "</span></div>";
+				returntext += "<div class='post_repost_count'>Reposted <span class='post_repost_count'>" + d["post_repost_count"] + "</span> times</div>";
 				return returntext;
 			})
 
@@ -206,7 +207,7 @@ d3.json(datafile_json, function(error, json) {
 		.attr("class", function(d, i) { return "wedge post-" + d["post_id"] + " user-" + d["user_id"]; })
 		.attr("name", function(d, i) { return d["post_id"]; })
 	.attr("stroke-width", 0.75)
-		.attr("stroke", function(d, i) { return theme_color; })
+//		.attr("stroke", function(d, i) { return theme_color; })
 		//.attr("fill", function(d, i) { return getthiscolor(d, i, scaleTimeForColor); })
 		//.attr("fill", "#666")
 		//.attr("fill", "none")
@@ -255,9 +256,9 @@ d3.json(datafile_json, function(error, json) {
 
 	$("#infooverlay_inner .info").flowtype({
 		minimum: 200,
-		maximum: 1000,
-		minFont: 2,
-		maxFont: 16,
+		maximum: 1200,
+		minFont: 10,
+		maxFont: 20,
 		fontRatio : 30
 	});
 

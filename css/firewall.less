@@ -1,16 +1,25 @@
+/* define colors */
+
 @gray-more-light: #DDD; 
 @gray-light: #AAA; 
 @gray-dark: #777;
 @gray-more-dark: #333;
+@gray-even-more-dark: #111;
 @light-text: @gray-more-light;
-@bar-text: @gray-dark;
-@bar-text-sameuser: #FF0;
-@pp-red: #FF2F2F;
-@theme-color: @pp-red;
-@hover-fill: @theme-color;
 @off-white: #EEE;
+@propublica-red: #FF2F2F;
+@cool-cyan: #1CEBE0;
+
+/* define theme styling */
+
+@theme-color: @propublica-red;
+
+@background-gray: @gray-even-more-dark;
+@theme-color-half: darken(@theme-color, 40%);
+@bar-text-sameuser: lighten(@theme-color, 40%);
+@bar-text: @gray-dark;
+@hover-fill: @theme-color;
 @sameuser-hover-opacity: 0.8;
-@background-gray: #111;
 
 html {
 	cursor: crosshair;
@@ -37,7 +46,8 @@ a:hover{
 
 path.wedge {
 	cursor:pointer;
-//	fill: @theme-color !important;
+	fill: @theme-color-half !important;
+	stroke: @theme-color !important;
 	opacity: 0.4;
 	stroke-width: 1.25;
 }
@@ -173,22 +183,32 @@ rect {
 }
 
 .postdiv .userinfo div {
-	}
-
-.postdiv .userinfo div.post_lifespan {
-	width: calc(50% - 10px);
+//	border: 1px solid cyan;
 	float: left;
-	}
-
-.postdiv .userinfo div.lifespan_avg {
-	margin-left: calc(50% - 5px);
+	width: 33%;
+//	padding-left: 5px;
+//	text-align: center;
 	}
 
 .postdiv .userinfo span {
-	display: block;
+//	display: block;
 	font-weight: bold;
 	color: @theme-color;
 }
+
+.postdiv .userinfo div.post_lifespan {
+	//width: calc(50% - 10px);
+	}
+
+.postdiv .userinfo div.post_repost_count {
+	//width: calc(50% - 10px);
+	}
+
+.postdiv .userinfo div.lifespan_avg {
+//	margin-left: calc(50% - 5px);
+	}
+
+
 
 .postdiv .post_image {
 	border: 1px dotted @theme-color;
@@ -282,13 +302,18 @@ rect {
 
 #infooverlay #infooverlay_inner {
 	position: relative;
+	cursor: default;
 	z-index: 10;
 	overflow: auto;
-	padding: 100px; 
-	margin-top: 100px;
-	margin-left: auto;
-	margin-right: auto;
-	max-width: 1000px;
+	height: 100%;
+//	width: 100%;
+	padding-left: 180px;
+	padding-right: 30px;
+	padding-top: 30px;
+//	padding-bottom: 300px;
+	margin-right: 0px;
+//	margin-bottom: 50px;
+	max-width: 1200px;
 	color: white;
 	font-family: 'Open Sans', Helvetica, arial, sans-serif;
 	font-weight: 300;
@@ -311,6 +336,7 @@ rect {
 	padding-top: 20px;
 	font-size: 1em;
 	line-height: 1.5em;
+	padding-bottom: 80px;
 }
 
 
