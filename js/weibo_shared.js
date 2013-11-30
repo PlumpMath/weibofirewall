@@ -45,6 +45,9 @@ var usernameOffsetY = 0;
 
 var theme_color= "#FF2F2F";
 
+var scrollToX, scrollToY;
+var scrollRateX;
+var scrollSmoothing = 20;
 
 /**************/
 /**************/
@@ -143,9 +146,18 @@ function handleMouse(e) {
 	var scrollToX = (e.clientX)/ $(window).width() * $(document).width();
 	var scrollToY = (e.clientY) / $(window).height() * $(document).height();
 
-	//window.scrollTo(scrollToX, scrollToY);
-	$(window).scrollLeft(scrollToX);
+	//but also. we want to have a scroll rate. so - the closer the pointer is to the desired location, the slower the scroll rate.
+	// when e.clientX is close to scrollToX then scroll rate goes down
+	// add this to scrollLeft
+	scrollRateX = (scrollToX - $(window).scrollLeft()) / scrollSmoothing;
 
+	//window.scrollTo(scrollToX, scrollToY);
+	//$(window).scrollLeft(scrollToX);
+
+}
+
+function scrollWindow() {
+	$(window).scrollLeft($(window).scrollLeft() + scrollRateX);
 }
 
 function wedgeopacity(opacity) {
@@ -435,6 +447,7 @@ $(document).ready(function() {
 		setoptions(params);
 	};
 
+	setInterval(scrollWindow,10);
 
 });
 
