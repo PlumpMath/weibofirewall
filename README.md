@@ -1,3 +1,5 @@
+#NOTICE: This repository is obsolete, as it has moved to a private repository.
+
 # Jumping The Great Firewall
 
 #### With the ADVP at GSAPP - http://advp.gsapp.org
